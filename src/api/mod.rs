@@ -1,4 +1,5 @@
-pub mod structure;
-pub mod gates;
+pub mod circuit;
+pub mod simulator;
 
-pub use structure::*;
+pub use circuit::*;
+pub use simulator::*;
