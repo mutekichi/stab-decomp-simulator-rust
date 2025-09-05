@@ -1,9 +1,10 @@
-use num_complex::Complex64;
 use stabilizer_ch_form_rust::StabilizerCHForm;
 
+use crate::prelude::types::coefficient::Coefficient;
+
 #[derive(Clone, Debug)]
-pub struct StabilizerDecomposedState {
+pub struct StabilizerDecomposedState<T: Coefficient> {
     pub num_qubits: usize,
     pub stabilizers: Vec<StabilizerCHForm>,
-    pub coefficients: Vec<Complex64>,
+    pub coefficients: Vec<T>,
 }
