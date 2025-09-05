@@ -1,7 +1,7 @@
 use num_complex::Complex64;
 use std::ops::{Mul, MulAssign};
 
-use crate::prelude::types::{coefficient::{Conj, InnerProduct}, phase_factor::PhaseFactor};
+use crate::prelude::types::{coefficient::Conj, phase_factor::PhaseFactor};
 
 /// Represents a scalar value in the form `phase * 2^(-r/2)` or zero.
 /// NOTE: Should be changed to pub(crate)

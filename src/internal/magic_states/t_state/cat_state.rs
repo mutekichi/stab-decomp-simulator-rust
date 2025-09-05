@@ -1,5 +1,3 @@
-use core::num;
-
 use crate::prelude::{
     StabilizerDecomposedState,
     types::{phase_factor::PhaseFactor, scalar::Scalar},
@@ -68,7 +66,7 @@ fn _construct_cat_2_state() -> StabilizerDecomposedState<Scalar> {
 }
 
 /// Construct |cat_4> state as a superposition of 2 StabilizerCHForm states
-fn construct_cat_4_state() -> StabilizerDecomposedState<Scalar> {
+fn _construct_cat_4_state() -> StabilizerDecomposedState<Scalar> {
     let stab1 = _zero_minus_i_one_state(4);
     let stab2 = _even_parity_state(4);
     let coeffs = vec![Scalar::ONE_OVER_SQRT_2, Scalar::ONE_OVER_SQRT_2];
@@ -81,7 +79,7 @@ fn construct_cat_4_state() -> StabilizerDecomposedState<Scalar> {
 }
 
 /// Construct |cat_6> state as a superposition of 3 StabilizerCHForm states
-fn construct_cat_6_state() -> StabilizerDecomposedState<Scalar> {
+fn _construct_cat_6_state() -> StabilizerDecomposedState<Scalar> {
     let stab1 = _zero_minus_i_one_state(6);
     let stab2 = _even_parity_state(6);
     let stab3 = _even_parity_phase_flipped_state(6);
@@ -107,10 +105,7 @@ fn construct_cat_6_state() -> StabilizerDecomposedState<Scalar> {
     }
 }
 
-fn _project_ch_form_onto_cat_state(
-    state: &mut StabilizerCHForm,
-    qubits: &[usize],
-) {
+fn _project_ch_form_onto_cat_state(state: &mut StabilizerCHForm, qubits: &[usize]) {
     // Make sure qubits has length 2 and qubits[0] < qubits[1]
     // We do not check this here for performance reasons
     state.apply_sdg(qubits[0]);
@@ -133,9 +128,7 @@ fn _project_stab_decomp_state_onto_cat_state(
 }
 
 /// Make |cat_{m-1}> from |cat_m> by tracing out the last qubits
-fn _reduce_cat_state(
-    state: &mut StabilizerDecomposedState<Scalar>,
-) {
+fn _reduce_cat_state(state: &mut StabilizerDecomposedState<Scalar>) {
     let num_qubits = state.num_qubits;
     for stab in &mut state.stabilizers {
         stab.project(num_qubits - 1, false).unwrap();
@@ -144,24 +137,23 @@ fn _reduce_cat_state(
     state.num_qubits -= 1;
 }
 
-pub(crate) fn construct_cat_state(
-    num_qubits: usize,
-) -> StabilizerDecomposedState<Scalar> {
+pub(crate) fn _construct_cat_state(num_qubits: usize) -> StabilizerDecomposedState<Scalar> {
     match num_qubits {
         1 => _construct_cat_1_state(),
         2 => _construct_cat_2_state(),
-        4 => construct_cat_4_state(),
+        4 => _construct_cat_4_state(),
         5 => {
-            let mut state = construct_cat_6_state();
+            let mut state = _construct_cat_6_state();
             _reduce_cat_state(&mut state);
             state
         }
-        6 => construct_cat_6_state(),
+        6 => _construct_cat_6_state(),
         _ => {
-            let mut cat_pair = construct_cat_state(num_qubits - 4).kron(
-                &construct_cat_state(6)
+            let mut cat_pair = _construct_cat_state(num_qubits - 4).kron(&_construct_cat_state(6));
+            _project_stab_decomp_state_onto_cat_state(
+                &mut cat_pair,
+                &[num_qubits - 5, num_qubits - 4],
             );
-            _project_stab_decomp_state_onto_cat_state(&mut cat_pair, &[num_qubits - 5, num_qubits - 4]);
             cat_pair
         }
     }

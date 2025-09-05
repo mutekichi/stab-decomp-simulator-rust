@@ -1,6 +1,6 @@
-use crate::prelude::{types::coefficient::Coefficient, StabilizerDecomposedState};
+use crate::prelude::{StabilizerDecomposedState, types::coefficient::Coefficient};
 
-impl<T:Coefficient> StabilizerDecomposedState<T> {
+impl<T: Coefficient> StabilizerDecomposedState<T> {
     pub fn kron(&self, other: &Self) -> Self {
         let num_qubits = self.num_qubits + other.num_qubits;
         let mut stabilizers = Vec::new();
