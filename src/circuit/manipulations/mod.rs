@@ -1,4 +1,4 @@
-use crate::api::QuantumCircuit;
+use crate::circuit::QuantumCircuit;
 
 impl QuantumCircuit {
     /// Appends the gates from another `QuantumCircuit` to this one.

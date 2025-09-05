@@ -1,4 +1,5 @@
-use crate::api::{QuantumCircuit, QuantumGate};
+use crate::circuit::QuantumCircuit;
+use crate::circuit::QuantumGate;
 use regex::Regex;
 use std::collections::HashMap;
 use std::fs;

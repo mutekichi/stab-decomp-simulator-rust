@@ -1,5 +1,5 @@
-use crate::api::QuantumCircuit;
-use crate::api::QuantumGate;
+use crate::circuit::QuantumCircuit;
+use crate::circuit::QuantumGate;
 
 impl QuantumCircuit {
     /// Apply a quantum gate to the circuit.
