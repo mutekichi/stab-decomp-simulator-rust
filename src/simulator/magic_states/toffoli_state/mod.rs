@@ -1,8 +1,6 @@
 use stabilizer_ch_form_rust::prelude::*;
 
-use crate::stabilizer_decomposed_state::StabilizerDecomposedState;
-
-use crate::internal::types::scalar::Scalar;
+use crate::prelude::{StabilizerDecomposedState, types::scalar::Scalar};
 
 /// Constructs the Toffoli state |Toffoli>:
 /// |Toffoli> = (|000> + |100> + |010> + |111>) / 2

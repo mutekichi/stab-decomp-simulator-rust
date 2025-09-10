@@ -270,6 +270,7 @@ dependencies = [
  "lazy_static",
  "ndarray",
  "num-complex",
+ "num-traits",
  "regex",
  "stabilizer-ch-form-rust",
 ]

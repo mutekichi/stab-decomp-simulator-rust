@@ -92,21 +92,31 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
         if let Some(caps) = GATE3_RE.captures(line) {
             let gate_name = &caps[1];
             if let Some(gate_fn) = THREE_QUBIT_GATES.get(gate_name) {
-                let q1 = caps[3].parse::<usize>().map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
-                let q2 = caps[5].parse::<usize>().map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
-                let q3 = caps[7].parse::<usize>().map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
+                let q1 = caps[3]
+                    .parse::<usize>()
+                    .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
+                let q2 = caps[5]
+                    .parse::<usize>()
+                    .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
+                let q3 = caps[7]
+                    .parse::<usize>()
+                    .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
                 gates.push(gate_fn(q1, q2, q3));
                 matched = true;
             }
         }
-        
+
         // Check for 2-qubit gates if not matched
         if !matched {
             if let Some(caps) = GATE2_RE.captures(line) {
                 let gate_name = &caps[1];
                 if let Some(gate_fn) = TWO_QUBIT_GATES.get(gate_name) {
-                    let q1 = caps[3].parse::<usize>().map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
-                    let q2 = caps[5].parse::<usize>().map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
+                    let q1 = caps[3]
+                        .parse::<usize>()
+                        .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
+                    let q2 = caps[5]
+                        .parse::<usize>()
+                        .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
                     gates.push(gate_fn(q1, q2));
                     matched = true;
                 }
@@ -118,7 +128,9 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
             if let Some(caps) = GATE1_RE.captures(line) {
                 let gate_name = &caps[1];
                 if let Some(gate_fn) = SINGLE_QUBIT_GATES.get(gate_name) {
-                    let qarg = caps[3].parse::<usize>().map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
+                    let qarg = caps[3]
+                        .parse::<usize>()
+                        .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
                     gates.push(gate_fn(qarg));
                     matched = true;
                 }
@@ -126,7 +138,7 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
         }
 
         if !matched {
-             return Err(format!("Unrecognized or malformed line: {}", line));
+            return Err(format!("Unrecognized or malformed line: {}", line));
         }
     }
 
@@ -141,7 +153,7 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
 }
 
 /// Parses an OpenQASM 2.0 file into a `QuantumCircuit`.
-/// 
+///
 /// ### Arguments
 /// * `path` - A reference to a path of the OpenQASM 2.0 file.
 /// ### Returns

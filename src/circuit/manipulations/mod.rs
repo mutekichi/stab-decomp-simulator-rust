@@ -33,9 +33,7 @@ impl QuantumCircuit {
     /// let tensor_circuit = circuit1.tensor(&circuit2);
     /// ```
     pub fn tensor(&self, other: &QuantumCircuit) -> QuantumCircuit {
-        let mut new_circuit = QuantumCircuit::new(
-            self.num_qubits + other.num_qubits
-        );
+        let mut new_circuit = QuantumCircuit::new(self.num_qubits + other.num_qubits);
 
         // Add gates from the first circuit
         for gate in &self.gates {

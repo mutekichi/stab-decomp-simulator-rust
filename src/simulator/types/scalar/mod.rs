@@ -1,7 +1,8 @@
 use num_complex::Complex64;
 use std::ops::{Mul, MulAssign};
+use num_traits::One;
 
-use crate::prelude::types::{coefficient::Conj, phase_factor::PhaseFactor};
+use crate::prelude::types::{coefficient::{Amplify, Conj}, phase_factor::PhaseFactor};
 
 /// Represents a scalar value in the form `phase * 2^(-r/2)` or zero.
 /// NOTE: Should be changed to pub(crate)
@@ -103,5 +104,25 @@ impl Mul<PhaseFactor> for Scalar {
 impl MulAssign<PhaseFactor> for Scalar {
     fn mul_assign(&mut self, rhs: PhaseFactor) {
         *self = *self * rhs;
+    }
+}
+
+impl One for Scalar {
+    fn one() -> Self {
+        Scalar::ONE
+    }
+}
+
+impl Amplify for Scalar {
+    /// Amplifies the scalar by reducing the exponent `r` by the specified factor.
+    /// i.e. scalar *= 2^(factor/2)
+    fn amplify(&self, factor: usize) -> Self {
+        match self {
+            Scalar::Zero => Scalar::Zero,
+            Scalar::NonZero { phase, r } => Scalar::NonZero {
+                phase: *phase,
+                r: r.saturating_sub(factor),
+            },
+        }
     }
 }
