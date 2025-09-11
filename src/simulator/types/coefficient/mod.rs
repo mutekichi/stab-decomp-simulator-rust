@@ -1,7 +1,7 @@
 use num_complex::Complex64;
+use num_traits::One;
 use std::fmt::Debug;
 use std::ops::Mul;
-use num_traits::One;
 
 pub trait Conj {
     fn conj(&self) -> Self;

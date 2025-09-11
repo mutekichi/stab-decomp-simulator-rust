@@ -69,7 +69,16 @@ fn _construct_cat_2_state() -> StabilizerDecomposedState<Scalar> {
 fn _construct_cat_4_state() -> StabilizerDecomposedState<Scalar> {
     let stab1 = _zero_minus_i_one_state(4);
     let stab2 = _even_parity_state(4);
-    let coeffs = vec![Scalar::ONE_OVER_SQRT_2, Scalar::ONE_OVER_SQRT_2];
+    let coeffs = vec![
+        Scalar::NonZero {
+            phase: PhaseFactor::EXP_I_7PI_4,
+            r: 1,
+        },
+        Scalar::NonZero {
+            phase: PhaseFactor::PLUS_I,
+            r: 0,
+        },
+    ];
 
     StabilizerDecomposedState {
         num_qubits: 4,
@@ -141,6 +150,11 @@ pub(crate) fn _construct_cat_state(num_qubits: usize) -> StabilizerDecomposedSta
     match num_qubits {
         1 => _construct_cat_1_state(),
         2 => _construct_cat_2_state(),
+        3 => {
+            let mut state = _construct_cat_4_state();
+            _reduce_cat_state(&mut state);
+            state
+        }
         4 => _construct_cat_4_state(),
         5 => {
             let mut state = _construct_cat_6_state();

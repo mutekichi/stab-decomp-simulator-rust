@@ -1,7 +1,17 @@
 pub mod errors;
+use crate::{
+    circuit::QuantumCircuit,
+    prelude::{
+        Coefficient, SimulatorState, StabilizerDecomposedState,
+        magic_states::t_state::_construct_t_tensor_state,
+        types::{coefficient::Amplify, scalar::Scalar},
+    },
+};
 use errors::CompileError;
-use stabilizer_ch_form_rust::{api::{CliffordCircuit, CliffordGate}, StabilizerCHForm};
-use crate::{circuit::QuantumCircuit, prelude::{magic_states::t_state::_construct_t_tensor_state, types::{coefficient::Amplify, scalar::Scalar}, Coefficient, SimulatorState, StabilizerDecomposedState}};
+use stabilizer_ch_form_rust::{
+    StabilizerCHForm,
+    api::{CliffordCircuit, CliffordGate},
+};
 
 /// A trait for compilers that transform a `QuantumCircuit` blueprint into a
 /// computable `SimulatorState`.
@@ -32,8 +42,7 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
         for gate in &circuit.gates {
             if gate.is_clifford() {
                 clifford_ops.push(gate.to_clifford_gate().unwrap());
-            }
-            else if gate.is_t_type_gate() {
+            } else if gate.is_t_type_gate() {
                 let ancilla_idx = num_qubits_original + num_t_type_gates;
                 let target_idx = gate.qubits()[0];
                 clifford_ops.push(CliffordGate::CX(target_idx, ancilla_idx));
@@ -41,8 +50,7 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
                     clifford_ops.push(CliffordGate::Sdg(target_idx));
                 }
                 num_t_type_gates += 1;
-            }
-            else {
+            } else {
                 return Err(CompileError::GateNotSupported(format!(
                     "Gate {:?} is not supported by the StabDecompCompiler.",
                     gate
@@ -52,9 +60,7 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
 
         // If there are no T-gates, the circuit is purely Clifford.
         if num_t_type_gates == 0 {
-            let mut circuit = CliffordCircuit::new(
-                num_qubits_original
-            );
+            let mut circuit = CliffordCircuit::new(num_qubits_original);
             for gate in clifford_ops {
                 circuit.add_gate(gate);
             }
@@ -77,7 +83,11 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
         // NOTE: This process can be improved by "right-applying" the t-tensor
         // preparation to the whole circuit, instead of "left-applying" the
         // clifford operations to each stabilizer component.
-        for (stab, coeff) in t_tensor_state.stabilizers.iter().zip(t_tensor_state.coefficients.iter()) {
+        for (stab, coeff) in t_tensor_state
+            .stabilizers
+            .iter()
+            .zip(t_tensor_state.coefficients.iter())
+        {
             let mut full_stab_state = StabilizerCHForm::new(num_qubits_original).kron(stab);
 
             // Apply the clifford operations to the combined state.
@@ -85,14 +95,16 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
                 full_stab_state.apply_gate(gate);
             }
 
-            let mut can_postselect_all = false;
+            let mut can_postselect_all = true;
             let mut num_deterministic_qubits = 0;
 
             // Iterate reverse to handle qubit index shifts after discards.
             for qubit in (num_qubits_original..(num_qubits_original + num_t_type_gates)).rev() {
-                match full_stab_state.project(qubit, true) {
+                dbg!("here");
+                match full_stab_state.project(qubit, false) {
                     Ok(deterministic) => {
                         if deterministic {
+                            dbg!("deterministic");
                             num_deterministic_qubits += 1;
                         } else {
                             can_postselect_all = false;
@@ -100,6 +112,7 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
                         full_stab_state.discard(qubit).unwrap();
                     }
                     Err(_) => {
+                        dbg!("failed");
                         can_postselect_all = false;
                         break;
                     }
@@ -113,7 +126,9 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
                     full_stab_state.discard(qubit).unwrap();
                 }
                 final_stabilizers.push(full_stab_state);
-                final_coefficients.push(T::from(coeff.amplify(num_t_type_gates.saturating_sub(num_deterministic_qubits))));
+                final_coefficients.push(T::from(
+                    coeff.amplify(num_t_type_gates.saturating_sub(num_deterministic_qubits)),
+                ));
             }
         }
 

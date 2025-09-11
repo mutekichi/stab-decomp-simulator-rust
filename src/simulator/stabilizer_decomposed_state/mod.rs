@@ -32,7 +32,6 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     }
 }
 
-
 macro_rules! impl_single_qubit_gate {
     ( $( pub fn $method_name:ident(&mut self, qarg: usize) );* ) => {
         impl<T: Coefficient> StabilizerDecomposedState<T> {

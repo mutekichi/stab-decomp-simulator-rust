@@ -19,4 +19,3 @@ impl<T: Coefficient> SimulatorState<T> {
         Self { internal_state }
     }
 }
-

@@ -1,4 +1,11 @@
-use crate::{circuit::QuantumCircuit, prelude::{compiler::{errors::CompileError, CircuitCompiler, StabDecompCompiler}, types::scalar::Scalar, SimulatorState}};
+use crate::{
+    circuit::QuantumCircuit,
+    prelude::{
+        SimulatorState,
+        compiler::{CircuitCompiler, StabDecompCompiler, errors::CompileError},
+        types::scalar::Scalar,
+    },
+};
 
 impl SimulatorState<Scalar> {
     /// Creates a new `SimulatorState` by compiling a `QuantumCircuit`.
@@ -18,8 +25,8 @@ impl SimulatorState<Scalar> {
     }
 
     /// Returns the statevector as a `Vec<Complex64>`.
-    /// Note: This function is primarily for testing and debugging purposes. 
-    /// 
+    /// Note: This function is primarily for testing and debugging purposes.
+    ///
     /// ### Returns
     /// `Array1<Complex64>` representing the statevector.
     pub fn to_statevector(&self) -> ndarray::Array1<num_complex::Complex64> {

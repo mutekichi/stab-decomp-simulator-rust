@@ -144,3 +144,8 @@ pub fn random_circuit(n_qubits: usize, gate_count: usize, seed: Option<u64>) -> 
     }
     circuit
 }
+
+#[allow(dead_code)]
+pub fn _norm_squared(v: &Array1<Complex64>) -> f64 {
+    v.iter().map(|c| c.norm_sqr()).sum()
+}

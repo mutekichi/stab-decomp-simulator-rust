@@ -1,6 +1,6 @@
+pub mod gate_applications;
 pub mod gates;
 pub mod manipulations;
-pub mod gate_applications;
 pub mod parser;
 
 pub use gates::*;

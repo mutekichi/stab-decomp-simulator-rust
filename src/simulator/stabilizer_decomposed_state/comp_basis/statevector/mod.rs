@@ -3,7 +3,6 @@ use num_complex::Complex64;
 
 use crate::prelude::{Coefficient, StabilizerDecomposedState};
 
-
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// Converts the stabilizer decomposed state to a statevector representation.
     pub fn to_statevector(&self) -> Array1<Complex64> {

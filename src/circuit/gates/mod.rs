@@ -91,8 +91,8 @@ impl QuantumGate {
                 | QuantumGate::Swap(_, _)
         )
     }
-    
-    /// Checks if the gate is a T-type gate. 
+
+    /// Checks if the gate is a T-type gate.
     /// Note that this checks for both T and T-dagger gates.
     /// ### Returns
     /// * `bool` - `true` if the gate is a T-type gate, otherwise `false`.
@@ -100,7 +100,7 @@ impl QuantumGate {
         matches!(self, QuantumGate::T(_) | QuantumGate::Tdg(_))
     }
 
-    /// Checks if the gate is a T gate. 
+    /// Checks if the gate is a T gate.
     /// Note that this only checks for the T gate, not T-dagger.
     /// ### Returns
     /// * `bool` - `true` if the gate is a T gate, otherwise `false`.
@@ -109,7 +109,7 @@ impl QuantumGate {
     }
 
     /// Checks if the gate is a T-dagger gate.
-    /// 
+    ///
     /// ### Returns
     /// * `bool` - `true` if the gate is a T-dagger gate, otherwise `false`.
     pub fn is_tdg_gate(&self) -> bool {
@@ -152,9 +152,7 @@ impl QuantumGate {
             | QuantumGate::Tdg(q) => vec![q],
 
             // Two-qubit gates
-            QuantumGate::CX(c, t)
-            | QuantumGate::CZ(c, t)
-            | QuantumGate::Swap(c, t) => vec![c, t],
+            QuantumGate::CX(c, t) | QuantumGate::CZ(c, t) | QuantumGate::Swap(c, t) => vec![c, t],
 
             // Three-qubit gates
             QuantumGate::CCX(c1, c2, t) => vec![c1, c2, t],
