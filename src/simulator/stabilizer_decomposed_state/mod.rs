@@ -1,3 +1,5 @@
+pub mod comp_basis;
+
 use stabilizer_ch_form_rust::prelude::*;
 
 use crate::prelude::types::coefficient::Coefficient;

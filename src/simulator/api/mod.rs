@@ -16,4 +16,13 @@ impl SimulatorState<Scalar> {
         let compiler = StabDecompCompiler::new();
         compiler.compile(circuit)
     }
+
+    /// Returns the statevector as a `Vec<Complex64>`.
+    /// Note: This function is primarily for testing and debugging purposes. 
+    /// 
+    /// # Returns
+    /// `Array1<Complex64>` representing the statevector.
+    pub fn to_statevector(&self) -> ndarray::Array1<num_complex::Complex64> {
+        self.internal_state.to_statevector()
+    }
 }
