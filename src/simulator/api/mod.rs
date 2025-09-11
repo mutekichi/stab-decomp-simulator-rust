@@ -21,7 +21,7 @@ impl SimulatorState<Scalar> {
     /// A `Result` containing the compiled `SimulatorState` or a `CompileError`.
     pub fn from_circuit(circuit: &QuantumCircuit) -> Result<Self, CompileError> {
         let compiler = StabDecompCompiler::new();
-        compiler.compile(circuit)
+        compiler._compile(circuit)
     }
 
     /// Returns the statevector as a `Vec<Complex64>`.
@@ -30,6 +30,18 @@ impl SimulatorState<Scalar> {
     /// ### Returns
     /// `Array1<Complex64>` representing the statevector.
     pub fn to_statevector(&self) -> ndarray::Array1<num_complex::Complex64> {
-        self.internal_state.to_statevector()
+        self.internal_state._to_statevector()
     }
+
+    /// Returns the inner product of the state and another state.
+    ///
+    /// ### Arguments
+    /// * `other` - A reference to another `SimulatorState` to compute the inner product with.
+    ///
+    /// ### Returns
+    /// A `Complex64` representing the inner product.
+    pub fn inner_product(&self, other: &Self) -> num_complex::Complex64 {
+        self.internal_state._inner_product(&other.internal_state)
+    }
+
 }

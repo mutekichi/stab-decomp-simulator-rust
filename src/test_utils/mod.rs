@@ -1,11 +1,12 @@
 use ndarray::{Array1, Array2};
 use num_complex::Complex64;
 use rand::rngs::StdRng;
+use rand::seq::SliceRandom;
 use rand::{Rng, SeedableRng};
-use stabilizer_ch_form_rust::api::{CliffordCircuit, CliffordGate};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
+use crate::circuit::{QuantumCircuit, QuantumGate};
 
 #[allow(dead_code)]
 pub fn assert_eq_complex(a: Complex64, b: Complex64) {
@@ -98,50 +99,92 @@ pub fn pretty_print_complex_vec(name: &str, vec: &Array1<Complex64>) {
 
 /// Generates a random quantum circuit with the specified number of qubits and gates.
 #[allow(dead_code)]
-pub fn random_circuit(n_qubits: usize, gate_count: usize, seed: Option<u64>) -> CliffordCircuit {
-    let mut circuit = CliffordCircuit::new(n_qubits);
+pub fn random_circuit_with_t_gate(
+    n_qubits: usize,
+    clifford_gate_count: usize,
+    t_type_gate_count: usize,
+    seed: Option<u64>,
+) -> QuantumCircuit {
+    let mut circuit = QuantumCircuit::new(n_qubits);
     let mut rng = match seed {
         Some(s) => StdRng::seed_from_u64(s),
         None => StdRng::from_entropy(),
     };
 
-    for _ in 0..gate_count {
-        let gate_type = rng.gen_range(0..8);
-        match gate_type {
-            // 1-qubit gates
-            0..=5 => {
-                let q = rng.gen_range(0..n_qubits);
-                let gate = match gate_type {
-                    0 => CliffordGate::H(q),
-                    1 => CliffordGate::S(q),
-                    2 => CliffordGate::X(q),
-                    3 => CliffordGate::Y(q),
-                    4 => CliffordGate::Z(q),
-                    5 => CliffordGate::Sdg(q),
-                    _ => unreachable!(),
-                };
-                circuit.add_gate(gate);
-            }
-            // 2-qubit gates
-            6..=7 => {
-                if n_qubits < 2 {
-                    continue;
-                }
-                let q1 = rng.gen_range(0..n_qubits);
-                let mut q2 = rng.gen_range(0..n_qubits);
-                while q1 == q2 {
-                    q2 = rng.gen_range(0..n_qubits);
-                }
-                let gate = match gate_type {
-                    4 => CliffordGate::CX(q1, q2),
-                    5 => CliffordGate::CZ(q1, q2),
-                    _ => unreachable!(),
-                };
-                circuit.add_gate(gate);
-            }
-            _ => unreachable!(),
-        }
+    // An enum to represent the category of gate to be generated.
+    #[derive(Clone, Copy)]
+    enum GateCategory {
+        Clifford,
+        TType,
     }
+
+    // Create a pool of gate categories to be generated.
+    let total_gates = clifford_gate_count + t_type_gate_count;
+    let mut gate_categories: Vec<GateCategory> = Vec::with_capacity(total_gates);
+    gate_categories.extend(std::iter::repeat(GateCategory::Clifford).take(clifford_gate_count));
+    gate_categories.extend(std::iter::repeat(GateCategory::TType).take(t_type_gate_count));
+
+    // Shuffle the pool to ensure random ordering of Clifford and T-type gates.
+    gate_categories.shuffle(&mut rng);
+
+    for category in gate_categories {
+        let gate = match category {
+            GateCategory::Clifford => {
+                // Define the number of available Clifford gates of each arity.
+                const NUM_1Q_CLIFFORDS: u32 = 8; // H, X, Y, Z, S, Sdg, SqrtX, SqrtXdg
+                const NUM_2Q_CLIFFORDS: u32 = 3; // CX, CZ, Swap
+
+                // Determine the range of possible gates based on the number of qubits.
+                let max_gate_idx = if n_qubits < 2 {
+                    NUM_1Q_CLIFFORDS
+                } else {
+                    NUM_1Q_CLIFFORDS + NUM_2Q_CLIFFORDS
+                };
+
+                let gate_idx = rng.gen_range(0..max_gate_idx);
+
+                if gate_idx < NUM_1Q_CLIFFORDS {
+                    // Generate a 1-qubit Clifford gate.
+                    let q = rng.gen_range(0..n_qubits);
+                    match gate_idx {
+                        0 => QuantumGate::H(q),
+                        1 => QuantumGate::X(q),
+                        2 => QuantumGate::Y(q),
+                        3 => QuantumGate::Z(q),
+                        4 => QuantumGate::S(q),
+                        5 => QuantumGate::Sdg(q),
+                        6 => QuantumGate::SqrtX(q),
+                        7 => QuantumGate::SqrtXdg(q),
+                        _ => unreachable!(),
+                    }
+                } else {
+                    // Generate a 2-qubit Clifford gate.
+                    let q1 = rng.gen_range(0..n_qubits);
+                    let mut q2 = rng.gen_range(0..n_qubits);
+                    while q1 == q2 {
+                        q2 = rng.gen_range(0..n_qubits);
+                    }
+                    match gate_idx - NUM_1Q_CLIFFORDS {
+                        0 => QuantumGate::CX(q1, q2),
+                        1 => QuantumGate::CZ(q1, q2),
+                        2 => QuantumGate::Swap(q1, q2),
+                        _ => unreachable!(),
+                    }
+                }
+            }
+            GateCategory::TType => {
+                // Generate a T or Tdg gate.
+                let q = rng.gen_range(0..n_qubits);
+                if rng.gen_bool(0.5) {
+                    QuantumGate::T(q)
+                } else {
+                    QuantumGate::Tdg(q)
+                }
+            }
+        };
+        circuit.apply_gate(gate);
+    }
+
     circuit
 }
 

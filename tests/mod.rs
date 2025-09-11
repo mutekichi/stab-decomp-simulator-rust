@@ -1,17 +1,17 @@
-use stab_decomp_simulator_rust::{prelude::{from_qasm_file, SimulatorState}, test_utils::_norm_squared};
+use stab_decomp_simulator_rust::{prelude::{from_qasm_file, SimulatorState}};
 
 use crate::common::{
-    assert_eq_complex_array1, load_statevector_from_file, pretty_print_complex_vec,
+    assert_eq_complex_array1, load_statevector_from_file,
 };
-use std::path::PathBuf;
+use std::{path::PathBuf};
 
 pub mod common;
 
 #[test]
-fn test_assert_eq_precomputed_inner_product() {
+fn test_assert_eq_precomputed_statevector() {
     let base_path = PathBuf::from("tests")
         .join("resources")
-        .join("4q_50g_cx-h-s-t");
+        .join("4q_100g_cx-cz-h-s-sdg-sx-sxdg-t-tdg-x-z");
 
     let circuit_path = base_path.join("circuit.qasm");
     let statevector_path = base_path.join("ref.sv");
@@ -22,11 +22,8 @@ fn test_assert_eq_precomputed_inner_product() {
     let sim_state = SimulatorState::from_circuit(&circuit).unwrap();
     let sim_state_vec = sim_state.to_statevector();
 
-    dbg!(_norm_squared(&sim_state_vec));
-    dbg!(_norm_squared(&ref_state));
-
-    pretty_print_complex_vec("sim", &sim_state_vec);
-    pretty_print_complex_vec("ref", &ref_state);
+    println!("sim_state_vec: {:?}", sim_state_vec[0]);
+    println!("ref_state: {:?}", ref_state[0]);
 
     assert_eq_complex_array1(&ref_state, &sim_state_vec);
 }

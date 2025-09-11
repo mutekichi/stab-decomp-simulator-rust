@@ -99,7 +99,7 @@ mod tests {
         for num_qubits in 1..=9 {
             let state = _construct_t_tensor_state(num_qubits);
             let expected_vector = _construct_t_tensor_vector(num_qubits);
-            let state_vector = state.to_statevector();
+            let state_vector = state._to_statevector();
             assert_eq_complex_array1(&expected_vector, &state_vector);
             println!("Test passed for {} qubits.", num_qubits);
         }

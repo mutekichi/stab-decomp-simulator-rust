@@ -5,7 +5,7 @@ use crate::prelude::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// Converts the stabilizer decomposed state to a statevector representation.
-    pub fn to_statevector(&self) -> Array1<Complex64> {
+    pub(crate) fn _to_statevector(&self) -> Array1<Complex64> {
         let mut statevector = Array1::<Complex64>::zeros(1 << self.num_qubits);
         for (stab, coeff) in self.stabilizers.iter().zip(self.coefficients.iter()) {
             let stab_vector = stab.to_statevector();

@@ -1,4 +1,5 @@
 pub mod comp_basis;
+pub mod inner_product;
 
 use stabilizer_ch_form_rust::prelude::*;
 

@@ -3,7 +3,7 @@ use crate::{
     circuit::QuantumCircuit,
     prelude::{
         magic_states::t_state::_construct_t_tensor_state, types::{coefficient::Amplify, scalar::Scalar}, Coefficient, SimulatorState, StabilizerDecomposedState
-    }, test_utils::_norm_squared,
+    }
 };
 use errors::CompileError;
 use stabilizer_ch_form_rust::{
@@ -14,7 +14,7 @@ use stabilizer_ch_form_rust::{
 /// A trait for compilers that transform a `QuantumCircuit` blueprint into a
 /// computable `SimulatorState`.
 pub trait CircuitCompiler<T: Coefficient> {
-    fn compile(&self, circuit: &QuantumCircuit) -> Result<SimulatorState<T>, CompileError>;
+    fn _compile(&self, circuit: &QuantumCircuit) -> Result<SimulatorState<T>, CompileError>;
 }
 
 /// A compiler that implements the stabilizer decomposition simulation method.
@@ -23,16 +23,16 @@ pub trait CircuitCompiler<T: Coefficient> {
 /// internally uses a `StabilizerDecomposedState`. It processes non-Clifford
 /// gates (like T and Toffoli) in a batch by preparing the necessary magic
 /// states and then applying gate teleportation.
-pub struct StabDecompCompiler;
+pub(crate) struct StabDecompCompiler;
 
 impl StabDecompCompiler {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self
     }
 }
 
 impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
-    fn compile(&self, circuit: &QuantumCircuit) -> Result<SimulatorState<T>, CompileError> {
+    fn _compile(&self, circuit: &QuantumCircuit) -> Result<SimulatorState<T>, CompileError> {
         let num_qubits_original = circuit.num_qubits;
         let mut num_t_type_gates = 0;
         let mut clifford_ops: Vec<CliffordGate> = Vec::new();
@@ -119,7 +119,6 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
                 }
                 final_stabilizers.push(full_stab_state);
                 final_coefficients.push(T::from(
-                    // coeff.amplify(num_t_type_gates.saturating_sub(num_deterministic_qubits)),
                     coeff.amplify(num_deterministic_qubits),
                 ));
             }
