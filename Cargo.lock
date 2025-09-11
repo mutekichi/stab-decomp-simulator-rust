@@ -271,6 +271,7 @@ dependencies = [
  "ndarray",
  "num-complex",
  "num-traits",
+ "rand",
  "regex",
  "stabilizer-ch-form-rust",
 ]

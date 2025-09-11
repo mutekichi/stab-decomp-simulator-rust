@@ -7,10 +7,10 @@ impl SimulatorState<Scalar> {
     /// circuit blueprint and uses the default `StabDecompCompiler` to generate
     /// a computable state representation.
     ///
-    /// # Arguments
+    /// ### Arguments
     /// * `circuit` - A reference to the `QuantumCircuit` to be simulated.
     ///
-    /// # Returns
+    /// ### Returns
     /// A `Result` containing the compiled `SimulatorState` or a `CompileError`.
     pub fn from_circuit(circuit: &QuantumCircuit) -> Result<Self, CompileError> {
         let compiler = StabDecompCompiler::new();
@@ -20,7 +20,7 @@ impl SimulatorState<Scalar> {
     /// Returns the statevector as a `Vec<Complex64>`.
     /// Note: This function is primarily for testing and debugging purposes. 
     /// 
-    /// # Returns
+    /// ### Returns
     /// `Array1<Complex64>` representing the statevector.
     pub fn to_statevector(&self) -> ndarray::Array1<num_complex::Complex64> {
         self.internal_state.to_statevector()
