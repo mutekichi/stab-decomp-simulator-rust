@@ -9,11 +9,10 @@ pub(crate) use types::coefficient::Coefficient;
 
 use crate::{
     circuit::QuantumCircuit,
-    error::Error,
     state::{
         compiler::{errors::CompileError, CircuitCompiler, StabDecompCompiler},
         types::scalar::Scalar,
-    }
+    }, types::{error::Error, result::shot_count::ShotCount}
 };
 
 /// TODO: Add documentation for QuantumState
@@ -109,7 +108,7 @@ impl QuantumState {
     ///
     /// ### Returns
     /// A `Result` containing a vector of boolean measurement results or an `Error`.
-    pub fn sample(&self, qargs: &[usize], shots: usize) -> Result<Vec<Vec<bool>>, Error> {
+    pub fn sample(&self, qargs: &[usize], shots: usize) -> Result<ShotCount, Error> {
         match &self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => state._sample(qargs, shots),
         }

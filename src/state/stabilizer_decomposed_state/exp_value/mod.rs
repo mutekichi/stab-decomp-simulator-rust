@@ -2,8 +2,7 @@ use num_complex::Complex64;
 use stabilizer_ch_form_rust::types::pauli::PauliString;
 
 use crate::{
-    error::Error,
-    state::{Coefficient, StabilizerDecomposedState}, 
+    state::{Coefficient, StabilizerDecomposedState}, types::error::Error, 
 };
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {

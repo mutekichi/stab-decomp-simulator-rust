@@ -20,13 +20,13 @@
 //! ```
 
 pub mod circuit;
-pub mod error;
 pub mod state;
+pub mod types;
 
 // The prelude module provides a convenient way to import the most common types.
 pub mod prelude {
     pub use crate::circuit::{QuantumCircuit, QuantumGate, from_qasm_file, from_qasm_str};
-    pub use crate::error::Error;
+    pub use crate::types::*;
     pub use crate::state::QuantumState;
     // As you add more public APIs, re-export them here.
 }
