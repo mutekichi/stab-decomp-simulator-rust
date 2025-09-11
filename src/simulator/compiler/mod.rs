@@ -2,10 +2,8 @@ pub mod errors;
 use crate::{
     circuit::QuantumCircuit,
     prelude::{
-        Coefficient, SimulatorState, StabilizerDecomposedState,
-        magic_states::t_state::_construct_t_tensor_state,
-        types::{coefficient::Amplify, scalar::Scalar},
-    },
+        magic_states::t_state::_construct_t_tensor_state, types::{coefficient::Amplify, scalar::Scalar}, Coefficient, SimulatorState, StabilizerDecomposedState
+    }, test_utils::_norm_squared,
 };
 use errors::CompileError;
 use stabilizer_ch_form_rust::{
@@ -100,19 +98,13 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
 
             // Iterate reverse to handle qubit index shifts after discards.
             for qubit in (num_qubits_original..(num_qubits_original + num_t_type_gates)).rev() {
-                dbg!("here");
                 match full_stab_state.project(qubit, false) {
                     Ok(deterministic) => {
                         if deterministic {
-                            dbg!("deterministic");
                             num_deterministic_qubits += 1;
-                        } else {
-                            can_postselect_all = false;
                         }
-                        full_stab_state.discard(qubit).unwrap();
                     }
                     Err(_) => {
-                        dbg!("failed");
                         can_postselect_all = false;
                         break;
                     }
@@ -127,7 +119,8 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
                 }
                 final_stabilizers.push(full_stab_state);
                 final_coefficients.push(T::from(
-                    coeff.amplify(num_t_type_gates.saturating_sub(num_deterministic_qubits)),
+                    // coeff.amplify(num_t_type_gates.saturating_sub(num_deterministic_qubits)),
+                    coeff.amplify(num_deterministic_qubits),
                 ));
             }
         }

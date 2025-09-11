@@ -12,7 +12,7 @@ use crate::prelude::types::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Scalar {
     Zero,
-    NonZero { phase: PhaseFactor, r: usize },
+    NonZero { phase: PhaseFactor, r: isize },
 }
 
 impl Scalar {
@@ -119,12 +119,12 @@ impl One for Scalar {
 impl Amplify for Scalar {
     /// Amplifies the scalar by reducing the exponent `r` by the specified factor.
     /// i.e. scalar *= 2^(factor/2)
-    fn amplify(&self, factor: usize) -> Self {
+    fn amplify(&self, factor: isize) -> Self {
         match self {
             Scalar::Zero => Scalar::Zero,
             Scalar::NonZero { phase, r } => Scalar::NonZero {
                 phase: *phase,
-                r: r.saturating_sub(factor),
+                r: r - factor,
             },
         }
     }

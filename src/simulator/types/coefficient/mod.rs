@@ -22,12 +22,12 @@ pub trait InnerProduct: Conj + Mul<Self, Output = Self> + Sized + Copy {
 impl<T> InnerProduct for T where T: Conj + Mul<Self, Output = Self> + Copy {}
 
 pub trait Amplify: Copy {
-    fn amplify(&self, factor: usize) -> Self;
+    fn amplify(&self, factor: isize) -> Self;
 }
 
 impl Amplify for Complex64 {
     /// Amplifies the complex number by multiplying it with 2^(factor/2).
-    fn amplify(&self, factor: usize) -> Self {
+    fn amplify(&self, factor: isize) -> Self {
         let scale = 2f64.powf(factor as f64 / 2.0);
         self * scale
     }

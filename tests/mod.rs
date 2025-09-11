@@ -1,4 +1,4 @@
-use stab_decomp_simulator_rust::prelude::{SimulatorState, from_qasm_file};
+use stab_decomp_simulator_rust::{prelude::{from_qasm_file, SimulatorState}, test_utils::_norm_squared};
 
 use crate::common::{
     assert_eq_complex_array1, load_statevector_from_file, pretty_print_complex_vec,
@@ -21,6 +21,9 @@ fn test_assert_eq_precomputed_inner_product() {
 
     let sim_state = SimulatorState::from_circuit(&circuit).unwrap();
     let sim_state_vec = sim_state.to_statevector();
+
+    dbg!(_norm_squared(&sim_state_vec));
+    dbg!(_norm_squared(&ref_state));
 
     pretty_print_complex_vec("sim", &sim_state_vec);
     pretty_print_complex_vec("ref", &ref_state);

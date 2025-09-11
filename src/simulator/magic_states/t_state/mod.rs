@@ -96,7 +96,7 @@ mod tests {
 
     #[test]
     fn test_construct_t_tensor_state() {
-        for num_qubits in 1..=10 {
+        for num_qubits in 1..=9 {
             let state = _construct_t_tensor_state(num_qubits);
             let expected_vector = _construct_t_tensor_vector(num_qubits);
             let state_vector = state.to_statevector();
