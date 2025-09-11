@@ -7,9 +7,10 @@ impl QuantumCircuit {
     /// - `other`: A reference to another `QuantumCircuit` whose gates will be appended.
     /// # Example
     /// ```rust
-    /// let mut circuit1 = QuantumCircuit::new(2, None);
+    /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
+    /// let mut circuit1 = QuantumCircuit::new(2);
     /// circuit1.apply_h(0);
-    /// let mut circuit2 = QuantumCircuit::new(2, None);
+    /// let mut circuit2 = QuantumCircuit::new(2);
     /// circuit2.apply_cx(0, 1);
     /// circuit1.append(&circuit2);
     /// ```
@@ -26,9 +27,10 @@ impl QuantumCircuit {
     /// - `other`: A reference to another `QuantumCircuit` to tensor with.  
     /// # Example
     /// ```rust
-    /// let mut circuit1 = QuantumCircuit::new(1, None);
+    /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
+    /// let mut circuit1 = QuantumCircuit::new(1);
     /// circuit1.apply_h(0);
-    /// let mut circuit2 = QuantumCircuit::new(1, None);
+    /// let mut circuit2 = QuantumCircuit::new(1);
     /// circuit2.apply_x(0);
     /// let tensor_circuit = circuit1.tensor(&circuit2);
     /// ```

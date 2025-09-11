@@ -44,6 +44,7 @@ impl QuantumGate {
     /// * `bool` - `true` if the gate is a single-qubit gate, otherwise `false`.
     /// ### Examples
     /// ```rust
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// let gate = QuantumGate::H(0);
     /// println!("{}", gate.is_single_qubit_gate()); // true
     /// let gate = QuantumGate::CX(0, 1);
@@ -70,6 +71,7 @@ impl QuantumGate {
     /// * `bool` - `true` if the gate is a Clifford gate, otherwise `false`.
     /// ### Examples
     /// ```rust
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// let gate = QuantumGate::H(0);
     /// println!("{}", gate.is_clifford()); // true
     /// let gate = QuantumGate::T(0);

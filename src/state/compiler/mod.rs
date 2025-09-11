@@ -1,23 +1,26 @@
 pub mod errors;
 use crate::{
     circuit::QuantumCircuit,
-    simulator::{magic_states::t_state::_construct_t_tensor_state, types::{coefficient::Amplify, scalar::Scalar}, Coefficient, SimulatorState, StabilizerDecomposedState},
+    state::{
+        magic_states::t_state::_construct_t_tensor_state, types::{coefficient::Amplify, scalar::Scalar}, Coefficient, InternalState, QuantumState, StabilizerDecomposedState
+    },
 };
 use errors::CompileError;
+use num_traits::One;
 use stabilizer_ch_form_rust::{
     StabilizerCHForm,
     api::{CliffordCircuit, CliffordGate},
 };
 
 /// A trait for compilers that transform a `QuantumCircuit` blueprint into a
-/// computable `SimulatorState`.
-pub trait CircuitCompiler<T: Coefficient> {
-    fn _compile(&self, circuit: &QuantumCircuit) -> Result<SimulatorState<T>, CompileError>;
+/// computable `InternalState`.
+pub trait CircuitCompiler {
+    fn _compile(&self, circuit: &QuantumCircuit) -> Result<InternalState, CompileError>;
 }
 
 /// A compiler that implements the stabilizer decomposition simulation method.
 ///
-/// This compiler transforms a `QuantumCircuit` into a `SimulatorState` which
+/// This compiler transforms a `QuantumCircuit` into a `InternalState` which
 /// internally uses a `StabilizerDecomposedState`. It processes non-Clifford
 /// gates (like T and Toffoli) in a batch by preparing the necessary magic
 /// states and then applying gate teleportation.
@@ -29,8 +32,8 @@ impl StabDecompCompiler {
     }
 }
 
-impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
-    fn _compile(&self, circuit: &QuantumCircuit) -> Result<SimulatorState<T>, CompileError> {
+impl CircuitCompiler for StabDecompCompiler {
+    fn _compile(&self, circuit: &QuantumCircuit) -> Result<InternalState, CompileError> {
         let num_qubits_original = circuit.num_qubits;
         let mut num_t_type_gates = 0;
         let mut clifford_ops: Vec<CliffordGate> = Vec::new();
@@ -64,16 +67,18 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
             let stab_decomp_state = StabilizerDecomposedState {
                 num_qubits: num_qubits_original,
                 stabilizers: vec![ch_form],
-                coefficients: vec![T::one()],
+                coefficients: vec![Scalar::one()],
             };
-            return Ok(SimulatorState::new(stab_decomp_state));
+            return Ok(InternalState::StabilizerDecomposedStateScalar(
+                stab_decomp_state,
+            ));
         }
 
         // Initialize the T-tensor state for the ancilla qubits.
         let t_tensor_state = _construct_t_tensor_state(num_t_type_gates);
 
         let mut final_stabilizers: Vec<StabilizerCHForm> = Vec::new();
-        let mut final_coefficients: Vec<T> = Vec::new();
+        let mut final_coefficients: Vec<Scalar> = Vec::new();
 
         // Process each stabilizer component of the |T^n> state.
         // NOTE: This process can be improved by "right-applying" the t-tensor
@@ -116,9 +121,7 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
                     full_stab_state.discard(qubit).unwrap();
                 }
                 final_stabilizers.push(full_stab_state);
-                final_coefficients.push(T::from(
-                    coeff.amplify(num_deterministic_qubits),
-                ));
+                final_coefficients.push(Scalar::from(coeff.amplify(num_deterministic_qubits)));
             }
         }
 
@@ -128,6 +131,6 @@ impl<T: Coefficient + From<Scalar>> CircuitCompiler<T> for StabDecompCompiler {
             coefficients: final_coefficients,
         };
 
-        Ok(SimulatorState::new(final_state))
+        Ok(InternalState::StabilizerDecomposedStateScalar(final_state))
     }
 }

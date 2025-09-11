@@ -1,8 +1,7 @@
 use ndarray::Array1;
 use num_complex::Complex64;
 
-use crate::simulator::{Coefficient, StabilizerDecomposedState};
-
+use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// Converts the stabilizer decomposed state to a statevector representation.

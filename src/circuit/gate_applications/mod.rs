@@ -8,7 +8,9 @@ impl QuantumCircuit {
     /// * `gate` - The quantum gate to apply.
     /// ### Example
     /// ```rust
-    /// let mut circuit = QuantumCircuit::new(2, None);
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
+    /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_gate(QuantumGate::H(0));
     /// circuit.apply_gate(QuantumGate::CX(0, 1));
     /// ```
@@ -22,7 +24,9 @@ impl QuantumCircuit {
     /// * `gates` - A slice of quantum gates to apply.
     /// ### Example
     /// ```rust
-    /// let mut circuit = QuantumCircuit::new(2, None);
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
+    /// let mut circuit = QuantumCircuit::new(2);
     /// let gates = vec![QuantumGate::H(0), QuantumGate::CX(0, 1)];
     /// circuit.apply_gates(&gates);
     /// ```

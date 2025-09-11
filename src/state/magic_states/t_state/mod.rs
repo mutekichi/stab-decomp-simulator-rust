@@ -1,6 +1,9 @@
 use stabilizer_ch_form_rust::{StabilizerCHForm, api::*};
 
-use crate::simulator::{types::{phase_factor::PhaseFactor, scalar::Scalar}, StabilizerDecomposedState};
+use crate::state::{
+    StabilizerDecomposedState,
+    types::{phase_factor::PhaseFactor, scalar::Scalar},
+};
 
 mod cat_state;
 
@@ -54,7 +57,10 @@ pub(crate) fn _construct_t_tensor_state(num_qubits: usize) -> StabilizerDecompos
 
 #[cfg(test)]
 mod tests {
-    use crate::{simulator::magic_states::t_state::_construct_t_tensor_state, test_utils::assert_eq_complex_array1};
+    use crate::{
+        state::magic_states::t_state::_construct_t_tensor_state,
+        test_utils::assert_eq_complex_array1,
+    };
     use ndarray::Array1;
     use num_complex::Complex64;
 

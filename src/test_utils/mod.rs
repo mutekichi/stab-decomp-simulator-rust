@@ -1,3 +1,4 @@
+use crate::circuit::{QuantumCircuit, QuantumGate};
 use ndarray::{Array1, Array2};
 use num_complex::Complex64;
 use rand::rngs::StdRng;
@@ -6,7 +7,6 @@ use rand::{Rng, SeedableRng};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
-use crate::circuit::{QuantumCircuit, QuantumGate};
 
 #[allow(dead_code)]
 pub fn assert_eq_complex(a: Complex64, b: Complex64) {

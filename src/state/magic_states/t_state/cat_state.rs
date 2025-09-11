@@ -1,7 +1,9 @@
-
 use stabilizer_ch_form_rust::prelude::*;
 
-use crate::simulator::{types::{phase_factor::PhaseFactor, scalar::Scalar}, StabilizerDecomposedState};
+use crate::state::{
+    StabilizerDecomposedState,
+    types::{phase_factor::PhaseFactor, scalar::Scalar},
+};
 
 /// Returns (|0^n> - i|1^n>) / sqrt(2) as a StabilizerCHForm
 fn _zero_minus_i_one_state(num_qubits: usize) -> StabilizerCHForm {

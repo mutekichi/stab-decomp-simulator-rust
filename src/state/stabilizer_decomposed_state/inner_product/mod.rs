@@ -1,7 +1,6 @@
 use num_complex::Complex64;
 
-use crate::simulator::{Coefficient, StabilizerDecomposedState};
-
+use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// Computes the inner product between two `StabilizerDecomposedState` instances.
@@ -12,7 +11,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     ///
     /// ### Returns
     /// A `Complex64` representing the inner product.
-    pub (crate) fn _inner_product(&self, other: &Self) -> Complex64 {
+    pub(crate) fn _inner_product(&self, other: &Self) -> Complex64 {
         let mut result = Complex64::new(0.0, 0.0);
 
         for (stab1, coeff1) in self.stabilizers.iter().zip(self.coefficients.iter()) {
@@ -27,18 +26,19 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{prelude::SimulatorState, test_utils::{assert_eq_complex, random_circuit_with_t_gate}};
+    use crate::{
+        prelude::QuantumState,
+        test_utils::{assert_eq_complex, random_circuit_with_t_gate},
+    };
 
-
-    
     #[test]
     fn test_inner_product() {
         for _ in 0..10 {
             let circuit_1 = random_circuit_with_t_gate(6, 100, 10, None);
             let circuit_2 = random_circuit_with_t_gate(6, 100, 10, None);
 
-            let state_1 = SimulatorState::from_circuit(&circuit_1).unwrap();
-            let state_2 = SimulatorState::from_circuit(&circuit_2).unwrap();
+            let state_1 = QuantumState::from_circuit(&circuit_1).unwrap();
+            let state_2 = QuantumState::from_circuit(&circuit_2).unwrap();
 
             let inner_prod_naive = {
                 let sv1 = state_1.to_statevector();

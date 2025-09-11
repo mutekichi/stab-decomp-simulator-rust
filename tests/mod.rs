@@ -1,9 +1,7 @@
-use stab_decomp_simulator_rust::{prelude::{from_qasm_file, SimulatorState}};
+use stab_decomp_simulator_rust::prelude::{QuantumState, from_qasm_file};
 
-use crate::common::{
-    assert_eq_complex_array1, load_statevector_from_file,
-};
-use std::{path::PathBuf};
+use crate::common::{assert_eq_complex_array1, load_statevector_from_file};
+use std::path::PathBuf;
 
 pub mod common;
 
@@ -19,7 +17,7 @@ fn test_assert_eq_precomputed_statevector() {
     let circuit = from_qasm_file(circuit_path).unwrap();
     let ref_state = load_statevector_from_file(statevector_path).unwrap();
 
-    let sim_state = SimulatorState::from_circuit(&circuit).unwrap();
+    let sim_state = QuantumState::from_circuit(&circuit).unwrap();
     let sim_state_vec = sim_state.to_statevector();
 
     println!("sim_state_vec: {:?}", sim_state_vec[0]);
