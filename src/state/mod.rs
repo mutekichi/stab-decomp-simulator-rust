@@ -3,6 +3,7 @@ pub(crate) mod magic_states;
 pub(crate) mod stabilizer_decomposed_state;
 pub(crate) mod types;
 
+use stabilizer_ch_form_rust::types::pauli::PauliString;
 pub(crate) use stabilizer_decomposed_state::StabilizerDecomposedState;
 pub(crate) use types::coefficient::Coefficient;
 
@@ -10,9 +11,9 @@ use crate::{
     circuit::QuantumCircuit,
     error::Error,
     state::{
-        compiler::{CircuitCompiler, StabDecompCompiler, errors::CompileError},
+        compiler::{errors::CompileError, CircuitCompiler, StabDecompCompiler},
         types::scalar::Scalar,
-    },
+    }
 };
 
 /// TODO: Add documentation for QuantumState
@@ -117,11 +118,11 @@ impl QuantumState {
     /// Returns the expectation value of a given observable represented as a pauli string.
     ///
     /// ### Arguments
-    /// * `pauli_string` - A string representing the pauli observable, e.g. "X0 Y1 Z2".
+    /// * `pauli_string` - A reference to a `PauliString` representing the observable.
     ///
     /// ### Returns
     /// A `Result` containing the expectation value as `Complex64` or an `Error`.
-    pub fn exp_value(&self, pauli_string: &str) -> Result<num_complex::Complex64, Error> {
+    pub fn exp_value(&self, pauli_string: &PauliString)-> Result<num_complex::Complex64, Error> {
         match &self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => state._exp_value(pauli_string),
         }
