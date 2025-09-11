@@ -1,9 +1,7 @@
 pub mod errors;
 use crate::{
     circuit::QuantumCircuit,
-    prelude::{
-        magic_states::t_state::_construct_t_tensor_state, types::{coefficient::Amplify, scalar::Scalar}, Coefficient, SimulatorState, StabilizerDecomposedState
-    }
+    simulator::{magic_states::t_state::_construct_t_tensor_state, types::{coefficient::Amplify, scalar::Scalar}, Coefficient, SimulatorState, StabilizerDecomposedState},
 };
 use errors::CompileError;
 use stabilizer_ch_form_rust::{

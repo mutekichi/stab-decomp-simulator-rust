@@ -3,7 +3,7 @@ pub mod inner_product;
 
 use stabilizer_ch_form_rust::prelude::*;
 
-use crate::prelude::types::coefficient::Coefficient;
+use crate::simulator::Coefficient;
 
 #[derive(Clone, Debug)]
 pub struct StabilizerDecomposedState<T: Coefficient> {

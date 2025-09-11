@@ -1,10 +1,8 @@
 use crate::{
     circuit::QuantumCircuit,
-    prelude::{
-        SimulatorState,
-        compiler::{CircuitCompiler, StabDecompCompiler, errors::CompileError},
-        types::scalar::Scalar,
-    },
+    simulator::{
+        compiler::{errors::CompileError, CircuitCompiler, StabDecompCompiler}, types::scalar::Scalar, SimulatorState
+    }
 };
 
 impl SimulatorState<Scalar> {

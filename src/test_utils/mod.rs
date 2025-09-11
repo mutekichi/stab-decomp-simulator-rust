@@ -64,7 +64,7 @@ pub fn load_statevector_from_file<P: AsRef<Path>>(
     Ok(Array1::from(vec_data))
 }
 
-/// Prints a boolean vector (Array1<bool>) to the console in a readable format (e.g., [0, 1, 0]).
+/// Prints a boolean vector (`Array1<bool>`) to the console in a readable format (e.g., [0, 1, 0]).
 #[allow(dead_code)]
 pub fn pretty_print_bool_vec(name: &str, vec: &Array1<bool>) {
     let s: String = vec
@@ -74,7 +74,7 @@ pub fn pretty_print_bool_vec(name: &str, vec: &Array1<bool>) {
     println!("{}: [{}]", name, s);
 }
 
-/// Prints a boolean matrix (Array2<bool>) to the console in a readable format.
+/// Prints a boolean matrix (`Array2<bool>`) to the console in a readable format.
 #[allow(dead_code)] // This is a debug utility, so allow it to be unused in some tests
 pub fn pretty_print_bool_mat(name: &str, mat: &Array2<bool>) {
     println!("{}: [", name);
@@ -85,7 +85,7 @@ pub fn pretty_print_bool_mat(name: &str, mat: &Array2<bool>) {
     println!("]");
 }
 
-/// Prints a complex vector (Array1<Complex64>) to the console in a readable format.
+/// Prints a complex vector (`Array1<Complex64>`) to the console in a readable format.
 #[allow(dead_code)]
 pub fn pretty_print_complex_vec(name: &str, vec: &Array1<Complex64>) {
     let elements: Vec<String> = vec

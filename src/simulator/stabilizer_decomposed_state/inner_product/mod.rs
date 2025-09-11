@@ -1,7 +1,6 @@
 use num_complex::Complex64;
 
-use crate::prelude::{Coefficient, StabilizerDecomposedState};
-
+use crate::simulator::{Coefficient, StabilizerDecomposedState};
 
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
@@ -29,6 +28,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
 #[cfg(test)]
 mod tests {
     use crate::{prelude::SimulatorState, test_utils::{assert_eq_complex, random_circuit_with_t_gate}};
+
 
     
     #[test]

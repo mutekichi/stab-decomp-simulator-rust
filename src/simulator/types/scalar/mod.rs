@@ -2,10 +2,8 @@ use num_complex::Complex64;
 use num_traits::One;
 use std::ops::{Mul, MulAssign};
 
-use crate::prelude::types::{
-    coefficient::{Amplify, Conj},
-    phase_factor::PhaseFactor,
-};
+use crate::simulator::types::{coefficient::{Amplify, Conj}, phase_factor::PhaseFactor};
+
 
 /// Represents a scalar value in the form `phase * 2^(-r/2)` or zero.
 /// NOTE: Should be changed to pub(crate)
