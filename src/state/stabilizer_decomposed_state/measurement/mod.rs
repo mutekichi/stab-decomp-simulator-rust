@@ -1,5 +1,7 @@
-use crate::{error::Error, state::{Coefficient, StabilizerDecomposedState}};
-
+use crate::{
+    error::Error,
+    state::{Coefficient, StabilizerDecomposedState},
+};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     pub(crate) fn _measure(&mut self, qargs: &[usize]) -> Result<Vec<bool>, Error> {

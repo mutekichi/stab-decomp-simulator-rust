@@ -6,7 +6,14 @@ pub(crate) mod types;
 pub(crate) use stabilizer_decomposed_state::StabilizerDecomposedState;
 pub(crate) use types::coefficient::Coefficient;
 
-use crate::{circuit::QuantumCircuit, error::Error, state::{compiler::{errors::CompileError, CircuitCompiler, StabDecompCompiler}, types::scalar::Scalar}};
+use crate::{
+    circuit::QuantumCircuit,
+    error::Error,
+    state::{
+        compiler::{CircuitCompiler, StabDecompCompiler, errors::CompileError},
+        types::scalar::Scalar,
+    },
+};
 
 /// TODO: Add documentation for QuantumState
 pub struct QuantumState {
@@ -19,11 +26,9 @@ pub struct QuantumState {
 //     }
 // }
 
-enum InternalState {
+pub(crate) enum InternalState {
     StabilizerDecomposedStateScalar(StabilizerDecomposedState<Scalar>),
 }
-
-
 
 impl QuantumState {
     /// Creates a new `QuantumState` by compiling a `QuantumCircuit`.
@@ -82,10 +87,10 @@ impl QuantumState {
 
     /// Measure the specified qubits and return the measurement results.
     /// The state gets collapsed according to the measurement results.
-    /// 
+    ///
     /// ### Arguments
     /// * `qargs` - A slice of qubit indices to measure.
-    /// 
+    ///
     /// ### Returns
     /// A `Result` containing a vector of boolean measurement results or an `Error`.
     pub fn measure(&mut self, qargs: &[usize]) -> Result<Vec<bool>, Error> {
@@ -100,12 +105,25 @@ impl QuantumState {
     /// ### Arguments
     /// * `qargs` - A slice of qubit indices to sample.
     /// * `shots` - The number of samples to draw.
-    /// 
+    ///
     /// ### Returns
     /// A `Result` containing a vector of boolean measurement results or an `Error`.
     pub fn sample(&self, qargs: &[usize], shots: usize) -> Result<Vec<Vec<bool>>, Error> {
         match &self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => state._sample(qargs, shots),
+        }
+    }
+
+    /// Returns the expectation value of a given observable represented as a pauli string.
+    ///
+    /// ### Arguments
+    /// * `pauli_string` - A string representing the pauli observable, e.g. "X0 Y1 Z2".
+    ///
+    /// ### Returns
+    /// A `Result` containing the expectation value as `Complex64` or an `Error`.
+    pub fn exp_value(&self, pauli_string: &str) -> Result<num_complex::Complex64, Error> {
+        match &self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._exp_value(pauli_string),
         }
     }
 }

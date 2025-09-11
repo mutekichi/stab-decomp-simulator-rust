@@ -2,7 +2,9 @@ pub mod errors;
 use crate::{
     circuit::QuantumCircuit,
     state::{
-        magic_states::t_state::_construct_t_tensor_state, types::{coefficient::Amplify, scalar::Scalar}, Coefficient, InternalState, QuantumState, StabilizerDecomposedState
+        InternalState, StabilizerDecomposedState,
+        magic_states::t_state::_construct_t_tensor_state,
+        types::{coefficient::Amplify, scalar::Scalar},
     },
 };
 use errors::CompileError;
@@ -14,7 +16,7 @@ use stabilizer_ch_form_rust::{
 
 /// A trait for compilers that transform a `QuantumCircuit` blueprint into a
 /// computable `InternalState`.
-pub trait CircuitCompiler {
+pub(crate) trait CircuitCompiler {
     fn _compile(&self, circuit: &QuantumCircuit) -> Result<InternalState, CompileError>;
 }
 

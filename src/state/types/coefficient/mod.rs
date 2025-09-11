@@ -13,11 +13,7 @@ impl Conj for Complex64 {
     }
 }
 
-pub trait InnerProduct: Conj + Mul<Self, Output = Self> + Sized + Copy {
-    fn inner_product(self, rhs: Self) -> Self {
-        self.conj() * rhs
-    }
-}
+pub trait InnerProduct: Conj + Mul<Self, Output = Self> + Sized + Copy {}
 
 impl<T> InnerProduct for T where T: Conj + Mul<Self, Output = Self> + Copy {}
 
