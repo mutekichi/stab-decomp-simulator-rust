@@ -19,15 +19,15 @@
 //! // (Further operations like calculating expectation values, etc.)
 //! ```
 
-// Make circuit-related structures public.
 pub mod circuit;
-// Make simulator-related structures public.
 pub mod state;
+pub mod error;
 
 // The prelude module provides a convenient way to import the most common types.
 pub mod prelude {
     pub use crate::circuit::{QuantumCircuit, QuantumGate, from_qasm_file, from_qasm_str};
     pub use crate::state::QuantumState;
+    pub use crate::error::{Error};
     // As you add more public APIs, re-export them here.
 }
 

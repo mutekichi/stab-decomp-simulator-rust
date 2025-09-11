@@ -1,5 +1,7 @@
 pub mod comp_basis;
 pub mod inner_product;
+pub mod measurement;
+pub mod sample;
 
 use stabilizer_ch_form_rust::prelude::*;
 

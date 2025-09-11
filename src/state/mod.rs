@@ -6,18 +6,18 @@ pub(crate) mod types;
 pub(crate) use stabilizer_decomposed_state::StabilizerDecomposedState;
 pub(crate) use types::coefficient::Coefficient;
 
-use crate::{circuit::QuantumCircuit, state::{compiler::{errors::CompileError, CircuitCompiler, StabDecompCompiler}, types::scalar::Scalar}};
+use crate::{circuit::QuantumCircuit, error::Error, state::{compiler::{errors::CompileError, CircuitCompiler, StabDecompCompiler}, types::scalar::Scalar}};
 
-/// TODO: Add documentation for SimulatorState
+/// TODO: Add documentation for QuantumState
 pub struct QuantumState {
     internal_state: InternalState,
 }
 
-impl QuantumState {
-    pub fn new(internal_state: InternalState) -> Self {
-        Self { internal_state }
-    }
-}
+// impl QuantumState {
+//     pub fn new(internal_state: InternalState) -> Self {
+//         Self { internal_state }
+//     }
+// }
 
 enum InternalState {
     StabilizerDecomposedStateScalar(StabilizerDecomposedState<Scalar>),
@@ -26,7 +26,7 @@ enum InternalState {
 
 
 impl QuantumState {
-    /// Creates a new `SimulatorState` by compiling a `QuantumCircuit`.
+    /// Creates a new `QuantumState` by compiling a `QuantumCircuit`.
     ///
     /// This function serves as the primary entry point for simulation. It takes a
     /// circuit blueprint and uses the default `StabDecompCompiler` to generate
@@ -36,7 +36,7 @@ impl QuantumState {
     /// * `circuit` - A reference to the `QuantumCircuit` to be simulated.
     ///
     /// ### Returns
-    /// A `Result` containing the compiled `SimulatorState` or a `CompileError`.
+    /// A `Result` containing the compiled `QuantumState` or a `CompileError`.
     pub fn from_circuit(circuit: &QuantumCircuit) -> Result<Self, CompileError> {
         let compiler = StabDecompCompiler::new();
         let internal_state = compiler._compile(circuit)?;
@@ -57,7 +57,7 @@ impl QuantumState {
     /// Returns the inner product of the state and another state.
     ///
     /// ### Arguments
-    /// * `other` - A reference to another `SimulatorState` to compute the inner product with.
+    /// * `other` - A reference to another `QuantumState` to compute the inner product with.
     ///
     /// ### Returns
     /// A `Complex64` representing the inner product.
@@ -67,6 +67,45 @@ impl QuantumState {
                 InternalState::StabilizerDecomposedStateScalar(state1),
                 InternalState::StabilizerDecomposedStateScalar(state2),
             ) => state1._inner_product(state2),
+        }
+    }
+
+    /// Returns the number of qubits in the quantum state.
+    ///
+    /// ### Returns
+    /// * `usize` - The number of qubits.
+    pub fn num_qubits(&self) -> usize {
+        match &self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state.num_qubits,
+        }
+    }
+
+    /// Measure the specified qubits and return the measurement results.
+    /// The state gets collapsed according to the measurement results.
+    /// 
+    /// ### Arguments
+    /// * `qargs` - A slice of qubit indices to measure.
+    /// 
+    /// ### Returns
+    /// A `Result` containing a vector of boolean measurement results or an `Error`.
+    pub fn measure(&mut self, qargs: &[usize]) -> Result<Vec<bool>, Error> {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._measure(qargs),
+        }
+    }
+
+    /// Sample the specified qubits and return the measurement results.
+    /// The state does not get collapsed.
+    ///
+    /// ### Arguments
+    /// * `qargs` - A slice of qubit indices to sample.
+    /// * `shots` - The number of samples to draw.
+    /// 
+    /// ### Returns
+    /// A `Result` containing a vector of boolean measurement results or an `Error`.
+    pub fn sample(&self, qargs: &[usize], shots: usize) -> Result<Vec<Vec<bool>>, Error> {
+        match &self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._sample(qargs, shots),
         }
     }
 }

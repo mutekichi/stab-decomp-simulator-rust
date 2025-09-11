@@ -7,7 +7,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// i.e. ⟨self|other⟩
     ///
     /// ### Arguments
-    /// * `other` - A reference to another `SimulatorState` instance.
+    /// * `other` - A reference to another `QuantumState` instance.
     ///
     /// ### Returns
     /// A `Complex64` representing the inner product.
