@@ -2,9 +2,12 @@ pub mod comp_basis;
 pub mod evolution;
 pub mod exp_value;
 pub mod inner_product;
+pub mod kron;
 pub mod measurement;
+pub mod projection;
 pub mod sampling;
 
+use num_complex::Complex64;
 use stabilizer_ch_form_rust::prelude::*;
 
 use crate::state::Coefficient;
@@ -14,25 +17,22 @@ pub(crate) struct StabilizerDecomposedState<T: Coefficient> {
     pub num_qubits: usize,
     pub stabilizers: Vec<StabilizerCHForm>,
     pub coefficients: Vec<T>,
+    pub global_factor: Complex64, // stands for the global phase and normalization factor
 }
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    /// Returns a new StabilizerDecomposedState representing the tensor product of self and other.
-    pub fn kron(&self, other: &Self) -> Self {
-        let mut new_stabilizers = Vec::new();
-        let mut new_coefficients = Vec::new();
-
-        for (stab1, coeff1) in self.stabilizers.iter().zip(self.coefficients.iter()) {
-            for (stab2, coeff2) in other.stabilizers.iter().zip(other.coefficients.iter()) {
-                new_stabilizers.push(stab1.kron(stab2));
-                new_coefficients.push(*coeff1 * *coeff2);
-            }
-        }
-
+    /// Creates a new StabilizerDecomposedState representing the all-zero state |0...0>.
+    pub fn new(
+        num_qubits: usize,
+        stabilizers: Vec<StabilizerCHForm>,
+        coefficients: Vec<T>,
+    ) -> Self {
+        // We do not check if the input stabilizers and coefficients are valid here for performance reasons.
         StabilizerDecomposedState {
-            num_qubits: self.num_qubits + other.num_qubits,
-            stabilizers: new_stabilizers,
-            coefficients: new_coefficients,
+            num_qubits,
+            stabilizers,
+            coefficients,
+            global_factor: Complex64::new(1.0, 0.0),
         }
     }
 }

@@ -19,11 +19,7 @@ pub(crate) fn _construct_toffoli_state() -> StabilizerDecomposedState<Scalar> {
 
     let coeffs = vec![Scalar::ONE_OVER_SQRT_2, Scalar::ONE_OVER_SQRT_2];
 
-    StabilizerDecomposedState {
-        num_qubits: 3,
-        stabilizers: vec![stab1, stab2],
-        coefficients: coeffs,
-    }
+    StabilizerDecomposedState::new(3, vec![stab1, stab2], coeffs)
 }
 
 pub(crate) fn _construct_toffoli_tensor_state(

@@ -44,11 +44,7 @@ fn _construct_cat_1_state() -> StabilizerDecomposedState<Scalar> {
     let stab = StabilizerCHForm::new(1);
     let coeffs = vec![Scalar::ONE];
 
-    StabilizerDecomposedState {
-        num_qubits: 1,
-        stabilizers: vec![stab],
-        coefficients: coeffs,
-    }
+    StabilizerDecomposedState::new(1, vec![stab], coeffs)
 }
 
 /// Construct |cat_2> = (|00> + i|11>) / sqrt(2) state as a StabilizerDecomposedState
@@ -59,11 +55,7 @@ fn _construct_cat_2_state() -> StabilizerDecomposedState<Scalar> {
     stab.apply_s(1);
     let coeffs = vec![Scalar::ONE];
 
-    StabilizerDecomposedState {
-        num_qubits: 2,
-        stabilizers: vec![stab],
-        coefficients: coeffs,
-    }
+    StabilizerDecomposedState::new(2, vec![stab], coeffs)
 }
 
 /// Construct |cat_4> state as a superposition of 2 StabilizerCHForm states
@@ -81,11 +73,7 @@ fn _construct_cat_4_state() -> StabilizerDecomposedState<Scalar> {
         },
     ];
 
-    StabilizerDecomposedState {
-        num_qubits: 4,
-        stabilizers: vec![stab1, stab2],
-        coefficients: coeffs,
-    }
+    StabilizerDecomposedState::new(4, vec![stab1, stab2], coeffs)
 }
 
 /// Construct |cat_6> state as a superposition of 3 StabilizerCHForm states
@@ -108,11 +96,7 @@ fn _construct_cat_6_state() -> StabilizerDecomposedState<Scalar> {
         }, // (1+i)/sqrt(2)
     ];
 
-    StabilizerDecomposedState {
-        num_qubits: 6,
-        stabilizers: vec![stab1, stab2, stab3],
-        coefficients: coeffs,
-    }
+    StabilizerDecomposedState::new(6, vec![stab1, stab2, stab3], coeffs)
 }
 
 fn _project_ch_form_onto_cat_state(state: &mut StabilizerCHForm, qubits: &[usize]) {

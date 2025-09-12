@@ -12,6 +12,6 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             let coeff_complex: Complex64 = (*coeff).into();
             statevector = statevector + stab_vector * coeff_complex;
         }
-        statevector
+        statevector * self.global_factor
     }
 }

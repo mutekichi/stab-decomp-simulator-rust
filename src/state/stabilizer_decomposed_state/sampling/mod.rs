@@ -105,6 +105,29 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     fn _probability_of_zero(&self, qarg: usize) -> f64 {
         dbg!(qarg);
         // Placeholder implementation
-        0.7
+        0.75
+    }
+}
+
+#[cfg(test)]
+mod test {
+
+    #[test]
+    fn test_sampling() {
+        let sample_state = crate::test_utils::create_sample_stab_decomp_state();
+        let shots = 6400;
+        let qargs = vec![0, 1, 2];
+        let seed = None;
+        let result = sample_state._sample(&qargs, shots, seed);
+        match result {
+            Ok(shot_count) => {
+                for (outcome, count) in shot_count.iter() {
+                    println!("{:?}: {}", outcome, count);
+                }
+            }
+            Err(e) => {
+                panic!("Sampling failed with error: {:?}", e);
+            }
+        }
     }
 }

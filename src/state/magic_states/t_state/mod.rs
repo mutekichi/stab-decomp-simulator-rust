@@ -48,11 +48,7 @@ pub(crate) fn _construct_t_tensor_state(num_qubits: usize) -> StabilizerDecompos
     let mut new_coeffs = new_coeffs_original;
     new_coeffs.extend(new_coeffs_to_append);
 
-    StabilizerDecomposedState {
-        num_qubits: cat_state.num_qubits,
-        stabilizers: new_stabs,
-        coefficients: new_coeffs,
-    }
+    StabilizerDecomposedState::new(cat_state.num_qubits, new_stabs, new_coeffs)
 }
 
 #[cfg(test)]

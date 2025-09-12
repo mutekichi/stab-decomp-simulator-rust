@@ -109,9 +109,16 @@ impl QuantumState {
     ///
     /// ### Returns
     /// A `Result` containing a vector of boolean measurement results or an `Error`.
-    pub fn sample(&self, qargs: &[usize], shots: usize, seed: Option<[u8;32]>) -> Result<ShotCount, Error> {
+    pub fn sample(
+        &self,
+        qargs: &[usize],
+        shots: usize,
+        seed: Option<[u8; 32]>,
+    ) -> Result<ShotCount, Error> {
         match &self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._sample(qargs, shots, seed)
+            InternalState::StabilizerDecomposedStateScalar(state) => {
+                state._sample(qargs, shots, seed)
+            }
         }
     }
 

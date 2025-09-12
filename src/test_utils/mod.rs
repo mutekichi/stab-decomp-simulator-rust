@@ -1,9 +1,11 @@
 use crate::circuit::{QuantumCircuit, QuantumGate};
+use crate::state::StabilizerDecomposedState;
 use ndarray::{Array1, Array2};
 use num_complex::Complex64;
 use rand::rngs::StdRng;
 use rand::seq::SliceRandom;
 use rand::{Rng, SeedableRng};
+use stabilizer_ch_form_rust::StabilizerCHForm;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -186,6 +188,31 @@ pub fn random_circuit_with_t_gate(
     }
 
     circuit
+}
+
+#[allow(dead_code)]
+/// Creates a |Toffoli> state as a sample StabilizerDecomposedState.
+///
+/// This state is defined as (|000> + |100> + |010> + |111>) / 2.
+pub(crate) fn create_sample_stab_decomp_state() -> StabilizerDecomposedState<Complex64> {
+    pub use stabilizer_ch_form_rust::api::*;
+    pub use std::f64::consts::FRAC_1_SQRT_2;
+    // |0+0> part
+    let mut stab1 = StabilizerCHForm::new(3);
+    stab1.apply_h(1);
+
+    // |1,Bell> part
+    let mut stab2 = StabilizerCHForm::new(3);
+    stab2.apply_x(0);
+    stab2.apply_h(1);
+    stab2.apply_cx(1, 2);
+
+    let coeffs = vec![
+        Complex64::new(FRAC_1_SQRT_2, 0.0),
+        Complex64::new(FRAC_1_SQRT_2, 0.0),
+    ];
+
+    StabilizerDecomposedState::new(3, vec![stab1, stab2], coeffs)
 }
 
 #[allow(dead_code)]

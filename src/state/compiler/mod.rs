@@ -66,11 +66,11 @@ impl CircuitCompiler for StabDecompCompiler {
                 circuit.add_gate(gate);
             }
             let ch_form = StabilizerCHForm::from_clifford_circuit(&circuit).unwrap();
-            let stab_decomp_state = StabilizerDecomposedState {
-                num_qubits: num_qubits_original,
-                stabilizers: vec![ch_form],
-                coefficients: vec![Scalar::one()],
-            };
+            let stab_decomp_state = StabilizerDecomposedState::new(
+                num_qubits_original,
+                vec![ch_form],
+                vec![Scalar::one()],
+            );
             return Ok(InternalState::StabilizerDecomposedStateScalar(
                 stab_decomp_state,
             ));
@@ -127,11 +127,11 @@ impl CircuitCompiler for StabDecompCompiler {
             }
         }
 
-        let final_state = StabilizerDecomposedState {
-            num_qubits: num_qubits_original,
-            stabilizers: final_stabilizers,
-            coefficients: final_coefficients,
-        };
+        let final_state = StabilizerDecomposedState::new(
+            num_qubits_original,
+            final_stabilizers,
+            final_coefficients,
+        );
 
         Ok(InternalState::StabilizerDecomposedStateScalar(final_state))
     }
