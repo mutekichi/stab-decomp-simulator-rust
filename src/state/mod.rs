@@ -10,9 +10,10 @@ pub(crate) use types::coefficient::Coefficient;
 use crate::{
     circuit::QuantumCircuit,
     state::{
-        compiler::{errors::CompileError, CircuitCompiler, StabDecompCompiler},
+        compiler::{CircuitCompiler, StabDecompCompiler, errors::CompileError},
         types::scalar::Scalar,
-    }, types::{error::Error, result::shot_count::ShotCount}
+    },
+    types::{error::Error, result::shot_count::ShotCount},
 };
 
 /// TODO: Add documentation for QuantumState
@@ -108,9 +109,9 @@ impl QuantumState {
     ///
     /// ### Returns
     /// A `Result` containing a vector of boolean measurement results or an `Error`.
-    pub fn sample(&self, qargs: &[usize], shots: usize) -> Result<ShotCount, Error> {
+    pub fn sample(&self, qargs: &[usize], shots: usize, seed: Option<[u8;32]>) -> Result<ShotCount, Error> {
         match &self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._sample(qargs, shots),
+            InternalState::StabilizerDecomposedStateScalar(state) => state._sample(qargs, shots, seed)
         }
     }
 
@@ -121,7 +122,7 @@ impl QuantumState {
     ///
     /// ### Returns
     /// A `Result` containing the expectation value as `Complex64` or an `Error`.
-    pub fn exp_value(&self, pauli_string: &PauliString)-> Result<num_complex::Complex64, Error> {
+    pub fn exp_value(&self, pauli_string: &PauliString) -> Result<num_complex::Complex64, Error> {
         match &self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => state._exp_value(pauli_string),
         }

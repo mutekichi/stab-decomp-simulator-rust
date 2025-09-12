@@ -1,5 +1,6 @@
 use crate::{
-    state::{Coefficient, StabilizerDecomposedState}, types::error::Error,
+    state::{Coefficient, StabilizerDecomposedState},
+    types::error::Error,
 };
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {

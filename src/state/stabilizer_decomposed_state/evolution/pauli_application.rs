@@ -1,8 +1,6 @@
-use stabilizer_ch_form_rust::types::pauli::{pauli_string::Pauli, PauliString};
+use stabilizer_ch_form_rust::types::pauli::{PauliString, pauli_string::Pauli};
 
-use crate::{
-    state::{Coefficient, StabilizerDecomposedState},
-};
+use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     pub(crate) fn _apply_pauli_string(&mut self, pauli_string: &PauliString) {
