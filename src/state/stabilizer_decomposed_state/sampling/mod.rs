@@ -45,21 +45,63 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         shot_count: &mut ShotCount,
         rng: &mut StdRng,
     ) {
+        // There are no shots to process, stop the recursion
+        if current_shots == 0 {
+            return;
+        }
         // Base case: If we've processed all qubits, record the result
         if current_qarg == qubit_indices.len() {
             *shot_count.entry(current_outcome.clone()).or_insert(0) += current_shots;
             return;
         }
-        // There are no shots to process, stop the recursion
-        if current_shots == 0 {
+        let qarg = qubit_indices[current_qarg];
+        
+        // Project the qubit onto |0> and |1> to further sample the outcomes and also to 
+        // calculate the probabilities of measuring 0 and 1.
+        let mut state_zero = self.clone();
+        let mut state_one = self.clone();
+        let proj_zero_result = state_zero._project_unnormalized(qarg, false);
+        let proj_one_result = state_one._project_unnormalized(qarg, true);
+        
+        if proj_zero_result.is_err() {
+            // Projection to |0> is impossible, all shots must be |1>
+            current_outcome.push(true);
+            // If the projection to |0> is impossible, the projection to |1> must be possible
+            assert!(proj_one_result.is_ok());
+            state_one._recursive_sample(
+                qubit_indices,
+                current_qarg + 1,
+                current_shots,
+                current_outcome,
+                shot_count,
+                rng,
+            );
+            current_outcome.pop();
             return;
         }
-        let qarg = qubit_indices[current_qarg];
-        // Calculate the probability of measuring 0 on the current qubit
-        let prob_0 = self._probability_of_zero(qarg);
+
+        if proj_one_result.is_err() {
+            // Projection to |1> is impossible, all shots must be |0>
+            current_outcome.push(false);
+            // If the projection to |1> is impossible, the projection to |0> must be possible
+            assert!(proj_zero_result.is_ok());
+            state_zero._recursive_sample(
+                qubit_indices,
+                current_qarg + 1,
+                current_shots,
+                current_outcome,
+                shot_count,
+                rng,
+            );
+            current_outcome.pop();
+            return;
+        }
+
+        // Maybe the denominator always equals to 1.0, but we just sum them up to be safe...
+        let prob_zero = state_zero._norm() / (state_zero._norm() + state_one._norm());
 
         // Sample the number of 0 outcomes using a binomial distribution
-        let binom = match Binomial::new(current_shots as u64, prob_0) {
+        let binom = match Binomial::new(current_shots as u64, prob_zero) {
             Ok(b) => b,
             Err(_) => {
                 Error::Sampling("Failed to create binomial distribution".to_string());
@@ -74,7 +116,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         // forward the current outcome with a 0 measurement result
         current_outcome.push(false);
         // Recurse for the next qubit with the number of 0 and 1 outcomes
-        self._recursive_sample(
+        state_zero._recursive_sample(
             qubit_indices,
             current_qarg + 1,
             num_zeros,
@@ -88,7 +130,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         current_outcome.push(true);
 
         // Recurse for the next qubit with the number of 1 outcomes
-        self._recursive_sample(
+        state_one._recursive_sample(
             qubit_indices,
             current_qarg + 1,
             num_ones,
@@ -100,20 +142,16 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         // backtrack the current outcome to remove the last entry
         current_outcome.pop();
     }
-
-    /// Calculate the probability of measuring 0 on a specific qubit.
-    fn _probability_of_zero(&self, qarg: usize) -> f64 {
-        dbg!(qarg);
-        // Placeholder implementation
-        0.75
-    }
 }
 
 #[cfg(test)]
 mod test {
+    use num_complex::Complex64;
+
 
     #[test]
     fn test_sampling() {
+        // sample_state = |000> + |100> + |010> + |111>
         let sample_state = crate::test_utils::create_sample_stab_decomp_state();
         let shots = 6400;
         let qargs = vec![0, 1, 2];
@@ -123,6 +161,38 @@ mod test {
             Ok(shot_count) => {
                 for (outcome, count) in shot_count.iter() {
                     println!("{:?}: {}", outcome, count);
+                }
+            }
+            Err(e) => {
+                panic!("Sampling failed with error: {:?}", e);
+            }
+        }
+    }
+    
+    #[test]
+    fn test_sampling_large_state() {
+        // base_state = |000> + |100> + |010> + |111>
+        let base_state = crate::test_utils::create_sample_stab_decomp_state();
+        
+        fn tensor(n: usize, state: &crate::state::StabilizerDecomposedState<Complex64>) -> crate::state::StabilizerDecomposedState<Complex64> {
+            if n == 1 {
+                state.clone()
+            } else {
+                let smaller = tensor(n - 1, state);
+                smaller.kron(state)
+            }
+        }
+        let sample_state = tensor(8, &base_state); // (3 qubits) ^ 8 = 24 qubits
+
+        let shots = 10;
+        let qargs = (0..15).collect::<Vec<usize>>();
+        let seed = None;
+        let result = sample_state._sample(&qargs, shots, seed);
+        match result {
+            Ok(shot_count) => {
+                for (outcome, count) in shot_count.iter() {
+                    let outcome_str: String = outcome.iter().map(|&b| if b { '1' } else { '0' }).collect();
+                    println!("{:?}: {}", outcome_str, count);
                 }
             }
             Err(e) => {

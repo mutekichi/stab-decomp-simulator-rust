@@ -9,8 +9,9 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// NOTE: This ignores the global factor
     pub(crate) fn _norm_squared(&self) -> f64 {
         let mut sum = Complex64::new(0.0, 0.0);
-        for i in 0..self.coefficients.len() - 1{ 
-            for j in i+1..self.coefficients.len(){
+        // TODO: i < j optimization
+        for i in 0..self.coefficients.len() {
+            for j in 0..self.coefficients.len() {
                 let inner_prod = self.stabilizers[i].inner_product(&self.stabilizers[j]);
                 sum += (self.coefficients[i].conj() * self.coefficients[j]).into() * inner_prod;
             }
