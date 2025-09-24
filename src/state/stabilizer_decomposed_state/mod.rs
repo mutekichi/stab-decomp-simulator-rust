@@ -6,6 +6,7 @@ pub mod kron;
 pub mod measurement;
 pub mod projection;
 pub mod sampling;
+pub mod norm;
 
 use num_complex::Complex64;
 use stabilizer_ch_form_rust::prelude::*;

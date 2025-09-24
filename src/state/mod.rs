@@ -134,4 +134,45 @@ impl QuantumState {
             InternalState::StabilizerDecomposedStateScalar(state) => state._exp_value(pauli_string),
         }
     }
+
+    /// Project the state onto the ±1 eigenspace of the Pauli Z operator on the specified qubit with normalization.
+    /// The state is modified in place.
+    ///
+    /// ### Arguments
+    /// * `qubit` - The index of the qubit to project.
+    /// * `outcome` - The measurement outcome (true for +1, false for -1).
+    ///
+    /// ### Returns
+    /// A `Result` indicating success or an `Error`.
+    pub fn project_normalized(&mut self, qubit: usize, outcome: bool) -> Result<(), Error> {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => {
+                state._project_normalized(qubit, outcome)
+            }
+        }
+    }
+
+    /// Project the state onto the ±1 eigenspace of the Pauli Z operator on the specified qubit without normalization.
+    ///
+    /// The state is internally represented as a stabilizer decomposed state:
+    /// $$|\phi\rangle = \sum_i c_i |\psi_i\rangle$$ and the projected state is given by:
+    /// $$
+    /// \Pi_{Z_j = \pm 1} |\phi\rangle = \sum_i c_i \right(I + (-1)^{o} Z_j\left)/2 |\psi_i\rangle,
+    /// which is generally unnormalized.
+    ///
+    /// The state is modified in place.
+    ///
+    /// ### Arguments
+    /// * `qubit` - The index of the qubit to project.
+    /// * `outcome` - The measurement outcome (true for +1, false for -1).
+    ///
+    /// ### Returns
+    /// A `Result` indicating success or an `Error`.
+    pub fn project_unnormalized(&mut self, qubit: usize, outcome: bool) -> Result<(), Error> {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => {
+                state._project_unnormalized(qubit, outcome)
+            }
+        }
+    }
 }
