@@ -2,49 +2,72 @@ use crate::state::Coefficient;
 use crate::state::StabilizerDecomposedState;
 use stabilizer_ch_form_rust::prelude::*;
 
-#[allow(dead_code)]
-macro_rules! impl_single_qubit_gate {
-    ( $( pub fn $method_name:ident(&mut self, qarg: usize) );* ) => {
-        impl<T: Coefficient> StabilizerDecomposedState<T> {
-            $(
-                pub fn $method_name(&mut self, qarg: usize) {
-                    for stab in self.stabilizers.iter_mut() {
-                        stab.$method_name(qarg);
-                    }
-                }
-            )*
+impl<T: Coefficient> StabilizerDecomposedState<T> {
+    // Single-qubit gates
+    pub fn _apply_x(&mut self, qarg: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_x(qarg);
         }
-    };
-}
+    }
 
-#[allow(dead_code)]
-macro_rules! impl_two_qubit_gate {
-    ( $( pub fn $method_name:ident(&mut self, $arg1:ident: usize, $arg2:ident: usize) );* ) => {
-        impl<T: Coefficient> StabilizerDecomposedState<T> {
-            $(
-                pub fn $method_name(&mut self, $arg1: usize, $arg2: usize) {
-                    for stab in self.stabilizers.iter_mut() {
-                        stab.$method_name($arg1, $arg2);
-                    }
-                }
-            )*
+    pub fn _apply_y(&mut self, qarg: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_y(qarg);
         }
-    };
-}
+    }
 
-impl_single_qubit_gate! {
-    pub fn apply_x(&mut self, qarg: usize);
-    pub fn apply_y(&mut self, qarg: usize);
-    pub fn apply_z(&mut self, qarg: usize);
-    pub fn apply_h(&mut self, qarg: usize);
-    pub fn apply_s(&mut self, qarg: usize);
-    pub fn apply_sdg(&mut self, qarg: usize);
-    pub fn apply_sqrt_x(&mut self, qarg: usize);
-    pub fn apply_sqrt_xdg(&mut self, qarg: usize)
-}
+    pub fn _apply_z(&mut self, qarg: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_z(qarg);
+        }
+    }
 
-impl_two_qubit_gate! {
-    pub fn apply_cx(&mut self, control: usize, target: usize);
-    pub fn apply_cz(&mut self, qarg1: usize, qarg2: usize);
-    pub fn apply_swap(&mut self, qarg1: usize, qarg2: usize)
+    pub fn _apply_h(&mut self, qarg: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_h(qarg);
+        }
+    }
+
+    pub fn _apply_s(&mut self, qarg: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_s(qarg);
+        }
+    }
+
+    pub fn _apply_sdg(&mut self, qarg: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_sdg(qarg);
+        }
+    }
+
+    pub fn _apply_sqrt_x(&mut self, qarg: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_sqrt_x(qarg);
+        }
+    }
+
+    pub fn _apply_sqrt_xdg(&mut self, qarg: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_sqrt_xdg(qarg);
+        }
+    }
+
+    // Two-qubit gates
+    pub fn _apply_cx(&mut self, control: usize, target: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_cx(control, target);
+        }
+    }
+
+    pub fn _apply_cz(&mut self, qarg1: usize, qarg2: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_cz(qarg1, qarg2);
+        }
+    }
+
+    pub fn _apply_swap(&mut self, qarg1: usize, qarg2: usize) {
+        for stab in self.stabilizers.iter_mut() {
+            stab.apply_swap(qarg1, qarg2);
+        }
+    }
 }

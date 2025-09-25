@@ -1,12 +1,12 @@
-pub mod comp_basis;
 pub mod evolution;
 pub mod exp_value;
 pub mod inner_product;
 pub mod kron;
 pub mod measurement;
+pub mod norm;
 pub mod projection;
 pub mod sampling;
-pub mod norm;
+pub mod statevector;
 
 use num_complex::Complex64;
 use stabilizer_ch_form_rust::prelude::*;

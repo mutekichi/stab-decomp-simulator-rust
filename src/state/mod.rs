@@ -175,4 +175,93 @@ impl QuantumState {
             }
         }
     }
+
+    // Gate applications
+
+    /// Applies a Pauli-X gate to the specified qubit.
+    ///
+    /// ### Arguments
+    /// * `qubit` - The index of the qubit to apply the gate to.
+    ////
+    /// ### Returns
+    /// Nothing. The state is modified in place.
+    pub fn apply_x(&mut self, qubit: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_x(qubit),
+        }
+    }
+
+    /// Applies a Pauli-Y gate to the specified qubit.
+    pub fn apply_y(&mut self, qubit: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_y(qubit),
+        }
+    }
+
+    /// Applies a Pauli-Z gate to the specified qubit.
+    pub fn apply_z(&mut self, qubit: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_z(qubit),
+        }
+    }
+
+    /// Applies a Hadamard gate to the specified qubit.
+    pub fn apply_h(&mut self, qubit: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_h(qubit),
+        }
+    }
+
+    /// Applies an S gate to the specified qubit.
+    pub fn apply_s(&mut self, qubit: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_s(qubit),
+        }
+    }
+
+    /// Applies an Sdg gate to the specified qubit.
+    pub fn apply_sdg(&mut self, qubit: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_sdg(qubit),
+        }
+    }
+
+    /// Applies a SqrtX gate to the specified qubit.
+    pub fn apply_sqrt_x(&mut self, qubit: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_sqrt_x(qubit),
+        }
+    }
+
+    /// Applies a SqrtXdg gate to the specified qubit.
+    pub fn apply_sqrt_xdg(&mut self, qubit: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_sqrt_xdg(qubit),
+        }
+    }
+
+    /// Applies a CX (CNOT) gate.
+    pub fn apply_cx(&mut self, control: usize, target: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => {
+                state._apply_cx(control, target)
+            }
+        }
+    }
+
+    /// Applies a CZ gate.
+    pub fn apply_cz(&mut self, qarg1: usize, qarg2: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_cz(qarg1, qarg2),
+        }
+    }
+
+    /// Applies a SWAP gate.
+    pub fn apply_swap(&mut self, qarg1: usize, qarg2: usize) {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => {
+                state._apply_swap(qarg1, qarg2)
+            }
+        }
+    }
 }

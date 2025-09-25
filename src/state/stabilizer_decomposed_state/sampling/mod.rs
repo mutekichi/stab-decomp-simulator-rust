@@ -55,14 +55,14 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             return;
         }
         let qarg = qubit_indices[current_qarg];
-        
-        // Project the qubit onto |0> and |1> to further sample the outcomes and also to 
+
+        // Project the qubit onto |0> and |1> to further sample the outcomes and also to
         // calculate the probabilities of measuring 0 and 1.
         let mut state_zero = self.clone();
         let mut state_one = self.clone();
         let proj_zero_result = state_zero._project_unnormalized(qarg, false);
         let proj_one_result = state_one._project_unnormalized(qarg, true);
-        
+
         if proj_zero_result.is_err() {
             // Projection to |0> is impossible, all shots must be |1>
             current_outcome.push(true);
@@ -148,7 +148,6 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
 mod test {
     use num_complex::Complex64;
 
-
     #[test]
     fn test_sampling() {
         // sample_state = |000> + |100> + |010> + |111>
@@ -168,13 +167,16 @@ mod test {
             }
         }
     }
-    
+
     #[test]
     fn test_sampling_large_state() {
         // base_state = |000> + |100> + |010> + |111>
         let base_state = crate::test_utils::create_sample_stab_decomp_state();
-        
-        fn tensor(n: usize, state: &crate::state::StabilizerDecomposedState<Complex64>) -> crate::state::StabilizerDecomposedState<Complex64> {
+
+        fn tensor(
+            n: usize,
+            state: &crate::state::StabilizerDecomposedState<Complex64>,
+        ) -> crate::state::StabilizerDecomposedState<Complex64> {
             if n == 1 {
                 state.clone()
             } else {
@@ -191,7 +193,8 @@ mod test {
         match result {
             Ok(shot_count) => {
                 for (outcome, count) in shot_count.iter() {
-                    let outcome_str: String = outcome.iter().map(|&b| if b { '1' } else { '0' }).collect();
+                    let outcome_str: String =
+                        outcome.iter().map(|&b| if b { '1' } else { '0' }).collect();
                     println!("{:?}: {}", outcome_str, count);
                 }
             }

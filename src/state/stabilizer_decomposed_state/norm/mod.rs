@@ -2,8 +2,6 @@ use num_complex::Complex64;
 
 use crate::state::{Coefficient, StabilizerDecomposedState};
 
-
-
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// calculates the norm of the state
     /// NOTE: This ignores the global factor
