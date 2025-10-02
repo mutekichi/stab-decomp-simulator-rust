@@ -162,6 +162,26 @@ impl QuantumState {
         }
     }
 
+    /// Discard the specified qubit from the quantum state.
+    /// The state is modified in place.
+    ///
+    /// NOTE: Make sure that the qubit to be discarded is projected to |0> before calling this function.
+    ///       Discarding a qubit that is not in |0> may lead to incorrect results.
+    ///       This function does not check if the qubit is in |0> for performance reasons.
+    ///
+    /// ## Arguments
+    /// * `qubit` - The index of the qubit to discard.
+    ///
+    /// ## Returns
+    /// A `Result` indicating success or an `Error`.
+    pub fn discard(&mut self, qubit: usize) -> Result<(), Error> {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => {
+                state._discard(qubit).map_err(|e| Error::Discard(e.to_string()))
+            }
+        }
+    }
+
     // ===== Gate Applications =====
 
     /// Applies a Pauli-X gate to the specified qubit.

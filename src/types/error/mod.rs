@@ -4,6 +4,7 @@ pub enum Error {
     Measurement(String),
     Projection(String),
     Sampling(String),
+    Discard(String),
 }
 
 impl std::fmt::Display for Error {
@@ -13,6 +14,7 @@ impl std::fmt::Display for Error {
             Error::Measurement(msg) => write!(f, "Measurement Error: {}", msg),
             Error::Projection(msg) => write!(f, "Projection Error: {}", msg),
             Error::Sampling(msg) => write!(f, "Sampling Error: {}", msg),
+            Error::Discard(msg) => write!(f, "Discard Error: {}", msg),
         }
     }
 }
