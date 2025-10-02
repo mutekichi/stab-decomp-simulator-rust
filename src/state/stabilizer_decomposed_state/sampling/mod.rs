@@ -185,23 +185,52 @@ mod test {
                 smaller.kron(state)
             }
         }
-        let sample_state = tensor(8, &base_state); // (3 qubits) ^ 8 = 24 qubits
 
-        let shots = 10;
-        let qargs = (0..(3 * 8)).collect::<Vec<usize>>();
-        let seed = None;
-        let result = sample_state._sample(&qargs, shots, seed);
-        match result {
-            Ok(shot_count) => {
-                for (outcome, count) in shot_count.iter() {
-                    let outcome_str: String =
-                        outcome.iter().map(|&b| if b { '1' } else { '0' }).collect();
-                    println!("{:?}: {}", outcome_str, count);
+        fn run_sampling(
+            state: &crate::state::StabilizerDecomposedState<Complex64>,
+            qargs: &[usize],
+            shots: usize,
+            seed: Option<[u8; 32]>,
+            samples_to_print: usize,
+        ) {
+            let result = state._sample(qargs, shots, seed);
+            match result {
+                Ok(shot_count) => {
+                    println!("Showing up to {} samples:", samples_to_print);
+                    for (i, (outcome, count)) in shot_count.iter().enumerate() {
+                        if i >= samples_to_print {
+                            break;
+                        }
+                        let outcome_str: String = outcome
+                            .iter()
+                            .map(|&b| if b { '1' } else { '0' })
+                            .collect();
+                        println!("{}: {}", outcome_str, count);
+                    }
+                }
+                Err(e) => {
+                    panic!("Sampling failed with error: {:?}", e);
                 }
             }
-            Err(e) => {
-                panic!("Sampling failed with error: {:?}", e);
+        }
+        let num_tensors_list = [1, 2, 3, 4, 5, 6, 7, 8];
+        let shots_list = [10, 100, 10000];
+
+        for &num_tensors in num_tensors_list.iter() {
+            let large_state = tensor(num_tensors, &base_state);
+            let num_qubits = large_state.num_qubits;
+            let qargs: Vec<usize> = (0..num_qubits).collect();
+            for &shots in shots_list.iter() {
+                println!(
+                    "Sampling {} shots from a state with {} qubits",
+                    shots, num_qubits
+                );
+                let start_time = std::time::Instant::now();
+                run_sampling(&large_state, &qargs, shots, None, 10);
+                let duration = start_time.elapsed();
+                println!("Time elapsed in sampling: {:?}", duration);
             }
         }
+
     }
 }
