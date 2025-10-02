@@ -16,7 +16,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         }
         // assert that the result is real
         assert!(sum.im.abs() < 1e-10);
-        sum.re
+        sum.re * self.global_factor.norm_sqr()
     }
 
     /// calculates the norm of the state

@@ -18,6 +18,7 @@ pub trait InnerProduct: Conj + Mul<Self, Output = Self> + Sized + Copy {}
 impl<T> InnerProduct for T where T: Conj + Mul<Self, Output = Self> + Copy {}
 
 pub trait Amplify: Copy {
+    /// Amplifies the value by multiplying it with 2^(factor/2).
     fn amplify(&self, factor: isize) -> Self;
 }
 
