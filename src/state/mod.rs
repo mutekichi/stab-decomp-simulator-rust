@@ -21,17 +21,13 @@ pub struct QuantumState {
     internal_state: InternalState,
 }
 
-// impl QuantumState {
-//     pub fn new(internal_state: InternalState) -> Self {
-//         Self { internal_state }
-//     }
-// }
-
 pub(crate) enum InternalState {
     StabilizerDecomposedStateScalar(StabilizerDecomposedState<Scalar>),
 }
 
 impl QuantumState {
+    // ===== Primary APIs =====
+
     /// Creates a new `QuantumState` by compiling a `QuantumCircuit`.
     ///
     /// This function serves as the primary entry point for simulation. It takes a
@@ -73,16 +69,6 @@ impl QuantumState {
                 InternalState::StabilizerDecomposedStateScalar(state1),
                 InternalState::StabilizerDecomposedStateScalar(state2),
             ) => state1._inner_product(state2),
-        }
-    }
-
-    /// Returns the number of qubits in the quantum state.
-    ///
-    /// ### Returns
-    /// * `usize` - The number of qubits.
-    pub fn num_qubits(&self) -> usize {
-        match &self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state.num_qubits,
         }
     }
 
@@ -176,7 +162,7 @@ impl QuantumState {
         }
     }
 
-    // Gate applications
+    // ===== Gate Applications =====
 
     /// Applies a Pauli-X gate to the specified qubit.
     ///
@@ -262,6 +248,41 @@ impl QuantumState {
             InternalState::StabilizerDecomposedStateScalar(state) => {
                 state._apply_swap(qarg1, qarg2)
             }
+        }
+    }
+
+    // ===== Properties =====
+    
+    /// Returns the number of qubits in the quantum state.
+    ///
+    /// ### Returns
+    /// * `usize` - The number of qubits.
+    pub fn num_qubits(&self) -> usize {
+        match &self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state.num_qubits,
+        }
+    }
+
+    /// Returns the stabilizer rank (the number of stabilizer states in the decomposition)
+    /// of the internal stabilizer decomposed state.
+    /// 
+    /// ### Returns
+    /// * `usize` - The stabilizer rank.
+    pub fn stabilizer_rank(&self) -> usize {
+        match &self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => {
+                state.stabilizers.len()
+            }
+        }
+    }
+
+    /// Returns the norm of the state.
+    /// 
+    /// ### Returns
+    /// * `f64` - The norm of the state, which should be 1.0 for a valid quantum state.
+    pub fn norm(&self) -> f64 {
+        match &self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._norm(),
         }
     }
 }
