@@ -176,9 +176,9 @@ impl QuantumState {
     /// A `Result` indicating success or an `Error`.
     pub fn discard(&mut self, qubit: usize) -> Result<(), Error> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => {
-                state._discard(qubit).map_err(|e| Error::Discard(e.to_string()))
-            }
+            InternalState::StabilizerDecomposedStateScalar(state) => state
+                ._discard(qubit)
+                .map_err(|e| Error::Discard(e.to_string())),
         }
     }
 
@@ -272,7 +272,7 @@ impl QuantumState {
     }
 
     // ===== Properties =====
-    
+
     /// Returns the number of qubits in the quantum state.
     ///
     /// ### Returns
@@ -285,19 +285,17 @@ impl QuantumState {
 
     /// Returns the stabilizer rank (the number of stabilizer states in the decomposition)
     /// of the internal stabilizer decomposed state.
-    /// 
+    ///
     /// ### Returns
     /// * `usize` - The stabilizer rank.
     pub fn stabilizer_rank(&self) -> usize {
         match &self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => {
-                state.stabilizers.len()
-            }
+            InternalState::StabilizerDecomposedStateScalar(state) => state.stabilizers.len(),
         }
     }
 
     /// Returns the norm of the state.
-    /// 
+    ///
     /// ### Returns
     /// * `f64` - The norm of the state, which should be 1.0 for a valid quantum state.
     pub fn norm(&self) -> f64 {

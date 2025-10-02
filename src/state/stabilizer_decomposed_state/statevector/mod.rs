@@ -24,7 +24,6 @@ mod tests {
     use ndarray::array;
     use num_complex::Complex64;
 
-
     #[test]
     fn test_to_statevector() {
         // sample_state = |000> + |100> + |010> + |111>

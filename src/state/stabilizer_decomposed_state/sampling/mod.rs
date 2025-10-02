@@ -22,7 +22,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             Some(s) => StdRng::from_seed(s),
             None => StdRng::from_entropy(),
         };
-        // Sort qargs to 
+        // Sort qargs to
         // Start the recursive sampling process
         self._recursive_sample(
             qargs,
@@ -97,7 +97,8 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             return;
         }
 
-        let prob_zero = state_zero._norm_squared() / (state_zero._norm_squared() + state_one._norm_squared());
+        let prob_zero =
+            state_zero._norm_squared() / (state_zero._norm_squared() + state_one._norm_squared());
 
         // Sample the number of 0 outcomes using a binomial distribution
         let binom = match Binomial::new(current_shots as u64, prob_zero) {
@@ -187,7 +188,7 @@ mod test {
         let sample_state = tensor(8, &base_state); // (3 qubits) ^ 8 = 24 qubits
 
         let shots = 10;
-        let qargs = (0..(3*8)).collect::<Vec<usize>>();
+        let qargs = (0..(3 * 8)).collect::<Vec<usize>>();
         let seed = None;
         let result = sample_state._sample(&qargs, shots, seed);
         match result {

@@ -62,7 +62,10 @@ mod tests {
         normalize: bool,
     ) -> (Array1<Complex64>, f64) {
         let num_elements = statevector.len();
-        assert!(num_elements > 0 && num_elements.is_power_of_two(), "Statevector length must be a non-zero power of 2.");
+        assert!(
+            num_elements > 0 && num_elements.is_power_of_two(),
+            "Statevector length must be a non-zero power of 2."
+        );
 
         let num_qubits = num_elements.ilog2() as usize;
         assert!(qubit_index < num_qubits, "qubit_index is out of bounds.");
@@ -80,7 +83,8 @@ mod tests {
         // The probability of this outcome is the squared norm of the projected vector.
         let probability: f64 = projected_statevector.iter().map(|c| c.norm_sqr()).sum();
 
-        if normalize && probability > 1e-12 { // Avoid division by zero for very small probabilities.
+        if normalize && probability > 1e-12 {
+            // Avoid division by zero for very small probabilities.
             let norm = probability.sqrt();
             projected_statevector.mapv_inplace(|c| c / norm);
         }
@@ -88,7 +92,10 @@ mod tests {
         (projected_statevector, probability)
     }
 
-    use crate::{state::{QuantumState, StabilizerDecomposedState}, test_utils::{assert_eq_complex_array1, random_circuit_with_t_gate}};
+    use crate::{
+        state::QuantumState,
+        test_utils::{assert_eq_complex_array1, random_circuit_with_t_gate},
+    };
 
     #[test]
     fn test_project_unnormalized() {
@@ -102,17 +109,21 @@ mod tests {
         state.project_unnormalized(3, true).unwrap();
         let statevector_test = state.to_statevector();
 
-        let norm_ref = statevector_ref.iter().map(|c| c.norm_sqr()).sum::<f64>().sqrt();
+        let norm_ref = statevector_ref
+            .iter()
+            .map(|c| c.norm_sqr())
+            .sum::<f64>()
+            .sqrt();
         dbg!(norm_ref);
         dbg!(state.norm());
-        
+
         assert_eq_complex_array1(&statevector_ref, &statevector_test);
     }
 
     #[test]
     fn test_project_normalized() {
         // random_state
-        let random_circuit = random_circuit_with_t_gate(5, 1000, 10, None); 
+        let random_circuit = random_circuit_with_t_gate(5, 1000, 10, None);
         let mut state = QuantumState::from_circuit(&random_circuit).unwrap();
         let statevector = state.to_statevector();
         let statevector_ref = project_qubit(&statevector, 3, 1, true).0;
