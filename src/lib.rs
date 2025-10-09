@@ -5,7 +5,7 @@
 //!
 //! NECSTAR is particularly effective for circuits dominated by Clifford gates 
 //! but also contain a small number of non-Clifford gates, such as the T-gate.
-//! It provides an intuitive API for building and simulating quantum circuits without approximations.
+//! It provides an intuitive API for building and simulating quantum circuits.
 //!
 //! # Features
 //!
