@@ -1,9 +1,12 @@
-use crate::core::{PhaseFactor, StabilizerCHForm};
+use crate::{
+    core::{PhaseFactor, StabilizerCHForm},
+    error::ChFormError,
+};
 
 impl StabilizerCHForm {
-    pub(crate) fn _right_multiply_s(&mut self, qarg: usize) {
+    pub(crate) fn _right_multiply_s(&mut self, qarg: usize) -> Result<(), ChFormError> {
         if qarg >= self.n {
-            panic!("Qubit index out of bounds.");
+            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
         }
 
         let f_col = self.mat_f.column(qarg).to_owned();
@@ -15,5 +18,7 @@ impl StabilizerCHForm {
                 self.gamma[p] *= PhaseFactor::MINUS_I;
             }
         }
+
+        Ok(())
     }
 }

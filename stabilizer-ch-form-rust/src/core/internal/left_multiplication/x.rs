@@ -1,15 +1,15 @@
-use crate::StabilizerCHForm;
+use crate::{StabilizerCHForm, error::ChFormError};
 use ndarray::Array1;
 
 impl StabilizerCHForm {
-    /// Applies the Pauli-X gate to the qubit at index `qarg`.
-    ///
-    /// Time complexity: O(n)
-    ///
-    /// See around eq.(48) of arXiv:1808.00128 for details.
-    pub(crate) fn _left_multiply_x(&mut self, qarg: usize) {
+    // Applies the Pauli-X gate to the qubit at index `qarg`.
+    //
+    // Time complexity: O(n)
+    //
+    // See around eq.(48) of arXiv:1808.00128 for details.
+    pub(crate) fn _left_multiply_x(&mut self, qarg: usize) -> Result<(), ChFormError> {
         if qarg >= self.n {
-            panic!("Qubit index out of bounds.");
+            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
         }
         // calculate u appearing in eq.(48) of arXiv:1808.00128 :
         // $$
@@ -54,5 +54,7 @@ impl StabilizerCHForm {
         self.phase_factor *= self.gamma[qarg];
 
         self.vec_s = u;
+
+        Ok(())
     }
 }

@@ -1,4 +1,4 @@
-use crate::StabilizerCHForm;
+use crate::{StabilizerCHForm, error::ChFormError};
 use ndarray::{Array1, Array2};
 
 impl StabilizerCHForm {
@@ -7,12 +7,9 @@ impl StabilizerCHForm {
     /// This is an in-place operation that modifies the state.
     /// NOTE: This function assumes that the qubit `qarg` has already been
     /// projected onto the |0> state and is disentangled from the rest.
-    pub(crate) fn _discard(&mut self, qarg: usize) -> Result<(), &'static str> {
-        if self.n == 0 {
-            return Err("Cannot discard a qubit from an empty state.");
-        }
+    pub(crate) fn _discard(&mut self, qarg: usize) -> Result<(), ChFormError> {
         if qarg >= self.n {
-            panic!("Qubit index out of bounds.");
+            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
         }
 
         // Ensure s[qarg], v[qarg] are false
@@ -85,7 +82,7 @@ impl StabilizerCHForm {
     // --- Private helper methods ---
 
     /// Sets s[qarg] and v[qarg] to false without changing the state.
-    fn _set_s_v_to_false(&mut self, qarg: usize) -> Result<(), &'static str> {
+    fn _set_s_v_to_false(&mut self, qarg: usize) -> Result<(), ChFormError> {
         if !self.vec_v[qarg] && !self.vec_s[qarg] {
             return Ok(());
         }
@@ -115,22 +112,23 @@ impl StabilizerCHForm {
                 }
 
                 if let (Some(f), Some(s)) = (first, second) {
-                    self._right_multiply_cx(f, s);
+                    self._right_multiply_cx(f, s)?;
                     self.vec_s[s] = false;
                     if s == qarg {
                         return Ok(());
                     }
                     s
                 } else {
-                    return Err("Could not find suitable qubits to zero out s[i].");
+                    // Unreachable if the state is valid.
+                    unreachable!("Could not find suitable qubits to zero out s[i].");
                 }
             }
         };
 
         // SWAP qarg and final_ok_index
-        self._right_multiply_cx(final_ok_index, qarg);
-        self._right_multiply_cx(qarg, final_ok_index);
-        self._right_multiply_cx(final_ok_index, qarg);
+        self._right_multiply_cx(final_ok_index, qarg)?;
+        self._right_multiply_cx(qarg, final_ok_index)?;
+        self._right_multiply_cx(final_ok_index, qarg)?;
 
         self.vec_v.swap(qarg, final_ok_index);
         self.vec_s.swap(qarg, final_ok_index);
@@ -139,10 +137,10 @@ impl StabilizerCHForm {
     }
 
     /// Transforms G so that G[qarg, :] and G[:, qarg] are zero except for the diagonal.
-    fn _transform_g(&mut self, qarg: usize) -> Result<(), &'static str> {
+    fn _transform_g(&mut self, qarg: usize) -> Result<(), ChFormError> {
         if !self.mat_g[[qarg, qarg]] {
             if let Some(pivot) = (0..self.n).find(|&i| i != qarg && self.mat_g[[qarg, i]]) {
-                self._right_multiply_cx(qarg, pivot);
+                self._right_multiply_cx(qarg, pivot)?;
             } else {
                 // This case should not happen if the state is valid.
             }
@@ -151,7 +149,7 @@ impl StabilizerCHForm {
         // Make G[i, qarg] = false for i != qarg (left-multiplication)
         for i in 0..self.n {
             if i != qarg && self.mat_g[[i, qarg]] {
-                self._left_multiply_cx(qarg, i);
+                self._left_multiply_cx(qarg, i)?;
             }
         }
 
@@ -159,31 +157,33 @@ impl StabilizerCHForm {
         for i in 0..self.n {
             if i != qarg && self.mat_g[[qarg, i]] {
                 if self.vec_v[i] {
-                    return Err("Cannot zero G column due to v vector state.");
+                    unreachable!("Cannot zero G column due to v vector state.");
                 }
-                self._right_multiply_cx(i, qarg);
+                self._right_multiply_cx(i, qarg)?;
             }
         }
         Ok(())
     }
 
     /// Transforms M so that M[qarg, :] and M[:, qarg] are zero.
-    fn _transform_m(&mut self, qarg: usize) {
+    fn _transform_m(&mut self, qarg: usize) -> Result<(), ChFormError> {
         // Left-multiplication gates
         for i in 0..self.n {
             if i != qarg && self.mat_m[[i, qarg]] {
-                self._left_multiply_cx(qarg, i);
+                self._left_multiply_cx(qarg, i)?;
             }
         }
         if self.mat_m[[qarg, qarg]] {
-            self._left_multiply_sdg(qarg);
+            self._left_multiply_sdg(qarg)?;
         }
 
         // Right-multiplication gates
         for i in 0..self.n {
             if i != qarg && self.mat_m[[qarg, i]] {
-                self._right_multiply_cz(qarg, i);
+                self._right_multiply_cz(qarg, i)?;
             }
         }
+
+        Ok(())
     }
 }

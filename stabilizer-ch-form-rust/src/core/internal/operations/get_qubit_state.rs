@@ -1,13 +1,11 @@
 use crate::StabilizerCHForm;
 use crate::core::internal::types::measurement::QubitState;
+use crate::error::ChFormError;
 
 impl StabilizerCHForm {
-    pub(crate) fn _get_qubit_state(&self, qarg: usize) -> QubitState {
+    pub(crate) fn _get_qubit_state(&self, qarg: usize) -> Result<QubitState, ChFormError> {
         if qarg >= self.n {
-            panic!("Qubit index out of bounds.");
-        }
-        if qarg >= self.n_qubits() {
-            panic!("Qubit index ouWt of bounds.");
+            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
         }
 
         let g_row = self.mat_g.row(qarg);
@@ -26,9 +24,9 @@ impl StabilizerCHForm {
                 },
             ) % 2
                 == 1;
-            QubitState::Determined(value)
+            Ok(QubitState::Determined(value))
         } else {
-            QubitState::Superposition
+            Ok(QubitState::Superposition)
         }
     }
 }

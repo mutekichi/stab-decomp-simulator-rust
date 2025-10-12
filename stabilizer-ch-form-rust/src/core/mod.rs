@@ -2,7 +2,10 @@ use ndarray::{Array1, Array2};
 use num_complex::Complex64;
 
 mod internal;
-use crate::api::representation::{CliffordCircuit, CliffordGate};
+use crate::{
+    api::representation::{CliffordCircuit, CliffordGate},
+    error::ChFormError,
+};
 use internal::types::phase_factor::PhaseFactor;
 
 #[derive(Debug, Clone)]
@@ -19,12 +22,12 @@ pub struct StabilizerCHForm {
 }
 
 impl StabilizerCHForm {
-    pub fn new(n: usize) -> Self {
+    pub fn new(n: usize) -> Result<Self, ChFormError> {
         if n == 0 {
-            panic!("Number of qubits must be greater than zero.");
+            return Err(ChFormError::InvalidNumQubits(n));
         }
 
-        Self {
+        Ok(Self {
             n: n,
             // Initialize G, F as identity matrices, M as zero matrix
             mat_g: Array2::from_shape_fn((n, n), |(i, j)| i == j),
@@ -39,7 +42,7 @@ impl StabilizerCHForm {
             omega: Complex64::new(1.0, 0.0),
             // Initialize overall phase factor as +1
             phase_factor: PhaseFactor::PLUS_ONE,
-        }
+        })
     }
 
     pub fn n_qubits(&self) -> usize {
@@ -57,25 +60,26 @@ impl StabilizerCHForm {
         self.omega
     }
 
-    pub fn from_clifford_circuit(circuit: &CliffordCircuit) -> Result<Self, String> {
-        if circuit.n_qubits == 0 {
-            return Err("Number of qubits must be greater than zero.".to_string());
-        }
-        let mut ch_form = StabilizerCHForm::new(circuit.n_qubits);
+    pub fn from_clifford_circuit(circuit: &CliffordCircuit) -> Result<Self, ChFormError> {
+        let mut ch_form = StabilizerCHForm::new(circuit.n_qubits)?;
 
         for gate in &circuit.gates {
             match gate {
-                CliffordGate::H(q) => ch_form._left_multiply_h(*q),
-                CliffordGate::S(q) => ch_form._left_multiply_s(*q),
-                CliffordGate::Sdg(q) => ch_form._left_multiply_sdg(*q),
-                CliffordGate::X(q) => ch_form._left_multiply_x(*q),
-                CliffordGate::Y(q) => ch_form._left_multiply_y(*q),
-                CliffordGate::Z(q) => ch_form._left_multiply_z(*q),
-                CliffordGate::SqrtX(q) => ch_form._left_multiply_sqrt_x(*q),
-                CliffordGate::SqrtXdg(q) => ch_form._left_multiply_sqrt_xdg(*q),
-                CliffordGate::CX(control, target) => ch_form._left_multiply_cx(*control, *target),
-                CliffordGate::CZ(control, target) => ch_form._left_multiply_cz(*control, *target),
-                CliffordGate::Swap(q1, q2) => ch_form._left_multiply_swap(*q1, *q2),
+                CliffordGate::H(q) => ch_form._left_multiply_h(*q)?,
+                CliffordGate::S(q) => ch_form._left_multiply_s(*q)?,
+                CliffordGate::Sdg(q) => ch_form._left_multiply_sdg(*q)?,
+                CliffordGate::X(q) => ch_form._left_multiply_x(*q)?,
+                CliffordGate::Y(q) => ch_form._left_multiply_y(*q)?,
+                CliffordGate::Z(q) => ch_form._left_multiply_z(*q)?,
+                CliffordGate::SqrtX(q) => ch_form._left_multiply_sqrt_x(*q)?,
+                CliffordGate::SqrtXdg(q) => ch_form._left_multiply_sqrt_xdg(*q)?,
+                CliffordGate::CX(control, target) => {
+                    ch_form._left_multiply_cx(*control, *target)?
+                }
+                CliffordGate::CZ(control, target) => {
+                    ch_form._left_multiply_cz(*control, *target)?
+                }
+                CliffordGate::Swap(q1, q2) => ch_form._left_multiply_swap(*q1, *q2)?,
             }
         }
         Ok(ch_form)

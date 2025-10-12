@@ -1,10 +1,10 @@
-use crate::StabilizerCHForm;
+use crate::{StabilizerCHForm, error::ChFormError};
 use ndarray::{Axis, s};
 
 impl StabilizerCHForm {
-    pub fn _kron(&self, other: &StabilizerCHForm) -> StabilizerCHForm {
+    pub fn _kron(&self, other: &StabilizerCHForm) -> Result<StabilizerCHForm, ChFormError> {
         let n_total = self.n + other.n;
-        let mut new_state = StabilizerCHForm::new(n_total);
+        let mut new_state = StabilizerCHForm::new(n_total)?;
 
         // Create block-diagonal matrices for G, F, and M
         new_state
@@ -48,6 +48,6 @@ impl StabilizerCHForm {
         new_state.set_global_phase(self.global_phase() * other.global_phase());
         new_state.phase_factor = self.phase_factor * other.phase_factor;
 
-        new_state
+        Ok(new_state)
     }
 }

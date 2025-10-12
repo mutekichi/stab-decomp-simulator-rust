@@ -5,8 +5,8 @@
 
 pub mod api;
 pub mod core;
-pub mod types;
 pub mod error;
+pub mod types;
 
 pub use core::StabilizerCHForm;
 pub mod prelude {

@@ -1,15 +1,10 @@
-use crate::StabilizerCHForm;
+use crate::{StabilizerCHForm, error::ChFormError};
 use ndarray::Array1;
 
 impl StabilizerCHForm {
-    /// Applies the Hadamard gate to the qubit at index `qarg`.
-    ///
-    /// Time complexity: O(n^2)
-    ///
-    /// See around Proposition 4. of arXiv:1808.00128 for details.
-    pub fn _left_multiply_h(&mut self, qarg: usize) {
+    pub fn _left_multiply_h(&mut self, qarg: usize) -> Result<(), ChFormError> {
         if qarg >= self.n {
-            panic!("Qubit index out of bounds.");
+            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
         }
         let (vec_t, vec_u, alpha, beta) = self._prepare_h_superposition_args(qarg);
         let delta = if alpha ^ beta {
@@ -21,6 +16,8 @@ impl StabilizerCHForm {
             self.phase_factor.flip_sign();
         }
         self._resolve_superposition(&vec_t, &vec_u, delta);
+
+        Ok(())
     }
 
     /// Prepares vec_t, vec_u, alpha, beta for applying H to qubit `qarg`.

@@ -1,17 +1,13 @@
-use crate::StabilizerCHForm;
+use crate::{StabilizerCHForm, error::ChFormError};
 use ndarray::Axis;
 
 impl StabilizerCHForm {
-    pub(crate) fn _permuted(&self, axes: &[usize]) -> Self {
+    pub(crate) fn _permuted(&self, axes: &[usize]) -> Result<Self, ChFormError> {
         if axes.len() != self.n {
-            panic!(
-                "The length of the axes slice ({}) must be equal to the number of qubits ({}).",
-                axes.len(),
-                self.n
-            );
+            return Err(ChFormError::InvalidPermutationLength(axes.len(), self.n));
         }
 
-        let mut new_state = StabilizerCHForm::new(self.n);
+        let mut new_state = StabilizerCHForm::new(self.n)?;
 
         // Permute matrices by selecting rows and columns according to `axes`.
         for (new_i, &old_i) in axes.iter().enumerate() {
@@ -31,10 +27,11 @@ impl StabilizerCHForm {
         new_state.omega = self.omega;
         new_state.phase_factor = self.phase_factor;
 
-        new_state
+        Ok(new_state)
     }
 
-    pub(crate) fn _permute(&mut self, axes: &[usize]) {
-        *self = self._permuted(axes);
+    pub(crate) fn _permute(&mut self, axes: &[usize]) -> Result<(), ChFormError> {
+        *self = self._permuted(axes)?;
+        Ok(())
     }
 }

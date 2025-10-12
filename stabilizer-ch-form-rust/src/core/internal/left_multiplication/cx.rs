@@ -1,12 +1,22 @@
-use crate::core::{PhaseFactor, StabilizerCHForm};
+use crate::{
+    core::{PhaseFactor, StabilizerCHForm},
+    error::ChFormError,
+};
 
 impl StabilizerCHForm {
-    pub(crate) fn _left_multiply_cx(&mut self, control: usize, target: usize) {
-        if control >= self.n || target >= self.n {
-            panic!("Qubit index out of bounds.");
+    pub(crate) fn _left_multiply_cx(
+        &mut self,
+        control: usize,
+        target: usize,
+    ) -> Result<(), ChFormError> {
+        if control >= self.n {
+            return Err(ChFormError::QubitIndexOutOfBounds(control, self.n));
+        }
+        if target >= self.n {
+            return Err(ChFormError::QubitIndexOutOfBounds(target, self.n));
         }
         if control == target {
-            return;
+            return Err(ChFormError::DuplicateQubitIndices(control));
         }
 
         // 1. Update gamma (must be done before matrix updates)
@@ -39,5 +49,7 @@ impl StabilizerCHForm {
         let m_target_row = self.mat_m.row(target).to_owned();
         let mut m_control_row = self.mat_m.row_mut(control);
         m_control_row ^= &m_target_row;
+
+        Ok(())
     }
 }

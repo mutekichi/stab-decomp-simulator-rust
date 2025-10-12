@@ -1,26 +1,35 @@
 use crate::StabilizerCHForm;
 use crate::core::internal::types::InternalGate;
 use crate::core::internal::types::PhaseFactor;
+use crate::error::ChFormError;
+use num_complex::Complex64;
 
 impl StabilizerCHForm {
     // TODO: Implement batch inner product calculation since the result of
     // `_self._get_normalize_to_zero_ops()` can be reused.
-    pub(crate) fn _inner_product(&self, other: &StabilizerCHForm) -> num_complex::Complex64 {
+    pub(crate) fn _inner_product(
+        &self,
+        other: &StabilizerCHForm,
+    ) -> Result<Complex64, ChFormError> {
         if self.n != other.n {
-            panic!("Inner product is only defined for states on the same number of qubits.");
+            return Err(ChFormError::QubitCountMismatch {
+                operation: "calculating inner product",
+                left: self.n,
+                right: other.n,
+            });
         }
 
         // Get operations to transform `self` to |0...0>
         // i.e. U_{ops} |self> = global_phase * phase * |0...0>
-        let (ops, phase) = self._get_normalize_to_zero_ops();
+        let (ops, phase) = self._get_normalize_to_zero_ops()?;
 
         // Apply the same operations to `other`
         // i.e. U_{ops} |other> = |transformed_other>
-        let transformed_other = other._get_ops_applied_state(&ops);
+        let transformed_other = other._get_ops_applied_state(&ops)?;
 
         // Get the amplitude of |0...0> in `transformed_other`
         // i.e. res = <0...0| U_{ops} |other>
-        let res = transformed_other._amplitude_at_zero();
+        let res = transformed_other._amplitude_at_zero()?;
 
         // Combine the results
         // The inner product is <self|other> = <self|U_dag U|other>
@@ -32,12 +41,12 @@ impl StabilizerCHForm {
         let inner_product_val = (res * phase.conjugated()).to_complex();
 
         // We need to account for the global phases
-        self.global_phase() * other.global_phase() * inner_product_val
+        Ok(self.global_phase() * other.global_phase() * inner_product_val)
     }
 
     /// Returns the sequence of operations needed to transform the current state to |0...0>
     /// along with the phase factor of the resulting state.
-    fn _get_normalize_to_zero_ops(&self) -> (Vec<InternalGate>, PhaseFactor) {
+    fn _get_normalize_to_zero_ops(&self) -> Result<(Vec<InternalGate>, PhaseFactor), ChFormError> {
         let mut ops = Vec::new();
         let mut self_clone = self.clone();
         let n = self_clone.n;
@@ -50,24 +59,25 @@ impl StabilizerCHForm {
                 if let Some(k) = (j + 1..n).find(|&k| self_clone.mat_g[[k, j]]) {
                     pivot_row = k;
                 } else {
-                    panic!("G matrix is singular.");
+                    // Unreachable if the state is valid
+                    unreachable!("G matrix is not full rank, invalid stabilizer state.");
                 }
             }
 
             if pivot_row != j {
                 // Swap rows j and pivot_row using CNOTs: (k,j), (j,k), (k,j)
                 ops.push(InternalGate::CX(pivot_row, j));
-                self_clone._left_multiply_cx(pivot_row, j);
+                self_clone._left_multiply_cx(pivot_row, j)?;
                 ops.push(InternalGate::CX(j, pivot_row));
-                self_clone._left_multiply_cx(j, pivot_row);
+                self_clone._left_multiply_cx(j, pivot_row)?;
                 ops.push(InternalGate::CX(pivot_row, j));
-                self_clone._left_multiply_cx(pivot_row, j);
+                self_clone._left_multiply_cx(pivot_row, j)?;
             }
 
             for i in 0..n {
                 if i != j && self_clone.mat_g[[i, j]] {
                     ops.push(InternalGate::CX(j, i));
-                    self_clone._left_multiply_cx(j, i);
+                    self_clone._left_multiply_cx(j, i)?;
                 }
             }
         }
@@ -77,7 +87,7 @@ impl StabilizerCHForm {
             for c in (r + 1)..n {
                 if self_clone.mat_m[[r, c]] {
                     ops.push(InternalGate::CZ(r, c));
-                    self_clone._left_multiply_cz(r, c);
+                    self_clone._left_multiply_cz(r, c)?;
                 }
             }
         }
@@ -86,7 +96,7 @@ impl StabilizerCHForm {
         for q in 0..n {
             if self_clone.mat_m[[q, q]] {
                 ops.push(InternalGate::Sdg(q));
-                self_clone._left_multiply_sdg(q);
+                self_clone._left_multiply_sdg(q)?;
             }
         }
 
@@ -94,7 +104,7 @@ impl StabilizerCHForm {
         for i in 0..n {
             if self_clone.vec_v[i] {
                 ops.push(InternalGate::H(i));
-                self_clone._left_multiply_h(i);
+                self_clone._left_multiply_h(i)?;
             }
         }
 
@@ -102,10 +112,28 @@ impl StabilizerCHForm {
         for i in 0..n {
             if self_clone.vec_s[i] {
                 ops.push(InternalGate::X(i));
-                self_clone._left_multiply_x(i);
+                self_clone._left_multiply_x(i)?;
             }
         }
 
-        (ops, self_clone.phase_factor)
+        Ok((ops, self_clone.phase_factor))
+    }
+
+    fn _get_ops_applied_state(
+        &self,
+        ops: &[InternalGate],
+    ) -> Result<StabilizerCHForm, ChFormError> {
+        let mut new_state = self.clone();
+        for op in ops {
+            match op {
+                InternalGate::H(q) => new_state._left_multiply_h(*q)?,
+                // InternalGate::S(q) => new_state._left_multiply_s(*q),
+                InternalGate::Sdg(q) => new_state._left_multiply_sdg(*q)?,
+                InternalGate::X(q) => new_state._left_multiply_x(*q)?,
+                InternalGate::CX(c, t) => new_state._left_multiply_cx(*c, *t)?,
+                InternalGate::CZ(c, t) => new_state._left_multiply_cz(*c, *t)?,
+            }
+        }
+        Ok(new_state)
     }
 }

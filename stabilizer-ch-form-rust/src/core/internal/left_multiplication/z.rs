@@ -1,11 +1,12 @@
-use crate::core::StabilizerCHForm;
+use crate::{core::StabilizerCHForm, error::ChFormError};
 
 impl StabilizerCHForm {
-    pub(crate) fn _left_multiply_z(&mut self, qarg: usize) {
+    pub(crate) fn _left_multiply_z(&mut self, qarg: usize) -> Result<(), ChFormError> {
         if qarg >= self.n {
-            // TODO: better error handling
-            panic!("Qubit index out of bounds.");
+            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
         }
         self.gamma[qarg].flip_sign();
+
+        Ok(())
     }
 }
