@@ -5,7 +5,7 @@ mod common;
 #[test]
 fn test_hadamard() {
     let mut ch_form = StabilizerCHForm::new(1).unwrap();
-    ch_form.apply_h(0);
+    ch_form.apply_h(0).unwrap();
 
     let statevec = ch_form.to_statevector().unwrap();
     println!("Statevector after H: {:?}", statevec);
@@ -19,8 +19,8 @@ fn test_hadamard() {
 #[test]
 fn test_bell_state() {
     let mut ch_form = StabilizerCHForm::new(2).unwrap();
-    ch_form.apply_h(0);
-    ch_form.apply_cx(0, 1);
+    ch_form.apply_h(0).unwrap();
+    ch_form.apply_cx(0, 1).unwrap();
 
     let statevec = ch_form.to_statevector().unwrap();
     // ndarray::array![1.0, 0.0, 0.0, 1.0] / 2f64.sqrt();
@@ -36,16 +36,16 @@ fn test_bell_state() {
 #[test]
 fn test_hadamard_behaviour() {
     let mut ch_form = StabilizerCHForm::new(3).unwrap();
-    ch_form.apply_h(0);
-    ch_form.apply_s(0);
-    ch_form.apply_cx(0, 1);
-    ch_form.apply_cx(1, 2);
-    ch_form.apply_cz(0, 2);
-    ch_form.apply_h(2);
-    ch_form.apply_s(1);
-    ch_form.apply_z(0);
-    ch_form.apply_cz(0, 1);
-    ch_form.apply_h(0);
+    ch_form.apply_h(0).unwrap();
+    ch_form.apply_s(0).unwrap();
+    ch_form.apply_cx(0, 1).unwrap();
+    ch_form.apply_cx(1, 2).unwrap();
+    ch_form.apply_cz(0, 2).unwrap();
+    ch_form.apply_h(2).unwrap();
+    ch_form.apply_s(1).unwrap();
+    ch_form.apply_z(0).unwrap();
+    ch_form.apply_cz(0, 1).unwrap();
+    ch_form.apply_h(0).unwrap();
 
     let internal_state = ch_form.get_internal_state();
     internal_state.pretty_print();
