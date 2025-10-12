@@ -28,7 +28,7 @@ impl StabilizerCHForm {
         }
 
         Ok(Self {
-            n: n,
+            n,
             // Initialize G, F as identity matrices, M as zero matrix
             mat_g: Array2::from_shape_fn((n, n), |(i, j)| i == j),
             mat_f: Array2::from_shape_fn((n, n), |(i, j)| i == j),

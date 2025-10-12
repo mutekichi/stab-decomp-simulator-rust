@@ -1,4 +1,4 @@
-use crate::StabilizerCHForm;
+use crate::{StabilizerCHForm, error::ChFormError};
 
 impl StabilizerCHForm {
     /// Projects a qubit onto a computational basis state (`|0>` or `|1>`).
@@ -27,10 +27,10 @@ impl StabilizerCHForm {
     ///
     /// # Errors
     ///
-    /// Returns an `Err` if the projection is impossible. This occurs when the qubit has a
+    /// Returns an `ChFormError` if the projection is impossible. This occurs when the qubit has a
     /// deterministic value that is orthogonal to the desired `outcome` (e.g., attempting to
     /// project a qubit in state `|0>` onto `|1>`).
-    pub fn project(&mut self, qarg: usize, outcome: bool) -> Result<bool, &'static str> {
+    pub fn project(&mut self, qarg: usize, outcome: bool) -> Result<bool, ChFormError> {
         self._project(qarg, outcome)
     }
 }

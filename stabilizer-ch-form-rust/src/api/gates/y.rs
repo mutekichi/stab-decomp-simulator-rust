@@ -1,14 +1,10 @@
-use crate::StabilizerCHForm;
+use crate::{StabilizerCHForm, error::ChFormError};
 
-pub trait YGate {
-    fn apply_y(&mut self, qarg: usize);
-}
-
-impl YGate for StabilizerCHForm {
+impl StabilizerCHForm {
     /// Applies the Pauli-Y gate to the qubit at index `qarg`.
     ///
     /// Time complexity: O(n)
-    fn apply_y(&mut self, qarg: usize) {
-        self._left_multiply_y(qarg);
+    pub fn apply_y(&mut self, qarg: usize) -> Result<(), ChFormError> {
+        self._left_multiply_y(qarg)
     }
 }

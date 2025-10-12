@@ -3,7 +3,7 @@ use stabilizer_ch_form_rust::prelude::*;
 #[test]
 
 fn test_project() {
-    let mut ch_form = StabilizerCHForm::new(3);
+    let mut ch_form = StabilizerCHForm::new(3).unwrap();
     ch_form.apply_h(0);
     ch_form.apply_cx(0, 1);
     ch_form.apply_cx(1, 2);

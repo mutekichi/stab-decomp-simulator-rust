@@ -17,7 +17,7 @@ impl StabilizerCHForm {
         // Also ensure M[qarg, :] and M[:, qarg] are zero.
         self._set_s_v_to_false(qarg)?;
         self._transform_g(qarg)?;
-        self._transform_m(qarg);
+        self._transform_m(qarg)?;
 
         // Update self with the new (n-1)-qubit state
         self.n -= 1;
@@ -30,16 +30,6 @@ impl StabilizerCHForm {
         self.vec_s = self._remove_element_from_vector(&self.vec_s, qarg);
 
         Ok(())
-    }
-
-    /// Returns a new StabilizerCHForm with the specified qubit discarded.
-    ///
-    /// NOTE: This function assumes that the qubit `qarg` has already been
-    /// projected onto the |0> state.
-    pub fn discarded(&self, qarg: usize) -> Result<StabilizerCHForm, &'static str> {
-        let mut self_clone = self.clone();
-        self_clone.discard(qarg)?;
-        Ok(self_clone)
     }
 
     // --- Private helper methods ---

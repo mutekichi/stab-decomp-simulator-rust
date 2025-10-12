@@ -91,7 +91,10 @@ impl Inspectable for StabilizerCHForm {
             gamma: self.gamma.mapv(|p| p.to_int()),
             vec_v: self.vec_v.clone(),
             vec_s: self.vec_s.clone(),
-            statevector: self.to_statevector(),
+            statevector: self.to_statevector().unwrap_or_else(|_| {
+                // If statevector computation fails, return a zero vector.
+                Array1::from_elem(1 << self.n_qubits(), Complex64::new(0.0, 0.0))
+            }),
         }
     }
 }

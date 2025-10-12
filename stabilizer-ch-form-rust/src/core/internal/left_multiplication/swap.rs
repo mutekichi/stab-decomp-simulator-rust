@@ -23,7 +23,7 @@ impl StabilizerCHForm {
                 _ => x,
             })
             .collect();
-        self._permute(&perm);
+        self._permute(&perm)?;
 
         Ok(())
     }

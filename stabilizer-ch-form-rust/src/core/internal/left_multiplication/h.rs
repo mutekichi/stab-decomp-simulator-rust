@@ -15,7 +15,7 @@ impl StabilizerCHForm {
         if alpha {
             self.phase_factor.flip_sign();
         }
-        self._resolve_superposition(&vec_t, &vec_u, delta);
+        self._resolve_superposition(&vec_t, &vec_u, delta)?;
 
         Ok(())
     }

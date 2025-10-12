@@ -1,5 +1,6 @@
 use crate::StabilizerCHForm;
 use crate::core::internal::types::PhaseFactor;
+use crate::error::ChFormError;
 
 impl StabilizerCHForm {
     pub fn _resolve_superposition(
@@ -7,13 +8,13 @@ impl StabilizerCHForm {
         vec_t: &ndarray::Array1<bool>,
         vec_u: &ndarray::Array1<bool>,
         delta: PhaseFactor,
-    ) {
+    ) -> Result<(), ChFormError> {
         if vec_t == vec_u {
             self._handle_same_vecs_case(delta, vec_t);
-            return;
+            return Ok(());
         }
         let (diff_indices_0, diff_indices_1) = self._get_differing_indices(vec_t, vec_u);
-        let pivot = self._apply_basis_transform_circuit(&diff_indices_0, &diff_indices_1);
+        let pivot = self._apply_basis_transform_circuit(&diff_indices_0, &diff_indices_1)?;
         // if t_q == 1, (y_q, z_q) = (1,0)
         // if t_q == 0, (y_q, z_q) = (0,1)
         if vec_t[pivot] {
@@ -38,12 +39,12 @@ impl StabilizerCHForm {
                         // H(|1> + i|0>) = e^{iπ/4}SH|0>
                         self.phase_factor *= PhaseFactor::EXP_I_PI_4;
                         self.vec_s[pivot] = false;
-                        self._right_multiply_s(pivot);
+                        self._right_multiply_s(pivot)?;
                     } else {
                         // |1> + i|0> = iSH|1>
                         self.vec_s[pivot] = true;
                         self.vec_v[pivot] = true;
-                        self._right_multiply_s(pivot);
+                        self._right_multiply_s(pivot)?;
                         self.phase_factor *= PhaseFactor::PLUS_I;
                     }
                 }
@@ -52,12 +53,12 @@ impl StabilizerCHForm {
                         // H(|1> - i|0>) = e^{-iπ/4}SH|1>
                         self.phase_factor *= PhaseFactor::EXP_I_7PI_4;
                         self.vec_s[pivot] = true;
-                        self._right_multiply_s(pivot);
+                        self._right_multiply_s(pivot)?;
                     } else {
                         // |1> - i|0> = -iSH|0>
                         self.vec_s[pivot] = false;
                         self.vec_v[pivot] = true;
-                        self._right_multiply_s(pivot);
+                        self._right_multiply_s(pivot)?;
                         self.phase_factor *= PhaseFactor::MINUS_I;
                     }
                 }
@@ -84,12 +85,12 @@ impl StabilizerCHForm {
                         // H(|0> + i|1>) = e^{iπ/4}SH|1>
                         self.phase_factor *= PhaseFactor::EXP_I_PI_4;
                         self.vec_s[pivot] = true;
-                        self._right_multiply_s(pivot);
+                        self._right_multiply_s(pivot)?;
                     } else {
                         // |0> + i|1> = SH|0>
                         self.vec_s[pivot] = false;
                         self.vec_v[pivot] = true;
-                        self._right_multiply_s(pivot);
+                        self._right_multiply_s(pivot)?;
                     }
                 }
                 PhaseFactor::MINUS_I => {
@@ -97,17 +98,18 @@ impl StabilizerCHForm {
                         // H(|0> - i|1>) = e^{-iπ/4}SH|0>
                         self.phase_factor *= PhaseFactor::EXP_I_7PI_4;
                         self.vec_s[pivot] = false;
-                        self._right_multiply_s(pivot);
+                        self._right_multiply_s(pivot)?;
                     } else {
                         // |0> - i|1> = SH|1>
                         self.vec_s[pivot] = true;
                         self.vec_v[pivot] = true;
-                        self._right_multiply_s(pivot);
+                        self._right_multiply_s(pivot)?;
                     }
                 }
                 _ => unreachable!(),
             }
         }
+        Ok(())
     }
 
     fn _handle_same_vecs_case(&mut self, delta: PhaseFactor, vec_t: &ndarray::Array1<bool>) {
@@ -154,22 +156,22 @@ impl StabilizerCHForm {
         &mut self,
         diff_indices_0: &[usize],
         diff_indices_1: &[usize],
-    ) -> usize {
+    ) -> Result<usize, ChFormError> {
         if diff_indices_0.is_empty() {
             let pivot = diff_indices_1[0];
             for &i in &diff_indices_1[1..] {
-                self._right_multiply_cx(i, pivot);
+                self._right_multiply_cx(i, pivot)?;
             }
-            pivot
+            Ok(pivot)
         } else {
             let pivot = diff_indices_0[0];
             for &i in &diff_indices_0[1..] {
-                self._right_multiply_cx(pivot, i);
+                self._right_multiply_cx(pivot, i)?;
             }
             for &i in diff_indices_1 {
-                self._right_multiply_cz(pivot, i);
+                self._right_multiply_cz(pivot, i)?;
             }
-            pivot
+            Ok(pivot)
         }
     }
 }

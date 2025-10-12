@@ -43,7 +43,12 @@ fn compare_with_qiskit_references() {
                 panic!("Failed to convert to CH-form for {}: {}", test_case_name, e)
             });
 
-            let our_statevector = ch_form.to_statevector();
+            let our_statevector = ch_form.to_statevector().unwrap_or_else(|e| {
+                panic!(
+                    "Failed to compute statevector for {}: {}",
+                    test_case_name, e
+                )
+            });
 
             let reference_statevector = common::load_statevector_from_file(&sv_path)
                 .unwrap_or_else(|e| {

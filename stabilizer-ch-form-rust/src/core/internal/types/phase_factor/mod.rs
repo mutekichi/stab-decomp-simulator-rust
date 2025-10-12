@@ -24,7 +24,7 @@ impl PhaseFactor {
     }
 
     /// Converts the phase factor to a complex number.
-    pub fn to_complex(&self) -> Complex64 {
+    pub fn to_complex(self) -> Complex64 {
         let angle = (self.0 as f64) * std::f64::consts::FRAC_PI_4;
         Complex64::new(angle.cos(), angle.sin())
     }
@@ -50,7 +50,7 @@ impl PhaseFactor {
     }
 
     /// Returns the internal integer representation `k`.
-    pub fn to_int(&self) -> u8 {
+    pub fn to_int(self) -> u8 {
         self.0
     }
 }

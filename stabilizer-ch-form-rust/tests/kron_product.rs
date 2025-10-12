@@ -36,13 +36,13 @@ fn test_kron_random_circuits() {
 
         // Method 1: Use the kron method. The result is converted to a statevector
         // using the little-endian `to_statevector`.
-        let kron_ch_form = ch_form1.kron(&ch_form2);
-        let actual_statevector = kron_ch_form.to_statevector();
+        let kron_ch_form = ch_form1.kron(&ch_form2).unwrap();
+        let actual_statevector = kron_ch_form.to_statevector().unwrap();
 
         // Method 2: Naively compute the kronecker product of statevectors
         // using a helper function that respects the little-endian ordering.
-        let sv1 = ch_form1.to_statevector();
-        let sv2 = ch_form2.to_statevector();
+        let sv1 = ch_form1.to_statevector().unwrap();
+        let sv2 = ch_form2.to_statevector().unwrap();
         let expected_statevector = kron_statevectors(&sv1, &sv2);
 
         dbg!(&expected_statevector);

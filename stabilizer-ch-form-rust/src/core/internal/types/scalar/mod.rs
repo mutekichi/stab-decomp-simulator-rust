@@ -13,11 +13,11 @@ pub enum Scalar {
 
 impl Scalar {
     /// Converts the scalar to its `Complex64` representation.
-    pub fn to_complex(&self) -> Complex64 {
+    pub fn to_complex(self) -> Complex64 {
         match self {
             Scalar::Zero => Complex64::new(0.0, 0.0),
             Scalar::NonZero { phase, r } => {
-                let norm = 2.0_f64.powf(-(*r as f64) / 2.0);
+                let norm = 2.0_f64.powf(-(r as f64) / 2.0);
                 phase.to_complex() * norm
             }
         }

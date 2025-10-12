@@ -44,7 +44,7 @@ impl StabilizerCHForm {
                 } else {
                     PhaseFactor::PLUS_ONE
                 };
-                self._resolve_superposition(&self.vec_s.to_owned(), &vec_t, delta);
+                self._resolve_superposition(&self.vec_s.to_owned(), &vec_t, delta)?;
                 Ok(false)
             }
         }

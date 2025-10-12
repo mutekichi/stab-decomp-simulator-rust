@@ -18,8 +18,8 @@ fn test_inner_product_random_circuits() {
         let ch_form2 = StabilizerCHForm::from_clifford_circuit(&circuit2).unwrap();
 
         // Method 1: Naively compute statevectors and then their inner product
-        let statevector1 = ch_form1.to_statevector();
-        let statevector2 = ch_form2.to_statevector();
+        let statevector1 = ch_form1.to_statevector().unwrap();
+        let statevector2 = ch_form2.to_statevector().unwrap();
         let expected_inner_product: Complex64 = statevector1
             .iter()
             .zip(statevector2.iter())
@@ -27,7 +27,7 @@ fn test_inner_product_random_circuits() {
             .sum();
 
         // Method 2: Use the inner_product method of StabilizerCHForm
-        let actual_inner_product = ch_form1.inner_product(&ch_form2);
+        let actual_inner_product = ch_form1.inner_product(&ch_form2).unwrap();
 
         // Check that both methods give the same result
         assert_eq_complex(expected_inner_product, actual_inner_product);
