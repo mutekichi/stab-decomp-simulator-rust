@@ -1,4 +1,4 @@
-use crate::{StabilizerCHForm, error::ChFormError};
+use crate::{StabilizerCHForm, error::Result};
 use ndarray::Array1;
 use num_complex::Complex64;
 
@@ -6,7 +6,7 @@ impl StabilizerCHForm {
     /// Represents this state as a statevector.
     ///
     /// NOTE: This implementation iterates over all 2^n basis states. This functionality is mainly for testing and debugging purposes.
-    pub fn to_statevector(&self) -> Result<Array1<Complex64>, ChFormError> {
+    pub fn to_statevector(&self) -> Result<Array1<Complex64>> {
         let dim = 1 << self.n_qubits(); // 2^n
         let mut statevector = ndarray::Array1::from_elem(dim, Complex64::new(0.0, 0.0));
 

@@ -1,18 +1,15 @@
 use crate::StabilizerCHForm;
 use crate::core::internal::types::InternalGate;
 use crate::core::internal::types::PhaseFactor;
-use crate::error::ChFormError;
+use crate::error::{Error, Result};
 use num_complex::Complex64;
 
 impl StabilizerCHForm {
     // TODO: Implement batch inner product calculation since the result of
     // `_self._get_normalize_to_zero_ops()` can be reused.
-    pub(crate) fn _inner_product(
-        &self,
-        other: &StabilizerCHForm,
-    ) -> Result<Complex64, ChFormError> {
+    pub(crate) fn _inner_product(&self, other: &StabilizerCHForm) -> Result<Complex64> {
         if self.n != other.n {
-            return Err(ChFormError::QubitCountMismatch {
+            return Err(Error::QubitCountMismatch {
                 operation: "calculating inner product",
                 left: self.n,
                 right: other.n,
@@ -46,7 +43,7 @@ impl StabilizerCHForm {
 
     /// Returns the sequence of operations needed to transform the current state to |0...0>
     /// along with the phase factor of the resulting state.
-    fn _get_normalize_to_zero_ops(&self) -> Result<(Vec<InternalGate>, PhaseFactor), ChFormError> {
+    fn _get_normalize_to_zero_ops(&self) -> Result<(Vec<InternalGate>, PhaseFactor)> {
         let mut ops = Vec::new();
         let mut self_clone = self.clone();
         let n = self_clone.n;
@@ -119,10 +116,7 @@ impl StabilizerCHForm {
         Ok((ops, self_clone.phase_factor))
     }
 
-    fn _get_ops_applied_state(
-        &self,
-        ops: &[InternalGate],
-    ) -> Result<StabilizerCHForm, ChFormError> {
+    fn _get_ops_applied_state(&self, ops: &[InternalGate]) -> Result<StabilizerCHForm> {
         let mut new_state = self.clone();
         for op in ops {
             match op {

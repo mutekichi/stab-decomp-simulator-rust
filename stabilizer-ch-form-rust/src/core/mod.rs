@@ -4,7 +4,7 @@ use num_complex::Complex64;
 mod internal;
 use crate::{
     api::representation::{CliffordCircuit, CliffordGate},
-    error::ChFormError,
+    error::{Error, Result},
 };
 use internal::types::phase_factor::PhaseFactor;
 
@@ -22,9 +22,9 @@ pub struct StabilizerCHForm {
 }
 
 impl StabilizerCHForm {
-    pub fn new(n: usize) -> Result<Self, ChFormError> {
+    pub fn new(n: usize) -> Result<Self> {
         if n == 0 {
-            return Err(ChFormError::InvalidNumQubits(n));
+            return Err(Error::InvalidNumQubits(n));
         }
 
         Ok(Self {
@@ -60,7 +60,7 @@ impl StabilizerCHForm {
         self.omega
     }
 
-    pub fn from_clifford_circuit(circuit: &CliffordCircuit) -> Result<Self, ChFormError> {
+    pub fn from_clifford_circuit(circuit: &CliffordCircuit) -> Result<Self> {
         let mut ch_form = StabilizerCHForm::new(circuit.n_qubits)?;
 
         for gate in &circuit.gates {

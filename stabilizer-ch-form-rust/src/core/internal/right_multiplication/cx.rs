@@ -1,19 +1,19 @@
-use crate::{core::StabilizerCHForm, error::ChFormError};
+use crate::{core::StabilizerCHForm, error::{Error, Result}};
 
 impl StabilizerCHForm {
     pub(crate) fn _right_multiply_cx(
         &mut self,
         control: usize,
         target: usize,
-    ) -> Result<(), ChFormError> {
+    ) -> Result<()> {
         if control >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(control, self.n));
+            return Err(Error::QubitIndexOutOfBounds(control, self.n));
         }
         if target >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(target, self.n));
+            return Err(Error::QubitIndexOutOfBounds(target, self.n));
         }
         if control == target {
-            return Err(ChFormError::DuplicateQubitIndices(control));
+            return Err(Error::DuplicateQubitIndices(control));
         }
 
         let g_target_col = self.mat_g.column(target).to_owned();

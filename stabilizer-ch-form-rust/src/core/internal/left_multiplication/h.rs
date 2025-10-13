@@ -1,10 +1,10 @@
-use crate::{StabilizerCHForm, error::ChFormError};
+use crate::{StabilizerCHForm, error::{Error, Result}};
 use ndarray::Array1;
 
 impl StabilizerCHForm {
-    pub fn _left_multiply_h(&mut self, qarg: usize) -> Result<(), ChFormError> {
+    pub fn _left_multiply_h(&mut self, qarg: usize) -> Result<()> {
         if qarg >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
+            return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
         let (vec_t, vec_u, alpha, beta) = self._prepare_h_superposition_args(qarg);
         let delta = if alpha ^ beta {

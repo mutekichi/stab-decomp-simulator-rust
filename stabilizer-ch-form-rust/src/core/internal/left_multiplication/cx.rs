@@ -1,22 +1,18 @@
 use crate::{
     core::{PhaseFactor, StabilizerCHForm},
-    error::ChFormError,
+    error::{Error, Result},
 };
 
 impl StabilizerCHForm {
-    pub(crate) fn _left_multiply_cx(
-        &mut self,
-        control: usize,
-        target: usize,
-    ) -> Result<(), ChFormError> {
+    pub(crate) fn _left_multiply_cx(&mut self, control: usize, target: usize) -> Result<()> {
         if control >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(control, self.n));
+            return Err(Error::QubitIndexOutOfBounds(control, self.n));
         }
         if target >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(target, self.n));
+            return Err(Error::QubitIndexOutOfBounds(target, self.n));
         }
         if control == target {
-            return Err(ChFormError::DuplicateQubitIndices(control));
+            return Err(Error::DuplicateQubitIndices(control));
         }
 
         // 1. Update gamma (must be done before matrix updates)

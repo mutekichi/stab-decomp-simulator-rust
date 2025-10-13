@@ -12,10 +12,11 @@ pub mod z;
 use crate::{
     StabilizerCHForm,
     api::representation::{CliffordCircuit, CliffordGate},
+    error::Result,
 };
 
 impl StabilizerCHForm {
-    pub fn apply_gate(&mut self, gate: &CliffordGate) -> Result<(), crate::error::ChFormError> {
+    pub fn apply_gate(&mut self, gate: &CliffordGate) -> Result<()> {
         match gate {
             CliffordGate::H(qarg) => self.apply_h(*qarg)?,
             CliffordGate::X(qarg) => self.apply_x(*qarg)?,
@@ -32,10 +33,7 @@ impl StabilizerCHForm {
         Ok(())
     }
 
-    pub fn apply_circuit(
-        &mut self,
-        circuit: &CliffordCircuit,
-    ) -> Result<(), crate::error::ChFormError> {
+    pub fn apply_circuit(&mut self, circuit: &CliffordCircuit) -> Result<()> {
         for gate in &circuit.gates {
             self.apply_gate(gate)?;
         }

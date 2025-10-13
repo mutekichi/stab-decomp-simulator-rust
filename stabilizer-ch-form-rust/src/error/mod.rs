@@ -1,8 +1,10 @@
 use thiserror::Error;
 
+pub type Result<T> = std::result::Result<T, Error>;
+
 /// Custom error type for StabilizerCHForm operations.
 #[derive(Error, Debug)]
-pub enum ChFormError {
+pub enum Error {
     /// Error for invalid qubit index.
     #[error("Qubit index {0} is out of bounds for {1} qubits.")]
     QubitIndexOutOfBounds(usize, usize),
@@ -39,4 +41,12 @@ pub enum ChFormError {
     /// Error for invalid permutation length.
     #[error("The length of the permutation ({0}) must match the number of qubits ({1}).")]
     InvalidPermutationLength(usize, usize),
+
+    /// Error for QASM parsing issues.
+    #[error("QASM parsing error: {0}")]
+    QasmParsingError(String),
+
+    /// Error for Pauli string parsing issues.
+    #[error("Pauli string parsing error: {0}")]
+    PauliStringParsingError(String),
 }

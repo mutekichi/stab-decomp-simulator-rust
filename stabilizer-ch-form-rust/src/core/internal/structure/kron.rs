@@ -1,8 +1,8 @@
-use crate::{StabilizerCHForm, error::ChFormError};
+use crate::{StabilizerCHForm, error::Result};
 use ndarray::{Axis, s};
 
 impl StabilizerCHForm {
-    pub fn _kron(&self, other: &StabilizerCHForm) -> Result<StabilizerCHForm, ChFormError> {
+    pub fn _kron(&self, other: &StabilizerCHForm) -> Result<StabilizerCHForm> {
         let n_total = self.n + other.n;
         let mut new_state = StabilizerCHForm::new(n_total)?;
 

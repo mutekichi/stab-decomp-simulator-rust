@@ -1,10 +1,10 @@
-use crate::{StabilizerCHForm, error::ChFormError};
+use crate::{StabilizerCHForm, error::{Error, Result}};
 use ndarray::Axis;
 
 impl StabilizerCHForm {
-    pub(crate) fn _permuted(&self, axes: &[usize]) -> Result<Self, ChFormError> {
+    pub(crate) fn _permuted(&self, axes: &[usize]) -> Result<Self> {
         if axes.len() != self.n {
-            return Err(ChFormError::InvalidPermutationLength(axes.len(), self.n));
+            return Err(Error::InvalidPermutationLength(axes.len(), self.n));
         }
 
         let mut new_state = StabilizerCHForm::new(self.n)?;
@@ -30,7 +30,7 @@ impl StabilizerCHForm {
         Ok(new_state)
     }
 
-    pub(crate) fn _permute(&mut self, axes: &[usize]) -> Result<(), ChFormError> {
+    pub(crate) fn _permute(&mut self, axes: &[usize]) -> Result<()> {
         *self = self._permuted(axes)?;
         Ok(())
     }

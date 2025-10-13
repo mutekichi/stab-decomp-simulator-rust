@@ -1,6 +1,6 @@
 use crate::StabilizerCHForm;
 use crate::core::internal::types::PhaseFactor;
-use crate::error::ChFormError;
+use crate::error::Result;
 
 impl StabilizerCHForm {
     pub fn _resolve_superposition(
@@ -8,7 +8,7 @@ impl StabilizerCHForm {
         vec_t: &ndarray::Array1<bool>,
         vec_u: &ndarray::Array1<bool>,
         delta: PhaseFactor,
-    ) -> Result<(), ChFormError> {
+    ) -> Result<()> {
         if vec_t == vec_u {
             self._handle_same_vecs_case(delta, vec_t);
             return Ok(());
@@ -156,7 +156,7 @@ impl StabilizerCHForm {
         &mut self,
         diff_indices_0: &[usize],
         diff_indices_1: &[usize],
-    ) -> Result<usize, ChFormError> {
+    ) -> Result<usize> {
         if diff_indices_0.is_empty() {
             let pivot = diff_indices_1[0];
             for &i in &diff_indices_1[1..] {

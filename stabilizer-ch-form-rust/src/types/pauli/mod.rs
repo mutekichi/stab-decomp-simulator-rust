@@ -1,7 +1,8 @@
-use crate::types::pauli::{pauli_string::Pauli, pauli_term::PauliTerm};
+use crate::{error::Error, types::pauli::{pauli_string::Pauli, pauli_term::PauliTerm}};
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::{fmt, str::FromStr};
+use crate::error::Result;
 
 pub mod pauli_string;
 pub mod pauli_term;
@@ -13,7 +14,7 @@ pub enum PauliString {
     Sparse(Vec<PauliTerm>),
 }
 /// Parses a dense Pauli string like "IXYZ".
-fn parse_dense(s: &str) -> Result<PauliString, String> {
+fn parse_dense(s: &str) -> Result<PauliString> {
     let mut ops = Vec::with_capacity(s.len());
     for (i, char) in s.chars().enumerate() {
         match char {
@@ -22,10 +23,10 @@ fn parse_dense(s: &str) -> Result<PauliString, String> {
             'Y' => ops.push(Pauli::Y),
             'Z' => ops.push(Pauli::Z),
             _ => {
-                return Err(format!(
-                    "invalid Pauli character '{}' at position {}",
+                return Err(Error::PauliStringParsingError(format!(
+                    "invalid character '{}' at position {} in dense PauliString",
                     char, i
-                ));
+                )));
             }
         }
     }
@@ -33,7 +34,7 @@ fn parse_dense(s: &str) -> Result<PauliString, String> {
 }
 
 /// Parses a sparse Pauli string like "X1 Y3".
-fn parse_sparse(s: &str) -> Result<PauliString, String> {
+fn parse_sparse(s: &str) -> Result<PauliString> {
     lazy_static! {
         static ref SPARSE_RE: Regex = Regex::new(r"(?i)\s*([XYZ])\s*(\d+)\s*").unwrap();
     }
@@ -51,7 +52,7 @@ fn parse_sparse(s: &str) -> Result<PauliString, String> {
         };
         let qubit = index_str
             .parse::<usize>()
-            .map_err(|_| format!("invalid qubit index: {}", index_str))?;
+            .map_err(|_| Error::PauliStringParsingError(format!("invalid qubit index: {}", index_str)))?;
         terms.push(PauliTerm { op, qubit });
     }
 
@@ -60,7 +61,7 @@ fn parse_sparse(s: &str) -> Result<PauliString, String> {
     // Also consider the length of surrounding whitespace that is not part of any match
     let total_trimmed_len = s.trim_start().trim_end().len();
     if parsed_len != total_trimmed_len {
-        return Err(format!("failed to fully parse sparse PauliString: '{}'", s));
+        return Err(Error::PauliStringParsingError(format!("failed to fully parse sparse PauliString: '{}'", s)));
     }
 
     Ok(PauliString::Sparse(terms))
@@ -68,9 +69,9 @@ fn parse_sparse(s: &str) -> Result<PauliString, String> {
 
 /// Implements FromStr for PauliString to allow parsing from strings.
 impl FromStr for PauliString {
-    type Err = String;
+    type Err = Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         let trimmed = s.trim();
 
         // Handle empty string or `"I"` (case insensitive) as identity.

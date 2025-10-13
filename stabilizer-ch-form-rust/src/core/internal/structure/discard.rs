@@ -1,4 +1,4 @@
-use crate::{StabilizerCHForm, error::ChFormError};
+use crate::{StabilizerCHForm, error::{Error, Result}};
 use ndarray::{Array1, Array2};
 
 impl StabilizerCHForm {
@@ -7,9 +7,9 @@ impl StabilizerCHForm {
     /// This is an in-place operation that modifies the state.
     /// NOTE: This function assumes that the qubit `qarg` has already been
     /// projected onto the |0> state and is disentangled from the rest.
-    pub(crate) fn _discard(&mut self, qarg: usize) -> Result<(), ChFormError> {
+    pub(crate) fn _discard(&mut self, qarg: usize) -> Result<()> {
         if qarg >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
+            return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
 
         // Ensure s[qarg], v[qarg] are false
@@ -72,7 +72,7 @@ impl StabilizerCHForm {
     // --- Private helper methods ---
 
     /// Sets s[qarg] and v[qarg] to false without changing the state.
-    fn _set_s_v_to_false(&mut self, qarg: usize) -> Result<(), ChFormError> {
+    fn _set_s_v_to_false(&mut self, qarg: usize) -> Result<()> {
         if !self.vec_v[qarg] && !self.vec_s[qarg] {
             return Ok(());
         }
@@ -127,7 +127,7 @@ impl StabilizerCHForm {
     }
 
     /// Transforms G so that G[qarg, :] and G[:, qarg] are zero except for the diagonal.
-    fn _transform_g(&mut self, qarg: usize) -> Result<(), ChFormError> {
+    fn _transform_g(&mut self, qarg: usize) -> Result<()> {
         if !self.mat_g[[qarg, qarg]] {
             if let Some(pivot) = (0..self.n).find(|&i| i != qarg && self.mat_g[[qarg, i]]) {
                 self._right_multiply_cx(qarg, pivot)?;
@@ -156,7 +156,7 @@ impl StabilizerCHForm {
     }
 
     /// Transforms M so that M[qarg, :] and M[:, qarg] are zero.
-    fn _transform_m(&mut self, qarg: usize) -> Result<(), ChFormError> {
+    fn _transform_m(&mut self, qarg: usize) -> Result<()> {
         // Left-multiplication gates
         for i in 0..self.n {
             if i != qarg && self.mat_m[[i, qarg]] {

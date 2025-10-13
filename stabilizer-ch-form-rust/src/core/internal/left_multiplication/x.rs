@@ -1,4 +1,4 @@
-use crate::{StabilizerCHForm, error::ChFormError};
+use crate::{StabilizerCHForm, error::{Error, Result}};
 use ndarray::Array1;
 
 impl StabilizerCHForm {
@@ -7,9 +7,9 @@ impl StabilizerCHForm {
     // Time complexity: O(n)
     //
     // See around eq.(48) of arXiv:1808.00128 for details.
-    pub(crate) fn _left_multiply_x(&mut self, qarg: usize) -> Result<(), ChFormError> {
+    pub(crate) fn _left_multiply_x(&mut self, qarg: usize) -> Result<()> {
         if qarg >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
+            return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
         // calculate u appearing in eq.(48) of arXiv:1808.00128 :
         // $$

@@ -1,13 +1,13 @@
 use crate::StabilizerCHForm;
-use crate::error::ChFormError;
+use crate::error::{Error, Result};
 
 use crate::core::internal::types::measurement::QubitState;
 use rand::random;
 
 impl StabilizerCHForm {
-    pub(crate) fn _measure(&mut self, qarg: usize) -> Result<bool, ChFormError> {
+    pub(crate) fn _measure(&mut self, qarg: usize) -> Result<bool> {
         if qarg >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
+            return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
 
         let z_basis_state = self._get_qubit_state(qarg)?;

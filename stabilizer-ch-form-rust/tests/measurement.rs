@@ -6,7 +6,7 @@ fn test_project() {
     let mut ch_form = StabilizerCHForm::new(3).unwrap();
     ch_form.apply_h(0).unwrap();
     ch_form.apply_cx(0, 1).unwrap();
-    ch_form.apply_cx(1, 2) .unwrap();
+    ch_form.apply_cx(1, 2).unwrap();
 
     dbg!(&ch_form.to_statevector().unwrap());
     // Project qubit 0 onto |0>

@@ -1,13 +1,13 @@
 use crate::StabilizerCHForm;
 use crate::core::internal::types::Scalar;
-use crate::error::ChFormError;
+use crate::error::{Error, Result};
 
 impl StabilizerCHForm {
     /// Computes the amplitude <0...0|φ> for the stabilizer state φ.
     ///
     /// NOTE: The amplitude includes the phase factor, but not ω.
     /// See around eq.(55) of arXiv:1808.00128 for details.
-    pub(crate) fn _amplitude_at_zero(&self) -> Result<Scalar, ChFormError> {
+    pub(crate) fn _amplitude_at_zero(&self) -> Result<Scalar> {
         for j in 0..self.n {
             if !self.vec_v[j] && self.vec_s[j] {
                 return Ok(Scalar::Zero);
@@ -28,9 +28,9 @@ impl StabilizerCHForm {
     pub(crate) fn _amplitude_at_computational_basis(
         &self,
         s: &ndarray::Array1<bool>,
-    ) -> Result<Scalar, ChFormError> {
+    ) -> Result<Scalar> {
         if s.len() != self.n_qubits() {
-            return Err(ChFormError::QubitIndexOutOfBounds(s.len(), self.n_qubits()));
+            return Err(Error::QubitIndexOutOfBounds(s.len(), self.n_qubits()));
         }
 
         let mut ch_form_clone = self.clone();

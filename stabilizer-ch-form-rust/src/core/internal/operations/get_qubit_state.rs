@@ -1,11 +1,11 @@
 use crate::StabilizerCHForm;
 use crate::core::internal::types::measurement::QubitState;
-use crate::error::ChFormError;
+use crate::error::{Error, Result};
 
 impl StabilizerCHForm {
-    pub(crate) fn _get_qubit_state(&self, qarg: usize) -> Result<QubitState, ChFormError> {
+    pub(crate) fn _get_qubit_state(&self, qarg: usize) -> Result<QubitState> {
         if qarg >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
+            return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
 
         let g_row = self.mat_g.row(qarg);

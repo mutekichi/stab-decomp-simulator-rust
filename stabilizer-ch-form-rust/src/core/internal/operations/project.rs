@@ -1,20 +1,20 @@
 use crate::{
     StabilizerCHForm,
     core::internal::types::{PhaseFactor, measurement::QubitState},
-    error::ChFormError,
+    error::{Error, Result},
 };
 
 impl StabilizerCHForm {
-    pub(crate) fn _project(&mut self, qarg: usize, outcome: bool) -> Result<bool, ChFormError> {
+    pub(crate) fn _project(&mut self, qarg: usize, outcome: bool) -> Result<bool> {
         if qarg >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
+            return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
 
         let qubit_state = self._get_qubit_state(qarg)?;
         match qubit_state {
             QubitState::Determined(value) => {
                 if value != outcome {
-                    Err(ChFormError::ImpossibleProjection {
+                    Err(Error::ImpossibleProjection {
                         qubit_index: qarg,
                         desired: outcome,
                     })

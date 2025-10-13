@@ -1,12 +1,12 @@
 use crate::{
     core::{PhaseFactor, StabilizerCHForm},
-    error::ChFormError,
+    error::{Error, Result},
 };
 
 impl StabilizerCHForm {
-    pub(crate) fn _right_multiply_s(&mut self, qarg: usize) -> Result<(), ChFormError> {
+    pub(crate) fn _right_multiply_s(&mut self, qarg: usize) -> Result<()> {
         if qarg >= self.n {
-            return Err(ChFormError::QubitIndexOutOfBounds(qarg, self.n));
+            return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
 
         let f_col = self.mat_f.column(qarg).to_owned();

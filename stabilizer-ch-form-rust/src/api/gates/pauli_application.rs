@@ -1,11 +1,11 @@
 use crate::{
     StabilizerCHForm,
-    error::ChFormError,
+    error::Result,
     types::pauli::{PauliString, pauli_string::Pauli},
 };
 
 impl StabilizerCHForm {
-    pub fn apply_pauli(&mut self, pauli_string: &PauliString) -> Result<(), ChFormError> {
+    pub fn apply_pauli(&mut self, pauli_string: &PauliString) -> Result<()> {
         match pauli_string {
             PauliString::Dense(ops) => {
                 for (qubit, &op) in ops.iter().enumerate() {
