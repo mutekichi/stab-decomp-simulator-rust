@@ -195,17 +195,16 @@ pub fn random_circuit_with_t_gate(
 ///
 /// This state is defined as (|000> + |100> + |010> + |111>) / 2.
 pub(crate) fn create_sample_stab_decomp_state() -> StabilizerDecomposedState<Complex64> {
-    pub use stabilizer_ch_form_rust::api::*;
     pub use std::f64::consts::FRAC_1_SQRT_2;
     // |0+0> part
-    let mut stab1 = StabilizerCHForm::new(3);
-    stab1.apply_h(1);
+    let mut stab1 = StabilizerCHForm::new(3).unwrap();
+    stab1.apply_h(1).unwrap();
 
     // |1,Bell> part
-    let mut stab2 = StabilizerCHForm::new(3);
-    stab2.apply_x(0);
-    stab2.apply_h(1);
-    stab2.apply_cx(1, 2);
+    let mut stab2 = StabilizerCHForm::new(3).unwrap();
+    stab2.apply_x(0).unwrap();
+    stab2.apply_h(1).unwrap();
+    stab2.apply_cx(1, 2).unwrap();
 
     let coeffs = vec![
         Complex64::new(FRAC_1_SQRT_2, 0.0),

@@ -1,9 +1,7 @@
 use crate::{
+    error::{Error, Result},
     state::{Coefficient, StabilizerDecomposedState},
-    types::{
-        error::Error,
-        result::shot_count::{self, ShotCount},
-    },
+    types::shot_count::ShotCount,
 };
 use rand::SeedableRng;
 use rand::rngs::StdRng;
@@ -15,9 +13,9 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         qargs: &[usize],
         shots: usize,
         seed: Option<[u8; 32]>,
-    ) -> Result<ShotCount, Error> {
+    ) -> Result<ShotCount> {
         // ShotCount: HashMap<Vec<bool>, usize>
-        let mut shot_count: ShotCount = shot_count::ShotCount::new();
+        let mut shot_count: ShotCount = ShotCount::new();
         let mut rng = match seed {
             Some(s) => StdRng::from_seed(s),
             None => StdRng::from_entropy(),
@@ -31,7 +29,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             &mut Vec::with_capacity(qargs.len()),
             &mut shot_count,
             &mut rng,
-        );
+        )?;
 
         Ok(shot_count)
     }
@@ -45,15 +43,15 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         current_outcome: &mut Vec<bool>,
         shot_count: &mut ShotCount,
         rng: &mut StdRng,
-    ) {
+    ) -> Result<()> {
         // There are no shots to process, stop the recursion
         if current_shots == 0 {
-            return;
+            return Ok(());
         }
         // Base case: If we've processed all qubits, record the result
         if current_qarg == qubit_indices.len() {
             *shot_count.entry(current_outcome.clone()).or_insert(0) += current_shots;
-            return;
+            return Ok(());
         }
         let qarg = qubit_indices[current_qarg];
 
@@ -75,9 +73,9 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
                 current_outcome,
                 shot_count,
                 rng,
-            );
+            )?;
             current_outcome.pop();
-            return;
+            return Ok(());
         }
 
         if proj_one_result.is_err() {
@@ -92,20 +90,19 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
                 current_outcome,
                 shot_count,
                 rng,
-            );
+            )?;
             current_outcome.pop();
-            return;
+            return Ok(());
         }
 
-        let prob_zero =
-            state_zero._norm_squared() / (state_zero._norm_squared() + state_one._norm_squared());
+        let prob_zero = state_zero._norm_squared()?
+            / (state_zero._norm_squared()? + state_one._norm_squared()?);
 
         // Sample the number of 0 outcomes using a binomial distribution
         let binom = match Binomial::new(current_shots as u64, prob_zero) {
             Ok(b) => b,
-            Err(_) => {
-                Error::Sampling("Failed to create binomial distribution".to_string());
-                return;
+            Err(e) => {
+                return Err(Error::Binomial(e));
             }
         };
 
@@ -123,7 +120,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             current_outcome,
             shot_count,
             rng,
-        );
+        )?;
 
         // backtrack the current outcome to replace the last entry with a 1 measurement result
         current_outcome.pop();
@@ -137,10 +134,12 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             current_outcome,
             shot_count,
             rng,
-        );
+        )?;
 
         // backtrack the current outcome to remove the last entry
         current_outcome.pop();
+
+        Ok(())
     }
 }
 
@@ -182,7 +181,7 @@ mod test {
                 state.clone()
             } else {
                 let smaller = tensor(n - 1, state);
-                smaller.kron(state)
+                smaller.kron(state).unwrap()
             }
         }
 
@@ -201,10 +200,8 @@ mod test {
                         if i >= samples_to_print {
                             break;
                         }
-                        let outcome_str: String = outcome
-                            .iter()
-                            .map(|&b| if b { '1' } else { '0' })
-                            .collect();
+                        let outcome_str: String =
+                            outcome.iter().map(|&b| if b { '1' } else { '0' }).collect();
                         println!("{}: {}", outcome_str, count);
                     }
                 }
@@ -231,6 +228,5 @@ mod test {
                 println!("Time elapsed in sampling: {:?}", duration);
             }
         }
-
     }
 }

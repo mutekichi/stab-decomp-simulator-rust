@@ -1,16 +1,18 @@
 use crate::{
+    error::Error,
+    error::Result,
     state::{Coefficient, StabilizerDecomposedState},
-    types::error::Error,
 };
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    pub(crate) fn _project_normalized(&mut self, qubit: usize, outcome: bool) -> Result<(), Error> {
+    pub(crate) fn _project_normalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
         self._project_unnormalized(qubit, outcome)?;
-        let norm = self._norm();
+        let norm = self._norm()?;
         if norm == 0.0 {
-            return Err(Error::Projection(
-                "Projection resulted in zero norm state".to_string(),
-            ));
+            return Err(Error::ImpossibleProjection {
+                qubit_index: qubit,
+                desired: outcome,
+            });
         }
         self.global_factor /= norm;
         Ok(())
@@ -18,11 +20,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
 
     // NOTE: This function always successes even if the projection is impossible for the state.
     //       When the projection is impossible, the norm of the state becomes zero.
-    pub(crate) fn _project_unnormalized(
-        &mut self,
-        qubit: usize,
-        outcome: bool,
-    ) -> Result<(), Error> {
+    pub(crate) fn _project_unnormalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
         // Filter out stabilizers that cannot be projected to the desired outcome
         // NOTE: We can optimize this by avoiding the allocation of a new vector
         //       and instead using `retain` if performance becomes an issue.
@@ -103,11 +101,11 @@ mod tests {
         let random_circuit = random_circuit_with_t_gate(5, 1000, 10, None);
 
         let mut state = QuantumState::from_circuit(&random_circuit).unwrap();
-        let statevector = state.to_statevector();
+        let statevector = state.to_statevector().unwrap();
         let statevector_ref = project_qubit(&statevector, 3, 1, false).0;
 
         state.project_unnormalized(3, true).unwrap();
-        let statevector_test = state.to_statevector();
+        let statevector_test = state.to_statevector().unwrap();
 
         let norm_ref = statevector_ref
             .iter()
@@ -115,7 +113,7 @@ mod tests {
             .sum::<f64>()
             .sqrt();
         dbg!(norm_ref);
-        dbg!(state.norm());
+        dbg!(state.norm().unwrap());
 
         assert_eq_complex_array1(&statevector_ref, &statevector_test);
     }
@@ -125,12 +123,12 @@ mod tests {
         // random_state
         let random_circuit = random_circuit_with_t_gate(5, 1000, 10, None);
         let mut state = QuantumState::from_circuit(&random_circuit).unwrap();
-        let statevector = state.to_statevector();
+        let statevector = state.to_statevector().unwrap();
         let statevector_ref = project_qubit(&statevector, 3, 1, true).0;
 
         state.project_normalized(3, true).unwrap();
-        let statevector_test = state.to_statevector();
+        let statevector_test = state.to_statevector().unwrap();
         assert_eq_complex_array1(&statevector_ref, &statevector_test);
-        assert!((state.norm() - 1.0).abs() < 1e-10);
+        assert!((state.norm().unwrap() - 1.0).abs() < 1e-10);
     }
 }

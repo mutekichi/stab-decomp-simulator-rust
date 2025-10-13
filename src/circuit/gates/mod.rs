@@ -1,3 +1,4 @@
+use crate::error::{Error, Result};
 use stabilizer_ch_form_rust::api::CliffordGate;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -161,6 +162,28 @@ impl QuantumGate {
         }
     }
 
+    /// Display the gate name.
+    /// ### Returns
+    /// * `String` - The name of the gate as a string.
+    pub fn name(&self) -> String {
+        match self {
+            QuantumGate::H(_) => "H".to_string(),
+            QuantumGate::X(_) => "X".to_string(),
+            QuantumGate::Y(_) => "Y".to_string(),
+            QuantumGate::Z(_) => "Z".to_string(),
+            QuantumGate::S(_) => "S".to_string(),
+            QuantumGate::Sdg(_) => "Sdg".to_string(),
+            QuantumGate::SqrtX(_) => "SqrtX".to_string(),
+            QuantumGate::SqrtXdg(_) => "SqrtXdg".to_string(),
+            QuantumGate::CX(_, _) => "CX".to_string(),
+            QuantumGate::CZ(_, _) => "CZ".to_string(),
+            QuantumGate::Swap(_, _) => "Swap".to_string(),
+            QuantumGate::T(_) => "T".to_string(),
+            QuantumGate::Tdg(_) => "Tdg".to_string(),
+            QuantumGate::CCX(_, _, _) => "CCX".to_string(),
+        }
+    }
+
     // --- Crate internal use only ---
     pub(crate) fn shift_indices(&mut self, offset: usize) {
         match self {
@@ -197,7 +220,7 @@ impl QuantumGate {
         new_gate
     }
 
-    pub(crate) fn to_clifford_gate(&self) -> Result<CliffordGate, String> {
+    pub(crate) fn to_clifford_gate(&self) -> Result<CliffordGate> {
         match self {
             QuantumGate::H(q) => Ok(CliffordGate::H(*q)),
             QuantumGate::X(q) => Ok(CliffordGate::X(*q)),
@@ -210,7 +233,7 @@ impl QuantumGate {
             QuantumGate::CX(c, t) => Ok(CliffordGate::CX(*c, *t)),
             QuantumGate::CZ(c, t) => Ok(CliffordGate::CZ(*c, *t)),
             QuantumGate::Swap(q1, q2) => Ok(CliffordGate::Swap(*q1, *q2)),
-            _ => Err("Cannot convert non-Clifford gate to CliffordGate.".to_string()),
+            _ => Err(Error::GateNotClifford(self.name())),
         }
     }
 }

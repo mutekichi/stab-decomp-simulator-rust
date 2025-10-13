@@ -303,6 +303,7 @@ dependencies = [
  "rand_distr",
  "regex",
  "stabilizer-ch-form-rust",
+ "thiserror",
 ]
 
 [[package]]

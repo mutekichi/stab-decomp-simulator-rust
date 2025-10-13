@@ -10,25 +10,25 @@
 //! # Features
 //!
 //! * **Stabilizer Decomposition Core**: The simulator's engine is built on the stabilizer
-//!     decomposition method. Instead of representing the state vector in a memory-intensive
-//!     dense vector, it maintains the quantum state as a linear combination of stabilizer states.
-//!     This approach is highly efficient for circuits with low non-Clifford gate counts and 
-//!     relatively large qubit numbers.
+//!   decomposition method. Instead of representing the state vector in a memory-intensive
+//!   dense vector, it maintains the quantum state as a linear combination of stabilizer states.
+//!   This approach is highly efficient for circuits with low non-Clifford gate counts and 
+//!   relatively large qubit numbers.
 //!
 //! * **Magic State Teleportation**: Non-Clifford gates are handled using the gate teleportation
-//!     protocol. The required magic states (e.g., T-states) are themselves represented using
-//!     stabilizer decompositions, allowing the entire simulation to remain within the stabilizer
-//!     formalism.
+//!   protocol. The required magic states (e.g., T-states) are themselves represented using
+//!   stabilizer decompositions, allowing the entire simulation to remain within the stabilizer
+//!   formalism.
 //!
 //! * **Intuitive Declarative API**: Users can define quantum computations by declaratively
-//!     building a [`QuantumCircuit`]. This circuit object is then compiled into a [`QuantumState`],
-//!     which provides a clean interface for simulation tasks, abstracting away the complex
-//!     internal state representation.
+//!   building a [`QuantumCircuit`]. This circuit object is then compiled into a [`QuantumState`],
+//!   which provides a clean interface for simulation tasks, abstracting away the complex
+//!   internal state representation.
 //!
 //! * **Strong, Exact Simulation**: Necstar performs strong simulation, calculating the full
-//!     final quantum state with exact amplitudes. No approximations are used, ensuring results
-//!     are accurate and suitable for verifying quantum algorithms or investigating the power of 
-//!     non-Clifford resources.
+//!   final quantum state with exact amplitudes. No approximations are used, ensuring results
+//!   are accurate and suitable for verifying quantum algorithms or investigating the power of 
+//!   non-Clifford resources.
 //!
 //! # Usage Examples
 //!
@@ -42,12 +42,14 @@
 pub mod circuit;
 pub mod state;
 pub mod types;
+pub mod error;
 
 // The prelude module provides a convenient way to import the most common types.
 pub mod prelude {
     pub use crate::circuit::*;
     pub use crate::state::QuantumState;
     pub use crate::types::*;
+    pub use crate::error::*;
 }
 
 // Hide test_utils from the public documentation.

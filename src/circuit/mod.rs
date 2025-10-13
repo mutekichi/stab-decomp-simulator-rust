@@ -13,7 +13,7 @@ pub struct QuantumCircuit {
 }
 
 impl QuantumCircuit {
-    /// Creates a new quantum circuit 
+    /// Creates a new quantum circuit
     pub fn new(num_qubits: usize) -> Self {
         Self {
             num_qubits,

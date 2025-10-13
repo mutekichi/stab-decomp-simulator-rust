@@ -18,7 +18,7 @@ fn test_assert_eq_precomputed_statevector() {
     let ref_state = load_statevector_from_file(statevector_path).unwrap();
 
     let sim_state = QuantumState::from_circuit(&circuit).unwrap();
-    let sim_state_vec = sim_state.to_statevector();
+    let sim_state_vec = sim_state.to_statevector().unwrap();
 
     println!("sim_state_vec: {:?}", sim_state_vec[0]);
     println!("ref_state: {:?}", ref_state[0]);

@@ -1,4 +1,4 @@
-pub mod errors;
+pub mod error;
 use crate::{
     circuit::QuantumCircuit,
     state::{
@@ -7,7 +7,7 @@ use crate::{
         types::{coefficient::Amplify, scalar::Scalar},
     },
 };
-use errors::CompileError;
+use error::{Error as CompileError, Result as CompileResult};
 use num_traits::One;
 use stabilizer_ch_form_rust::{
     StabilizerCHForm,
@@ -35,7 +35,7 @@ impl StabDecompCompiler {
 }
 
 impl CircuitCompiler for StabDecompCompiler {
-    fn _compile(&self, circuit: &QuantumCircuit) -> Result<InternalState, CompileError> {
+    fn _compile(&self, circuit: &QuantumCircuit) -> CompileResult<InternalState> {
         let num_qubits_original = circuit.num_qubits;
         let mut num_t_type_gates = 0;
         let mut clifford_ops: Vec<CliffordGate> = Vec::new();
@@ -52,10 +52,7 @@ impl CircuitCompiler for StabDecompCompiler {
                 }
                 num_t_type_gates += 1;
             } else {
-                return Err(CompileError::GateNotSupported(format!(
-                    "Gate {:?} is not supported by the StabDecompCompiler.",
-                    gate
-                )));
+                return Err(CompileError::GateNotSupported(gate.name()));
             }
         }
 
@@ -77,7 +74,7 @@ impl CircuitCompiler for StabDecompCompiler {
         }
 
         // Initialize the T-tensor state for the ancilla qubits.
-        let t_tensor_state = _construct_t_tensor_state(num_t_type_gates);
+        let t_tensor_state = _construct_t_tensor_state(num_t_type_gates).unwrap();
 
         let mut final_stabilizers: Vec<StabilizerCHForm> = Vec::new();
         let mut final_coefficients: Vec<Scalar> = Vec::new();
@@ -91,11 +88,11 @@ impl CircuitCompiler for StabDecompCompiler {
             .iter()
             .zip(t_tensor_state.coefficients.iter())
         {
-            let mut full_stab_state = StabilizerCHForm::new(num_qubits_original).kron(stab);
+            let mut full_stab_state = StabilizerCHForm::new(num_qubits_original)?.kron(stab)?;
 
             // Apply the clifford operations to the combined state.
             for gate in &clifford_ops {
-                full_stab_state.apply_gate(gate);
+                full_stab_state.apply_gate(gate)?;
             }
 
             let mut can_postselect_all = true;
@@ -123,7 +120,7 @@ impl CircuitCompiler for StabDecompCompiler {
                     full_stab_state.discard(qubit).unwrap();
                 }
                 final_stabilizers.push(full_stab_state);
-                final_coefficients.push(Scalar::from(coeff.amplify(num_deterministic_qubits)));
+                final_coefficients.push(coeff.amplify(num_deterministic_qubits));
             }
         }
 

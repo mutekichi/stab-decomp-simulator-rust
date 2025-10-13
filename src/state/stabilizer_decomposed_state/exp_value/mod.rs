@@ -1,12 +1,10 @@
 use num_complex::Complex64;
 use stabilizer_ch_form_rust::types::pauli::PauliString;
 
-use crate::{
-    state::{Coefficient, StabilizerDecomposedState},
-    types::error::Error,
-};
+use crate::error::Result;
+use crate::state::{Coefficient, StabilizerDecomposedState};
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    pub(crate) fn _exp_value(&self, pauli_string: &PauliString) -> Result<Complex64, Error> {
+    pub(crate) fn _exp_value(&self, pauli_string: &PauliString) -> Result<Complex64> {
         let mut exp_val = Complex64::new(0.0, 0.0);
 
         // To avoid repeated zipping, create a vector of pairs (stabilizer, coefficient).
@@ -20,20 +18,20 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             // Apply Pauli P to |S_i> once per outer loop iteration.
             let evolved_stab = {
                 let mut temp_stab = (*stab_i).clone();
-                temp_stab.apply_pauli(pauli_string);
+                temp_stab.apply_pauli(pauli_string)?;
                 temp_stab
             };
 
             // --- Diagonal term (j == i) ---
             // This calculates c_i* c_i <S_i|P|S_i>.
-            let inner_prod_diag = stab_i.inner_product(&evolved_stab);
+            let inner_prod_diag = stab_i.inner_product(&evolved_stab)?;
             exp_val += (coeff_i.conj() * **coeff_i).into() * inner_prod_diag;
 
             // --- Off-diagonal terms (j > i) ---
             // Loop through the remaining terms where j > i.
             for (stab_j, coeff_j) in terms.iter().skip(i + 1) {
                 // Calculate the term for (i, j): c_j* c_i <S_j|P|S_i>.
-                let inner_prod_off_diag = stab_j.inner_product(&evolved_stab);
+                let inner_prod_off_diag = stab_j.inner_product(&evolved_stab)?;
                 let term = (coeff_j.conj() * **coeff_i).into() * inner_prod_off_diag;
 
                 // Add the term and its complex conjugate, which covers the (j, i) case.

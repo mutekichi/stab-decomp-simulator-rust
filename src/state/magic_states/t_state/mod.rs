@@ -1,5 +1,6 @@
-use stabilizer_ch_form_rust::{StabilizerCHForm, api::*};
+use stabilizer_ch_form_rust::StabilizerCHForm;
 
+use crate::error::Result;
 use crate::state::{
     StabilizerDecomposedState,
     types::{phase_factor::PhaseFactor, scalar::Scalar},
@@ -8,13 +9,16 @@ use crate::state::{
 mod cat_state;
 
 /// Apply X then S on the target qubit
-fn _apply_xs(state: &mut StabilizerCHForm, target: usize) {
-    state.apply_x(target);
-    state.apply_s(target);
+fn _apply_xs(state: &mut StabilizerCHForm, target: usize) -> Result<()> {
+    state.apply_x(target)?;
+    state.apply_s(target)?;
+    Ok(())
 }
 
-pub(crate) fn _construct_t_tensor_state(num_qubits: usize) -> StabilizerDecomposedState<Scalar> {
-    let cat_state = cat_state::_construct_cat_state(num_qubits);
+pub(crate) fn _construct_t_tensor_state(
+    num_qubits: usize,
+) -> Result<StabilizerDecomposedState<Scalar>> {
+    let cat_state = cat_state::_construct_cat_state(num_qubits)?;
 
     let new_stabs_original = cat_state.stabilizers.clone();
     let new_coeffs_original = cat_state
@@ -28,7 +32,7 @@ pub(crate) fn _construct_t_tensor_state(num_qubits: usize) -> StabilizerDecompos
         .iter()
         .map(|stab| {
             let mut new_stab = stab.clone();
-            _apply_xs(&mut new_stab, 0);
+            _apply_xs(&mut new_stab, 0).unwrap();
             new_stab
         })
         .collect::<Vec<_>>();
@@ -48,7 +52,11 @@ pub(crate) fn _construct_t_tensor_state(num_qubits: usize) -> StabilizerDecompos
     let mut new_coeffs = new_coeffs_original;
     new_coeffs.extend(new_coeffs_to_append);
 
-    StabilizerDecomposedState::new(cat_state.num_qubits, new_stabs, new_coeffs)
+    Ok(StabilizerDecomposedState::new(
+        cat_state.num_qubits,
+        new_stabs,
+        new_coeffs,
+    ))
 }
 
 #[cfg(test)]
@@ -94,9 +102,9 @@ mod tests {
     #[test]
     fn test_construct_t_tensor_state() {
         for num_qubits in 1..=9 {
-            let state = _construct_t_tensor_state(num_qubits);
+            let state = _construct_t_tensor_state(num_qubits).unwrap();
             let expected_vector = _construct_t_tensor_vector(num_qubits);
-            let state_vector = state._to_statevector();
+            let state_vector = state._to_statevector().unwrap();
             assert_eq_complex_array1(&expected_vector, &state_vector);
             println!("Test passed for {} qubits.", num_qubits);
         }
