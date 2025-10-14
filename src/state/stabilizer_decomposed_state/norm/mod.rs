@@ -5,7 +5,6 @@ use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// calculates the norm of the state
-    /// NOTE: This ignores the global factor
     pub(crate) fn _norm_squared(&self) -> Result<f64> {
         let mut sum = Complex64::new(0.0, 0.0);
         // TODO: i < j optimization

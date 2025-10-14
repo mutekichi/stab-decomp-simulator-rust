@@ -82,7 +82,6 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             // Projection to |1> is impossible, all shots must be |0>
             current_outcome.push(false);
             // If the projection to |1> is impossible, the projection to |0> must be possible
-            assert!(proj_zero_result.is_ok());
             state_zero._recursive_sample(
                 qubit_indices,
                 current_qarg + 1,

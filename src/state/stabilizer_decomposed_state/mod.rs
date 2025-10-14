@@ -24,7 +24,7 @@ pub(crate) struct StabilizerDecomposedState<T: Coefficient> {
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// Creates a new StabilizerDecomposedState representing the all-zero state |0...0>.
-    pub fn new(
+    pub(crate) fn new(
         num_qubits: usize,
         stabilizers: Vec<StabilizerCHForm>,
         coefficients: Vec<T>,
@@ -36,5 +36,9 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             coefficients,
             global_factor: Complex64::new(1.0, 0.0),
         }
+    }
+
+    pub(crate) fn _amplify_global_factor(&mut self, factor: Complex64) {
+        self.global_factor *= factor;
     }
 }

@@ -6,6 +6,10 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Error, Debug)]
 pub enum Error {
+    /// Error for invalid qubit index.
+    #[error("Qubit index {0} is out of bounds for {1} qubits.")]
+    QubitIndexOutOfBounds(usize, usize),
+
     /// Error for invalid number of qubits.
     #[error("Number of qubits must be greater than zero, got {0}.")]
     InvalidNumQubits(usize),

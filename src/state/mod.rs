@@ -74,17 +74,29 @@ impl QuantumState {
         }
     }
 
-    /// Measure the specified qubits and return the measurement results.
+    /// Measure the specified qubits in the computational basis and return the measurement results.
     /// The state gets collapsed according to the measurement results.
     ///
     /// ### Arguments
     /// * `qargs` - A slice of qubit indices to measure.
+    /// * `seed` - An optional seed for the random number generator to ensure reproducibility.
     ///
     /// ### Returns
     /// A `Result` containing a vector of boolean measurement results or an `Error`.
-    pub fn measure(&mut self, qargs: &[usize]) -> Result<Vec<bool>> {
+    pub fn measure(&mut self, qargs: &[usize], seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._measure(qargs),
+            InternalState::StabilizerDecomposedStateScalar(state) => state._measure(qargs, seed),
+        }
+    }
+
+    /// Measure the all qubits in the computational basis and return the measurement results.
+    /// The state gets collapsed according to the measurement results.
+    ///
+    /// ### Returns
+    /// A `Result` containing a vector of boolean measurement results or an `Error`.
+    pub fn measure_all(&mut self, seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._measure_all(seed),
         }
     }
 
