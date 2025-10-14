@@ -7,15 +7,25 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// calculates the norm of the state
     pub(crate) fn _norm_squared(&self) -> Result<f64> {
         let mut sum = Complex64::new(0.0, 0.0);
-        // TODO: i < j optimization
-        for i in 0..self.coefficients.len() {
-            for j in 0..self.coefficients.len() {
-                let inner_prod = self.stabilizers[i].inner_product(&self.stabilizers[j])?;
-                sum += (self.coefficients[i].conj() * self.coefficients[j]).into() * inner_prod;
+        let terms: Vec<_> = self
+            .stabilizers
+            .iter()
+            .zip(self.coefficients.iter())
+            .collect();
+
+        for (i, (stab_i, coeff_i)) in terms.iter().enumerate() {
+            // Diagonal term (j == i)
+            let inner_prod_diag = stab_i.inner_product(stab_i)?;
+            sum += (coeff_i.conj() * **coeff_i).into() * inner_prod_diag;
+
+            // Off-diagonal terms (j > i)
+            for (stab_j, coeff_j) in terms.iter().skip(i + 1) {
+                let inner_prod_off_diag = stab_i.inner_product(stab_j)?;
+                let term = (coeff_i.conj() * **coeff_j).into() * inner_prod_off_diag;
+                sum += term + term.conj();
             }
         }
-        // assert that the result is real
-        assert!(sum.im.abs() < 1e-10);
+
         Ok(sum.re * self.global_factor.norm_sqr())
     }
 

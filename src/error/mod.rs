@@ -23,6 +23,19 @@ pub enum Error {
     #[error("Not implemented: {0}")]
     NotImplemented(String),
 
+    /// Error for mismatched qubit counts in operations involving two states (e.g., inner product).
+    #[error(
+        "The qubit counts of the two states must match for {}, got {} and {}.",
+        operation,
+        left,
+        right
+    )]
+    QubitCountMismatch {
+        operation: &'static str,
+        left: usize,
+        right: usize,
+    },
+
     #[error(
         "Impossible projection on qubit {qubit_index}: cannot project determined state |{}> onto |{}>.",
         if *desired { 0 } else { 1 },

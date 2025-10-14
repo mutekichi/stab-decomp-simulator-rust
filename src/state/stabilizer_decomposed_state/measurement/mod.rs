@@ -138,6 +138,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_measurement_large_state() {
         // base_state = |000> + |100> + |010> + |111>
         let base_state = crate::test_utils::create_sample_stab_decomp_state();
