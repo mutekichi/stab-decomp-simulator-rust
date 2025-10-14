@@ -9,17 +9,16 @@ impl StabilizerCHForm {
             return Err(Error::QubitIndexOutOfBounds(qarg2, self.n));
         }
         if qarg1 == qarg2 {
+            // No-op if the qubits are the same, but consistent with other gate error handling.
             return Err(Error::DuplicateQubitIndices(qarg1));
         }
 
-        let perm: Vec<usize> = (0..self.n)
-            .map(|x| match x {
-                _ if x == qarg1 => qarg2,
-                _ if x == qarg2 => qarg1,
-                _ => x,
-            })
-            .collect();
-        self._permute(&perm)?;
+        self.mat_g.swap_axes(qarg1, qarg2);
+        self.mat_f.swap_axes(qarg1, qarg2);
+        self.mat_m.swap_axes(qarg1, qarg2);
+        self.gamma.swap(qarg1, qarg2);
+        self.vec_v.swap(qarg1, qarg2);
+        self.vec_s.swap(qarg1, qarg2);
 
         Ok(())
     }
