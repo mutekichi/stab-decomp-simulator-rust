@@ -3,7 +3,7 @@ use num_traits::One;
 use std::fmt::Debug;
 use std::ops::Mul;
 
-pub trait Conj {
+pub(crate) trait Conj {
     fn conj(&self) -> Self;
 }
 
@@ -13,11 +13,11 @@ impl Conj for Complex64 {
     }
 }
 
-pub trait InnerProduct: Conj + Mul<Self, Output = Self> + Sized + Copy {}
+pub(crate) trait InnerProduct: Conj + Mul<Self, Output = Self> + Sized + Copy {}
 
 impl<T> InnerProduct for T where T: Conj + Mul<Self, Output = Self> + Copy {}
 
-pub trait Amplify: Copy {
+pub(crate) trait Amplify: Copy {
     /// Amplifies the value by multiplying it with 2^(factor/2).
     fn amplify(&self, factor: isize) -> Self;
 }
@@ -30,6 +30,9 @@ impl Amplify for Complex64 {
     }
 }
 
-pub trait Coefficient: InnerProduct + Into<Complex64> + One + Amplify + Debug {}
+pub(crate) trait Coefficient:
+    InnerProduct + Into<Complex64> + One + Amplify + Debug
+{
+}
 
 impl<T> Coefficient for T where T: InnerProduct + Into<Complex64> + One + Amplify + Debug {}

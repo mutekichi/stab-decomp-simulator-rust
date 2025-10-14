@@ -36,7 +36,7 @@ use crate::{
 /// 1. Construct a quantum circuit using [`QuantumCircuit`].
 /// 2. Compile the circuit into a [`QuantumState`] using [`QuantumState::from_circuit`].
 /// 3. Perform operations such as [`measure`](Self::measure), [`sample`](Self::sample), or [`exp_value`](Self::exp_value) (expectation value calculation).
-/// 4. If needed, additional clifford gates can be applied directly to the state using methods like 
+/// 4. If needed, additional clifford gates can be applied directly to the state using methods like
 /// [`apply_x`](Self::apply_x), [`apply_h`](Self::apply_h), etc.
 ///
 /// # Examples
@@ -148,7 +148,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `seed` - An optional seed for the random number generator to ensure reproducibility.
-    /// 
+    ///
     /// ### Returns
     /// A [`Result`] containing a vector of boolean measurement results or an [`Error`](crate::error::Error).
     pub fn measure_all(&mut self, seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
@@ -225,7 +225,6 @@ impl QuantumState {
         }
     }
 
-    
     #[cfg_attr(doc, katexit::katexit)]
     /// Projects the state onto a computational basis state (`|0>` or `|1>`) for a specific qubit,
     /// without normalizing the resulting state.
@@ -304,7 +303,7 @@ impl QuantumState {
 
     /// Applies a Pauli-Y gate to the specified qubit.
     /// Time complexity: `O(χn)`
-    /// 
+    ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
     //// ## Returns
@@ -317,7 +316,7 @@ impl QuantumState {
 
     /// Applies a Pauli-Z gate to the specified qubit.
     /// Time complexity: `O(χ)`
-    /// 
+    ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
     //// ## Returns
@@ -330,7 +329,7 @@ impl QuantumState {
 
     /// Applies a Hadamard gate to the specified qubit.
     /// Time complexity: `O(χn^2)`
-    /// 
+    ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
     //// ## Returns
@@ -343,7 +342,7 @@ impl QuantumState {
 
     /// Applies an S gate to the specified qubit.
     /// Time complexity: `O(χn)`
-    /// 
+    ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
     //// ## Returns
@@ -356,7 +355,7 @@ impl QuantumState {
 
     /// Applies an Sdg gate to the specified qubit.
     /// Time complexity: `O(χn)`
-    /// 
+    ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
     //// ## Returns
@@ -369,7 +368,7 @@ impl QuantumState {
 
     /// Applies a SqrtX gate to the specified qubit.
     /// Time complexity: `O(χn^2)`
-    /// 
+    ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
     //// ## Returns
@@ -382,7 +381,7 @@ impl QuantumState {
 
     /// Applies a SqrtXdg gate to the specified qubit.
     /// Time complexity: `O(χn^2)`
-    /// 
+    ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
     //// ## Returns
@@ -395,7 +394,7 @@ impl QuantumState {
 
     /// Applies a CX (CNOT) gate.
     /// Time complexity: `O(χn)`
-    /// 
+    ///
     /// ## Arguments
     /// * `control` - The index of the control qubit.
     /// * `target` - The index of the target qubit.
@@ -411,7 +410,7 @@ impl QuantumState {
 
     /// Applies a CZ gate.
     /// Time complexity: `O(χn)`
-    /// 
+    ///
     /// ## Arguments
     /// * `qarg1` - The index of the first qubit.
     /// * `qarg2` - The index of the second qubit.
@@ -425,7 +424,7 @@ impl QuantumState {
 
     /// Applies a SWAP gate.
     /// Time complexity: `O(χn)`
-    /// 
+    ///
     /// ## Arguments
     /// * `qarg1` - The index of the first qubit.
     /// * `qarg2` - The index of the second qubit.
