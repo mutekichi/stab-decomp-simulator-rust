@@ -37,7 +37,7 @@ use crate::{
 /// 2. Compile the circuit into a [`QuantumState`] using [`QuantumState::from_circuit`].
 /// 3. Perform operations such as [`measure`](Self::measure), [`sample`](Self::sample), or [`exp_value`](Self::exp_value) (expectation value calculation).
 /// 4. If needed, additional clifford gates can be applied directly to the state using methods like
-/// [`apply_x`](Self::apply_x), [`apply_h`](Self::apply_h), etc.
+///    [`apply_x`](Self::apply_x), [`apply_h`](Self::apply_h), etc.
 ///
 /// # Examples
 ///
@@ -296,7 +296,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
-    ////
+    ///
     /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_x(&mut self, qubit: usize) -> Result<()> {
@@ -310,7 +310,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_y(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
@@ -323,7 +323,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_z(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
@@ -336,7 +336,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_h(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
@@ -349,7 +349,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_s(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
@@ -362,7 +362,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_sdg(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
@@ -375,7 +375,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_sqrt_x(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
@@ -388,7 +388,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `qubit` - The index of the qubit to apply the gate to.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_sqrt_xdg(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
@@ -402,7 +402,7 @@ impl QuantumState {
     /// ## Arguments
     /// * `control` - The index of the control qubit.
     /// * `target` - The index of the target qubit.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_cx(&mut self, control: usize, target: usize) -> Result<()> {
         match &mut self.internal_state {
@@ -418,7 +418,7 @@ impl QuantumState {
     /// ## Arguments
     /// * `qarg1` - The index of the first qubit.
     /// * `qarg2` - The index of the second qubit.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_cz(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
         match &mut self.internal_state {
@@ -432,7 +432,7 @@ impl QuantumState {
     /// ## Arguments
     /// * `qarg1` - The index of the first qubit.
     /// * `qarg2` - The index of the second qubit.
-    //// ## Returns
+    /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_swap(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
         match &mut self.internal_state {

@@ -253,6 +253,8 @@ impl QuantumCircuit {
 
 pub mod gates;
 pub mod parser;
+pub mod random_clifford;
 
 pub use gates::QuantumGate;
 pub use parser::{from_qasm_file, from_qasm_str};
+pub use random_clifford::random_clifford;
