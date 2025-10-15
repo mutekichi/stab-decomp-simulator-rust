@@ -13,12 +13,9 @@ impl StabilizerCHForm {
             return Err(Error::DuplicateQubitIndices(qarg1));
         }
 
-        self.mat_g.swap_axes(qarg1, qarg2);
-        self.mat_f.swap_axes(qarg1, qarg2);
-        self.mat_m.swap_axes(qarg1, qarg2);
-        self.gamma.swap(qarg1, qarg2);
-        self.vec_v.swap(qarg1, qarg2);
-        self.vec_s.swap(qarg1, qarg2);
+        self._left_multiply_cx(qarg1, qarg2)?;
+        self._left_multiply_cx(qarg2, qarg1)?;
+        self._left_multiply_cx(qarg1, qarg2)?;
 
         Ok(())
     }
