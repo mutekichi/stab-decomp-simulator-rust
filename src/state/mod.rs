@@ -69,13 +69,17 @@ use crate::{
 /// // 4. Apply a gate directly to the state
 /// state.apply_x(0).unwrap();
 ///
-/// // Get the stabilizer rank
+/// // Get the stabilizer rank χ
 /// println!("Stabilizer rank: {}", state.stabilizer_rank());
 /// ```
 pub struct QuantumState {
     internal_state: InternalState,
 }
 
+/// Internal representation of the quantum state.
+/// Currently, only `StabilizerDecomposedState<Scalar>` is supported.
+/// Future extensions may include other types like `StabilizerDecomposedState<Complex64>`
+/// for Clifford gates other than T-gates.
 pub(crate) enum InternalState {
     StabilizerDecomposedStateScalar(StabilizerDecomposedState<Scalar>),
 }
@@ -175,7 +179,7 @@ impl QuantumState {
     ///
     /// ## Returns
     ///
-    /// A [`Result`](crate::error::Result) containing a [`ShotCount`] or an [`Error`](crate::error::Error).
+    /// A [`Result`] containing a [`ShotCount`] or an [`Error`](crate::error::Error).
     pub fn sample(
         &self,
         qargs: &[usize],
