@@ -1,12 +1,11 @@
 use stabilizer_ch_form_rust::StabilizerCHForm;
 
 use crate::error::Result;
+use crate::state::magic_states::cat_state::_construct_cat_state;
 use crate::state::{
     StabilizerDecomposedState,
     types::{phase_factor::PhaseFactor, scalar::Scalar},
 };
-
-mod cat_state;
 
 /// Apply X then S on the target qubit
 fn _apply_xs(state: &mut StabilizerCHForm, target: usize) -> Result<()> {
@@ -18,7 +17,7 @@ fn _apply_xs(state: &mut StabilizerCHForm, target: usize) -> Result<()> {
 pub(crate) fn _construct_t_tensor_state(
     num_qubits: usize,
 ) -> Result<StabilizerDecomposedState<Scalar>> {
-    let cat_state = cat_state::_construct_cat_state(num_qubits)?;
+    let cat_state = _construct_cat_state(num_qubits)?;
 
     let new_stabs_original = cat_state.stabilizers.clone();
     let new_coeffs_original = cat_state

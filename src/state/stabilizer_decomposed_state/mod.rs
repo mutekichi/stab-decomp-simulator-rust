@@ -1,10 +1,11 @@
 pub mod discard;
-pub mod evolution;
 pub mod exp_value;
+pub mod gates;
 pub mod inner_product;
 pub mod kron;
 pub mod measurement;
 pub mod norm;
+pub mod pauli_application;
 pub mod projection;
 pub mod sampling;
 pub mod statevector;

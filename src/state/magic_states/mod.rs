@@ -1,2 +1,3 @@
-pub mod t_state;
-pub mod toffoli_state;
+pub(crate) mod cat_state;
+pub(crate) mod t_state;
+pub(crate) mod toffoli_state;

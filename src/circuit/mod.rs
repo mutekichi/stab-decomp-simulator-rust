@@ -18,10 +18,10 @@
 /// circuit.apply_h(0);
 /// circuit.apply_t(0);
 /// circuit.apply_cx(0, 1);
-/// 
+///
 /// // Compile the circuit to a state for simulation
 /// let state = QuantumState::from_circuit(&bell_circuit).unwrap();
-/// 
+///
 /// // Sample measurement outcomes
 /// let shots = 1024;
 /// let qargs = vec![0, 1];
@@ -30,15 +30,15 @@
 /// for (outcome, count) in shot_count.iter() {
 ///     println!("{:?}: {}", outcome, count);
 /// }
-/// 
+///
 /// // Calculate an expectation value
 /// let pauli_str = PauliString::from_str("ZI").unwrap();
 /// let expectation = state.expectation_value(&pauli_str).unwrap();
 /// println!("Expectation value of {}: {}", pauli_str, expectation);
-/// 
+///
 /// // Apply a Clifford gate directly to the state
 /// state.apply_h(1).unwrap();
-/// 
+///
 /// // Get the stabilizer rank χ
 /// println!("Stabilizer rank: {}", state.stabilizer_rank());
 /// ```
@@ -254,5 +254,5 @@ impl QuantumCircuit {
 pub mod gates;
 pub mod parser;
 
-pub use gates::*;
-pub use parser::*;
+pub use gates::QuantumGate;
+pub use parser::{from_qasm_file, from_qasm_str};
