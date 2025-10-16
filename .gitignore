@@ -1,2 +1,6 @@
 **/target
 /data
+**/__pycache__/
+*.so
+*.pyc
+.venv
