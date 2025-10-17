@@ -2,6 +2,6 @@
 members = [
     "core",
     "core/stabilizer-ch-form-rust",
-    "python",
+    "python-bindings",
 ]
 resolver = "2"
