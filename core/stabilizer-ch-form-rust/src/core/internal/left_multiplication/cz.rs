@@ -1,4 +1,7 @@
-use crate::{core::StabilizerCHForm, error::{Error, Result}};
+use crate::{
+    core::StabilizerCHForm,
+    error::{Error, Result},
+};
 
 impl StabilizerCHForm {
     pub(crate) fn _left_multiply_cz(&mut self, q1: usize, q2: usize) -> Result<()> {

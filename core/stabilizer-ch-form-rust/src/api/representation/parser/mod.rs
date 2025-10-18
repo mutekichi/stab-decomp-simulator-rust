@@ -60,11 +60,13 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
 
         if let Some(caps) = QREG_RE.captures(line) {
             if n_qubits.is_some() {
-                return Err(Error::QasmParsingError("Multiple qreg declarations are not supported.".to_string()));
+                return Err(Error::QasmParsingError(
+                    "Multiple qreg declarations are not supported.".to_string(),
+                ));
             }
-            let size = caps[2]
-                .parse::<usize>()
-                .map_err(|_| Error::QasmParsingError(format!("Invalid qreg size in line: {}", line)))?;
+            let size = caps[2].parse::<usize>().map_err(|_| {
+                Error::QasmParsingError(format!("Invalid qreg size in line: {}", line))
+            })?;
             n_qubits = Some(size);
             continue;
         }
@@ -80,12 +82,12 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
         if let Some(caps) = GATE2_RE.captures(line) {
             let gate_name = &caps[1];
             if let Some(gate_fn) = TWO_QUBIT_GATES.get(gate_name) {
-                let q1 = caps[3]
-                    .parse::<usize>()
-                    .map_err(|_| Error::QasmParsingError(format!("Invalid qubit index in line: {}", line)))?;
-                let q2 = caps[5]
-                    .parse::<usize>()
-                    .map_err(|_| Error::QasmParsingError(format!("Invalid qubit index in line: {}", line)))?;
+                let q1 = caps[3].parse::<usize>().map_err(|_| {
+                    Error::QasmParsingError(format!("Invalid qubit index in line: {}", line))
+                })?;
+                let q2 = caps[5].parse::<usize>().map_err(|_| {
+                    Error::QasmParsingError(format!("Invalid qubit index in line: {}", line))
+                })?;
                 gates.push(gate_fn(q1, q2));
                 continue;
             }
@@ -94,21 +96,26 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
         if let Some(caps) = GATE1_RE.captures(line) {
             let gate_name = &caps[1];
             if let Some(gate_fn) = SINGLE_QUBIT_GATES.get(gate_name) {
-                let qarg = caps[3]
-                    .parse::<usize>()
-                    .map_err(|_| Error::QasmParsingError(format!("Invalid qubit index in line: {}", line)))?;
+                let qarg = caps[3].parse::<usize>().map_err(|_| {
+                    Error::QasmParsingError(format!("Invalid qubit index in line: {}", line))
+                })?;
                 gates.push(gate_fn(qarg));
                 continue;
             }
         }
 
-        return Err(Error::QasmParsingError(format!("Unrecognized or malformed line: {}", line)));
+        return Err(Error::QasmParsingError(format!(
+            "Unrecognized or malformed line: {}",
+            line
+        )));
     }
 
     if let Some(n) = n_qubits {
         Ok(CliffordCircuit { n_qubits: n, gates })
     } else {
-        Err(Error::QasmParsingError("qreg declaration not found in QASM string.".to_string()))
+        Err(Error::QasmParsingError(
+            "qreg declaration not found in QASM string.".to_string(),
+        ))
     }
 }
 
@@ -120,8 +127,13 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
 /// # Returns
 /// A `Result` containing the parsed `CliffordCircuit` or a `String` error message.
 pub fn from_qasm_file<P: AsRef<Path>>(path: P) -> Result<CliffordCircuit> {
-    let qasm_content = fs::read_to_string(path.as_ref())
-        .map_err(|e| Error::QasmParsingError(format!("Failed to read file '{}': {}", path.as_ref().display(), e)))?;
+    let qasm_content = fs::read_to_string(path.as_ref()).map_err(|e| {
+        Error::QasmParsingError(format!(
+            "Failed to read file '{}': {}",
+            path.as_ref().display(),
+            e
+        ))
+    })?;
 
     from_qasm_str(&qasm_content)
 }

@@ -1,4 +1,7 @@
-use crate::{StabilizerCHForm, error::{Error, Result}};
+use crate::{
+    StabilizerCHForm,
+    error::{Error, Result},
+};
 use ndarray::{Array1, Array2};
 
 impl StabilizerCHForm {

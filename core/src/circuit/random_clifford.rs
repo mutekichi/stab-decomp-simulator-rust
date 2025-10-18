@@ -186,8 +186,7 @@ fn _apply_permutation_layer(qc: &mut QuantumCircuit, s_perm: &Array1<usize>) {
 
 /// Generates a random n-qubit Clifford circuit using the Bravyi-Maslov canonical form.
 ///
-/// This function implements the O(n^2) algorithm described in the paper
-/// to sample a Clifford operator uniformly at random from the n-qubit Clifford group.
+/// This function implements the O(n^2) algorithm described in the paper to sample a Clifford operator uniformly at random from the n-qubit Clifford group.
 /// The resulting circuit is structured according to the canonical form U = F1 * H * S * F2.
 ///
 /// # Arguments

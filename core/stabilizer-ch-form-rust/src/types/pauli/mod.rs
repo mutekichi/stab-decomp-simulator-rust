@@ -1,8 +1,11 @@
-use crate::{error::Error, types::pauli::{pauli_string::Pauli, pauli_term::PauliTerm}};
+use crate::error::Result;
+use crate::{
+    error::Error,
+    types::pauli::{pauli_string::Pauli, pauli_term::PauliTerm},
+};
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::{fmt, str::FromStr};
-use crate::error::Result;
 
 pub mod pauli_string;
 pub mod pauli_term;
@@ -50,9 +53,9 @@ fn parse_sparse(s: &str) -> Result<PauliString> {
             "Z" => Pauli::Z,
             _ => unreachable!(), // Regex ensures this
         };
-        let qubit = index_str
-            .parse::<usize>()
-            .map_err(|_| Error::PauliStringParsingError(format!("invalid qubit index: {}", index_str)))?;
+        let qubit = index_str.parse::<usize>().map_err(|_| {
+            Error::PauliStringParsingError(format!("invalid qubit index: {}", index_str))
+        })?;
         terms.push(PauliTerm { op, qubit });
     }
 
@@ -61,7 +64,10 @@ fn parse_sparse(s: &str) -> Result<PauliString> {
     // Also consider the length of surrounding whitespace that is not part of any match
     let total_trimmed_len = s.trim_start().trim_end().len();
     if parsed_len != total_trimmed_len {
-        return Err(Error::PauliStringParsingError(format!("failed to fully parse sparse PauliString: '{}'", s)));
+        return Err(Error::PauliStringParsingError(format!(
+            "failed to fully parse sparse PauliString: '{}'",
+            s
+        )));
     }
 
     Ok(PauliString::Sparse(terms))

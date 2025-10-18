@@ -1,11 +1,10 @@
-use crate::{core::StabilizerCHForm, error::{Error, Result}};
+use crate::{
+    core::StabilizerCHForm,
+    error::{Error, Result},
+};
 
 impl StabilizerCHForm {
-    pub(crate) fn _right_multiply_cx(
-        &mut self,
-        control: usize,
-        target: usize,
-    ) -> Result<()> {
+    pub(crate) fn _right_multiply_cx(&mut self, control: usize, target: usize) -> Result<()> {
         if control >= self.n {
             return Err(Error::QubitIndexOutOfBounds(control, self.n));
         }
