@@ -7,11 +7,6 @@ use std::path::Path;
 
 /// Parses an OpenQASM 2.0 string into a `QuantumCircuit`.
 ///
-/// This is a simplified parser that supports `qreg` declarations and
-/// a standard set of universal quantum gates.
-/// It ignores comments, headers, and includes.
-/// Note: `measure` operations are detected and ignored, with a warning printed to stderr.
-///
 /// ### Arguments
 /// * `qasm_str` - A string slice containing the OpenQASM 2.0 circuit description.
 ///
