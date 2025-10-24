@@ -35,7 +35,6 @@ class QuantumCircuit:
     def apply_cz(self, qarg1: int, qarg2: int) -> None: ...
 
     def __str__(self) -> str: ...
-
 class QuantumState:
     """
     Represents a simulated quantum state.

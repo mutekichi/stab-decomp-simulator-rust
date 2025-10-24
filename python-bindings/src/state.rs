@@ -114,7 +114,7 @@ impl PyQuantumState {
             .map_err(|e| PyValueError::new_err(e.to_string()))
     }
 
-    fn discard_qubit(&mut self, qubit: usize) -> PyResult<()> {
+    fn discard(&mut self, qubit: usize) -> PyResult<()> {
         self.inner
             .discard(qubit)
             .map_err(|e| PyValueError::new_err(e.to_string()))
