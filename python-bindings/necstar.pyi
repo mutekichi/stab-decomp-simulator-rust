@@ -1,7 +1,7 @@
 # WIP
 from __future__ import annotations
 
-from typing import Optional, overload
+from typing import Optional
 
 class QuantumCircuit:
     """
@@ -19,10 +19,37 @@ class QuantumCircuit:
     def from_qasm_str(qasm: str) -> QuantumCircuit: ...
 
     @staticmethod
-    def random_clifford(n: int, seed: Optional[int] = None) -> QuantumCircuit: ...
+    def random_clifford(n: int, seed: Optional[int] = None) -> QuantumCircuit:
+        """Generates a random n-qubit Clifford circuit using the canonical form decomposition presented in Ref. [1].
 
-    # Instance methods
-    def apply_gate(self, gate_name: str, qubits: list[int]) -> None: ...
+        This function implements the O(n^2) algorithm described in the paper
+        to sample a Clifford operator uniformly at random from the n-qubit
+        Clifford group. The resulting circuit is structured according to the
+        canonical form U = F1 * H * S * F2, where F1 and F2 are Hadamard-free
+        Clifford circuits, H is a layer of Hadamard gates, and S is a permutation
+        of qubits.
+
+        References:
+            [1] S. Bravyi and D. Maslov, "Hadamard-free circuits expose the
+                structure of the Clifford group," arXiv:2003.09412v2 (2021).
+
+        Args:
+            n (int): The number of qubits.
+            seed (Optional[int], optional): An optional seed. Defaults to None.
+
+        Returns:
+            QuantumCircuit: A `QuantumCircuit` object representing the random Clifford
+            operator.
+        """
+        ...
+    def apply_gate(self, gate_name: str, qubits: list[int]) -> None:
+        """_summary_
+
+        Args:
+            gate_name (str): _description_
+            qubits (list[int]): _description_
+        """
+        ...
     def apply_h(self, target: int) -> None: ...
     def apply_x(self, target: int) -> None: ...
     def apply_y(self, target: int) -> None: ...
@@ -35,6 +62,8 @@ class QuantumCircuit:
     def apply_cz(self, qarg1: int, qarg2: int) -> None: ...
 
     def __str__(self) -> str: ...
+
+
 class QuantumState:
     """
     Represents a simulated quantum state.
