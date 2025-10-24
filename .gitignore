@@ -1,2 +1,28 @@
+# Rust build artifacts
 **/target
-/data
+
+# Python virtual environment
+.venv/
+venv/
+
+# Sphinx build output
+docs/_build/
+
+# Python cache files
+__pycache__/
+*.py[cod] # .pyc, .pyo, .pyd
+
+# Compiled Python extension module
+*.so
+
+# IDE/Editor specific files (Examples)
+.vscode/
+.idea/
+*.swp
+
+# OS specific files (Examples)
+.DS_Store
+Thumbs.db
+
+# For development purposes
+data/

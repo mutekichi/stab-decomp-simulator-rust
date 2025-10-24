@@ -1,0 +1,18 @@
+[build-system]
+requires = ["maturin>=1.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+manifest-path = "python-bindings/Cargo.toml"
+[project]
+name = "necstar"
+version = "0.1.0"
+description = "A high-performance near-Clifford quantum circuit simulator."
+authors = [
+  { name = "Yuki Watanabe", email = "sample@sample.com" },
+]
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+]

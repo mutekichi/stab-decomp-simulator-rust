@@ -1,0 +1,17 @@
+[package]
+name = "stab-decomp-simulator-rust"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ndarray = "0.15"
+num-complex = "0.4"
+regex = "1"
+lazy_static = "1.4"
+num-traits = "0.2"
+num-bigint = "0.4"
+rand = { version = "0.8", features = ["std_rng"] }
+rand_distr = "0.4"
+thiserror = "1.0"
+katexit = "0.1"
+stabilizer-ch-form-rust = { path = "./stabilizer-ch-form-rust" }
