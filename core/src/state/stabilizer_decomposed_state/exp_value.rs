@@ -4,7 +4,7 @@ use stabilizer_ch_form_rust::types::pauli::PauliString;
 use crate::error::Result;
 use crate::state::{Coefficient, StabilizerDecomposedState};
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    pub(crate) fn _exp_value(&self, pauli_string: &PauliString) -> Result<Complex64> {
+    pub(crate) fn _exp_value(&self, pauli_string: &PauliString) -> Result<f64> {
         let mut exp_val = Complex64::new(0.0, 0.0);
 
         // To avoid repeated zipping, create a vector of pairs (stabilizer, coefficient).
@@ -39,7 +39,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             }
         }
 
-        Ok(exp_val)
+        Ok(exp_val.re * self.global_factor.norm_sqr())
     }
 }
 
@@ -56,6 +56,6 @@ mod test {
         let expected_result = 0.5;
         let result = sample_state._exp_value(&pauli_string).unwrap();
         dbg!(result);
-        assert!((result.re - expected_result).abs() < 1e-10);
+        assert!((result - expected_result).abs() < 1e-10);
     }
 }

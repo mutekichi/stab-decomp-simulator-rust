@@ -199,8 +199,8 @@ impl QuantumState {
     /// * `pauli_string` - A reference to a [`PauliString`] representing the observable.
     ///
     /// ## Returns
-    /// A [`Result`] containing the expectation value as `Complex64` or an [`Error`](crate::error::Error).
-    pub fn exp_value(&self, pauli_string: &PauliString) -> Result<num_complex::Complex64> {
+    /// A [`Result`] containing the expectation value as `f64` or an [`Error`](crate::error::Error).
+    pub fn exp_value(&self, pauli_string: &PauliString) -> Result<f64> {
         match &self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => state._exp_value(pauli_string),
         }

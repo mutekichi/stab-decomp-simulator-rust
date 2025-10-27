@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, Tuple
 
+from necstar import PauliString
+
 from .circuit import QuantumCircuit
 
 class QuantumState:
@@ -129,15 +131,14 @@ class QuantumState:
         """
         ...
 
-    def exp_value(self, pauli_string: str) -> float:
+    def exp_value(self, pauli_string: PauliString) -> float:
         """Calculates the expectation value of a given Pauli observable.
 
         Args:
-            pauli_string (str): A string representing the Pauli operator
-                (e.g., "IXYZ", "Z0 X2"). See `PauliString.from_str` for format details.
+            pauli_string (PauliString): The Pauli string representing the observable.
 
         Returns:
-            float: The real part of the expectation value <psi|P|psi>.
+            float: The expectation value ⟨ψ|P|ψ⟩, where P is the Pauli operator.
 
         Raises:
             ValueError: If the Pauli string is invalid or the calculation fails.

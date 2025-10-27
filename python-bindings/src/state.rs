@@ -1,9 +1,10 @@
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use std::collections::HashMap;
-use std::str::FromStr;
 
-use stab_decomp_simulator_rust::prelude::{PauliString, QuantumState as RustQuantumState};
+use stab_decomp_simulator_rust::prelude::QuantumState as RustQuantumState;
+
+use crate::pauli_string::PyPauliString;
 
 // Helper function to convert Python seed (Option<u64>) to Rust seed (Option<[u8; 32]>)
 fn convert_py_seed(py_seed: Option<u64>) -> Option<[u8; 32]> {
@@ -92,14 +93,12 @@ impl PyQuantumState {
         Ok(py_shot_count)
     }
 
-    fn exp_value(&self, pauli_string: String) -> PyResult<f64> {
-        let pauli_op = PauliString::from_str(&pauli_string)
-            .map_err(|e| PyValueError::new_err(e.to_string()))?;
+    fn exp_value(&self, pauli_op: &PyPauliString) -> PyResult<f64> {
         let exp_val = self
             .inner
-            .exp_value(&pauli_op)
+            .exp_value(&pauli_op.inner)
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
-        Ok(exp_val.re)
+        Ok(exp_val)
     }
 
     fn project_normalized(&mut self, qubit: usize, outcome: bool) -> PyResult<()> {

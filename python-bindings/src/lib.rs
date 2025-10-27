@@ -9,7 +9,7 @@ use pauli_string::PyPauliString;
 use state::PyQuantumState;
 
 #[pymodule]
-fn necstar(m: &PyModule) -> PyResult<()> {
+fn necstar(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyQuantumCircuit>()?;
     m.add_class::<PyQuantumState>()?;
     m.add_class::<PyPauliString>()?;
