@@ -1,5 +1,6 @@
 use crate::error::{Error, Result};
 use stabilizer_ch_form_rust::api::CliffordGate;
+use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum QuantumGate {
@@ -164,23 +165,23 @@ impl QuantumGate {
 
     /// Display the gate name.
     /// ### Returns
-    /// * `String` - The name of the gate as a string.
-    pub fn name(&self) -> String {
+    /// * `&'static str` - The name of the gate as a string slice.
+    pub fn name(&self) -> &'static str {
         match self {
-            QuantumGate::H(_) => "H".to_string(),
-            QuantumGate::X(_) => "X".to_string(),
-            QuantumGate::Y(_) => "Y".to_string(),
-            QuantumGate::Z(_) => "Z".to_string(),
-            QuantumGate::S(_) => "S".to_string(),
-            QuantumGate::Sdg(_) => "Sdg".to_string(),
-            QuantumGate::SqrtX(_) => "SqrtX".to_string(),
-            QuantumGate::SqrtXdg(_) => "SqrtXdg".to_string(),
-            QuantumGate::CX(_, _) => "CX".to_string(),
-            QuantumGate::CZ(_, _) => "CZ".to_string(),
-            QuantumGate::Swap(_, _) => "Swap".to_string(),
-            QuantumGate::T(_) => "T".to_string(),
-            QuantumGate::Tdg(_) => "Tdg".to_string(),
-            QuantumGate::CCX(_, _, _) => "CCX".to_string(),
+            QuantumGate::H(_) => "H",
+            QuantumGate::X(_) => "X",
+            QuantumGate::Y(_) => "Y",
+            QuantumGate::Z(_) => "Z",
+            QuantumGate::S(_) => "S",
+            QuantumGate::Sdg(_) => "Sdg",
+            QuantumGate::SqrtX(_) => "SqrtX",
+            QuantumGate::SqrtXdg(_) => "SqrtXdg",
+            QuantumGate::CX(_, _) => "CX",
+            QuantumGate::CZ(_, _) => "CZ",
+            QuantumGate::Swap(_, _) => "Swap",
+            QuantumGate::T(_) => "T",
+            QuantumGate::Tdg(_) => "Tdg",
+            QuantumGate::CCX(_, _, _) => "CCX",
         }
     }
 
@@ -233,7 +234,28 @@ impl QuantumGate {
             QuantumGate::CX(c, t) => Ok(CliffordGate::CX(*c, *t)),
             QuantumGate::CZ(c, t) => Ok(CliffordGate::CZ(*c, *t)),
             QuantumGate::Swap(q1, q2) => Ok(CliffordGate::Swap(*q1, *q2)),
-            _ => Err(Error::GateNotClifford(self.name())),
+            _ => Err(Error::GateNotClifford(self.name().to_string())),
+        }
+    }
+}
+
+impl fmt::Display for QuantumGate {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            QuantumGate::H(q) => write!(f, "H({})", q),
+            QuantumGate::X(q) => write!(f, "X({})", q),
+            QuantumGate::Y(q) => write!(f, "Y({})", q),
+            QuantumGate::Z(q) => write!(f, "Z({})", q),
+            QuantumGate::S(q) => write!(f, "S({})", q),
+            QuantumGate::Sdg(q) => write!(f, "Sdg({})", q),
+            QuantumGate::SqrtX(q) => write!(f, "SqrtX({})", q),
+            QuantumGate::SqrtXdg(q) => write!(f, "SqrtXdg({})", q),
+            QuantumGate::T(q) => write!(f, "T({})", q),
+            QuantumGate::Tdg(q) => write!(f, "Tdg({})", q),
+            QuantumGate::CX(c, t) => write!(f, "CX({}, {})", c, t),
+            QuantumGate::CZ(c, t) => write!(f, "CZ({}, {})", c, t),
+            QuantumGate::Swap(q1, q2) => write!(f, "Swap({}, {})", q1, q2),
+            QuantumGate::CCX(c1, c2, t) => write!(f, "CCX({}, {}, {})", c1, c2, t),
         }
     }
 }

@@ -52,7 +52,7 @@ impl CircuitCompiler for StabDecompCompiler {
                 }
                 num_t_type_gates += 1;
             } else {
-                return Err(CompileError::GateNotSupported(gate.name()));
+                return Err(CompileError::GateNotSupported(gate.name().to_string()));
             }
         }
 
