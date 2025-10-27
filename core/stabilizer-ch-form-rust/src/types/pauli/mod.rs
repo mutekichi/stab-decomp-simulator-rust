@@ -16,7 +16,10 @@ pub enum PauliString {
     Dense(Vec<Pauli>),
     Sparse(Vec<PauliTerm>),
 }
+
 /// Parses a dense Pauli string like "IXYZ".
+/// The string is assumed to be in big-endian format (Q0 is rightmost),
+/// matching Qiskit's Pauli string convention.
 fn parse_dense(s: &str) -> Result<PauliString> {
     let mut ops = Vec::with_capacity(s.len());
     for (i, char) in s.chars().enumerate() {
@@ -33,41 +36,48 @@ fn parse_dense(s: &str) -> Result<PauliString> {
             }
         }
     }
+
+    // Reverse the vector to store in little-endian (index 0 = Qubit 0)
+    // "IX" (Q1=I, Q0=X) -> parsed as [I, X] -> reversed to [X, I]
+    ops.reverse();
+
     Ok(PauliString::Dense(ops))
 }
 
 /// Parses a sparse Pauli string like "X1 Y3".
 fn parse_sparse(s: &str) -> Result<PauliString> {
     lazy_static! {
-        static ref SPARSE_RE: Regex = Regex::new(r"(?i)\s*([XYZ])\s*(\d+)\s*").unwrap();
+        // Regex to match a single term EXACTLY (e.g., "X12", "Y3")
+        static ref TERM_RE: Regex = Regex::new(r"^(?i)([XYZ])(\d+)$").unwrap();
     }
 
     let mut terms = Vec::new();
-    for cap in SPARSE_RE.captures_iter(s) {
-        let op_char = cap.get(1).unwrap().as_str();
-        let index_str = cap.get(2).unwrap().as_str();
 
-        let op = match op_char.to_uppercase().as_str() {
-            "X" => Pauli::X,
-            "Y" => Pauli::Y,
-            "Z" => Pauli::Z,
-            _ => unreachable!(), // Regex ensures this
-        };
-        let qubit = index_str.parse::<usize>().map_err(|_| {
-            Error::PauliStringParsingError(format!("invalid qubit index: {}", index_str))
-        })?;
-        terms.push(PauliTerm { op, qubit });
+    if s.is_empty() {
+        return Ok(PauliString::Sparse(vec![]));
     }
 
-    // Check if the entire string was parsed successfully.
-    let parsed_len: usize = SPARSE_RE.find_iter(s).map(|m| m.as_str().len()).sum();
-    // Also consider the length of surrounding whitespace that is not part of any match
-    let total_trimmed_len = s.trim_start().trim_end().len();
-    if parsed_len != total_trimmed_len {
-        return Err(Error::PauliStringParsingError(format!(
-            "failed to fully parse sparse PauliString: '{}'",
-            s
-        )));
+    for term_str in s.split_whitespace() {
+        if let Some(cap) = TERM_RE.captures(term_str) {
+            let op_char = cap.get(1).unwrap().as_str();
+            let index_str = cap.get(2).unwrap().as_str();
+
+            let op = match op_char.to_uppercase().as_str() {
+                "X" => Pauli::X,
+                "Y" => Pauli::Y,
+                "Z" => Pauli::Z,
+                _ => unreachable!(), // Regex ensures this
+            };
+            let qubit = index_str.parse::<usize>().map_err(|_| {
+                Error::PauliStringParsingError(format!("invalid qubit index: {}", index_str))
+            })?;
+            terms.push(PauliTerm { op, qubit });
+        } else {
+            return Err(Error::PauliStringParsingError(format!(
+                "invalid sparse Pauli term: '{}' in string: '{}'",
+                term_str, s
+            )));
+        }
     }
 
     Ok(PauliString::Sparse(terms))
@@ -80,13 +90,12 @@ impl FromStr for PauliString {
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         let trimmed = s.trim();
 
-        // Handle empty string or `"I"` (case insensitive) as identity.
+        // Handle empty string or "I" (case insensitive) as identity.
         if trimmed.is_empty() || trimmed.eq_ignore_ascii_case("i") {
             return Ok(PauliString::identity());
         }
 
         // Heuristic to decide format: check for digits.
-        // This is more robust than checking for whitespace.
         let has_digits = trimmed.chars().any(|c| c.is_ascii_digit());
 
         if has_digits {
@@ -98,8 +107,7 @@ impl FromStr for PauliString {
 }
 
 impl PauliString {
-    /// Generates the identity Pauli string for any number of qubits.
-    /// Here, we treat `Sparse(vec![])` as the canonical identity representation.
+    /// Generates the identity Pauli string.
     pub fn identity() -> Self {
         PauliString::Sparse(vec![])
     }
@@ -117,8 +125,10 @@ impl fmt::Display for PauliString {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PauliString::Dense(ops) => {
+                // ops is little-endian (Q0 at index 0)
                 let s: String = ops
                     .iter()
+                    .rev() // Reverse to big-endian string (Q0 at rightmost)
                     .map(|op| match op {
                         Pauli::I => 'I',
                         Pauli::X => 'X',
@@ -126,15 +136,23 @@ impl fmt::Display for PauliString {
                         Pauli::Z => 'Z',
                     })
                     .collect();
-                write!(f, "{}", s)
+
+                if s.is_empty() {
+                    // Handle 0-qubit case
+                    write!(f, "I")
+                } else {
+                    write!(f, "{}", s)
+                }
             }
             PauliString::Sparse(terms) => {
+                if terms.is_empty() {
+                    return write!(f, "I");
+                }
                 let s: String = terms
                     .iter()
                     .map(|term| {
                         let op_char = match term.op {
-                            // Sparse format should not contain I, but we handle it just in case.
-                            Pauli::I => 'I',
+                            Pauli::I => 'I', // Should not happen in sparse, but safe
                             Pauli::X => 'X',
                             Pauli::Y => 'Y',
                             Pauli::Z => 'Z',
