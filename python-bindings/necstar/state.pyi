@@ -2,17 +2,16 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, Tuple
 
-from necstar import PauliString
-from necstar.gate import QuantumGate
-
 from .circuit import QuantumCircuit
+from .gate import QuantumGate
+from .pauli_string import PauliString
 
 class QuantumState:
     """
     Represents a simulated quantum state using the stabilizer decomposition method.
 
     This class provides the primary interface for simulating quantum computations
-    defined by a `QuantumCircuit`. It encapsulates the internal state representation
+    defined by a :class:`~necstar.QuantumCircuit`. It encapsulates the internal state representation
     and offers methods for performing measurements, sampling, calculating expectation
     values, and applying Clifford gates directly.
     """
@@ -29,7 +28,7 @@ class QuantumState:
 
     @staticmethod
     def from_circuit(circuit: QuantumCircuit) -> QuantumState:
-        """Creates a new `QuantumState` by compiling a `QuantumCircuit`.
+        """Creates a new :class:`~necstar.QuantumState` by compiling a :class:`~necstar.QuantumCircuit`.
 
         Args:
             circuit (QuantumCircuit): The quantum circuit to be simulated.
@@ -46,9 +45,9 @@ class QuantumState:
         """Returns the statevector as a list of complex number tuples (real, imag).
 
         Note:
-            This function computes the full, dense statevector of size 2^n, which
+            This function computes the full, dense statevector of size :math:`2^n`, which
             can be computationally expensive and memory-intensive for a large
-            number of qubits (n). It is primarily intended for testing and debugging.
+            number of qubits (:math:`n`). It is primarily intended for testing and debugging.
             The indexing follows the little-endian convention (like Qiskit).
 
         Returns:
@@ -61,7 +60,8 @@ class QuantumState:
         ...
 
     def inner_product(self, other: QuantumState) -> Tuple[float, float]:
-        """Computes the inner product <self|other> between this state and another.
+        """Computes the inner product :math:`\\langle\\text{self}|\\text{other}\\rangle`
+        between this state and another.
 
         Args:
             other (QuantumState): The other quantum state. Must have the same
@@ -76,9 +76,8 @@ class QuantumState:
         ...
 
     def measure(self, qargs: List[int], seed: Optional[int] = None) -> List[bool]:
-        """Measures the specified qubits in the computational basis.
-
-        The state collapses according to the measurement results.
+        """Measures the specified qubits in the computational basis. The state collapses according
+        to the measurement results.
 
         Args:
             qargs (List[int]): A list of qubit indices to measure.
@@ -86,7 +85,8 @@ class QuantumState:
                 to ensure reproducibility. Defaults to None.
 
         Returns:
-            List[bool]: A list of boolean measurement outcomes (False for |0>, True for |1>).
+            List[bool]: A list of boolean measurement outcomes (False for :math:`|0\\rangle`,
+            True for :math:`|1\\rangle`).
 
         Raises:
             ValueError: If measurement fails (e.g., invalid qubit index).
@@ -100,7 +100,7 @@ class QuantumState:
 
         Args:
             seed (Optional[int]): An optional seed for the random number generator
-                to ensure reproducibility. Defaults to None.
+            to ensure reproducibility. Defaults to None.
 
         Returns:
             List[bool]: A list of boolean measurement outcomes for all qubits.
@@ -139,7 +139,8 @@ class QuantumState:
             pauli_string (PauliString): The Pauli string representing the observable.
 
         Returns:
-            float: The expectation value ⟨ψ|P|ψ⟩, where P is the Pauli operator.
+            float: The expectation value :math:`\\langle\\psi|P|\\psi\\rangle`, where
+            P is the Pauli operator.
 
         Raises:
             ValueError: If the Pauli string is invalid or the calculation fails.
@@ -154,10 +155,10 @@ class QuantumState:
 
         Args:
             qubit (int): The index of the qubit to project.
-            outcome (bool): The desired basis state (False for |0>, True for |1>).
+            outcome (bool): The desired basis state (False for :math:`|0\\rangle`, True for :math:`|1\\rangle`).
 
         Raises:
-            ValueError: If the projection is impossible (e.g., projecting |0> onto |1>).
+            ValueError: If the projection is impossible (e.g., projecting :math:`|0\\rangle` onto :math:`|1\\rangle`).
         """
         ...
 
@@ -169,12 +170,12 @@ class QuantumState:
 
         Args:
             qubit (int): The index of the qubit to project.
-            outcome (bool): The desired basis state (False for |0>, True for |1>).
+            outcome (bool): The desired basis state (False for :math:`|0\\rangle`, True for :math:`|1\\rangle`).
 
         Raises:
             ValueError: If the projection operation encounters an internal error,
-                though it won't raise an error for impossible projections resulting
-                in a zero-norm state.
+            though it won't raise an error for impossible projections resulting
+            in a zero-norm state.
         """
         ...
 
@@ -185,7 +186,7 @@ class QuantumState:
 
         Important:
             This function MUST only be called on a qubit that has been projected
-            to the |0> state and is disentangled from all others. Failure to meet
+            to the :math:`|0\\rangle` state and is disentangled from all others. Failure to meet
             this precondition will lead to incorrect results. No verification is performed
             for performance reasons. Use `project_normalized(qubit, False)` first if needed.
 
@@ -200,7 +201,7 @@ class QuantumState:
     # --- Gate Applications ---
 
     def apply_gate(self, gate: QuantumGate) -> None:
-        """Applies a `QuantumGate` directly to the quantum state.
+        """Applies a :class:`~necstar.QuantumGate` directly to the quantum state.
 
         Note:
             Only Clifford gates are supported for direct application. Attempting
@@ -215,7 +216,7 @@ class QuantumState:
         ...
 
     def apply_gates(self, gates: List[QuantumGate]) -> None:
-        """Applies a list of `QuantumGate`s directly to the quantum state.
+        """Applies a list of :class:`~necstar.QuantumGate` s directly to the quantum state.
 
         Note:
             Only Clifford gates are supported for direct application. Attempting

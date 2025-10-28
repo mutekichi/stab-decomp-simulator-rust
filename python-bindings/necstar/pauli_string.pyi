@@ -15,13 +15,14 @@ class PauliString:
 
     @staticmethod
     def from_str(s: str) -> PauliString:
-        """Creates a PauliString object from a string representation.
+        """Creates a :class:`~necstar.PauliString` object from a string representation. Supports:
+
+        1. Dense format: e.g., "IXYZ" (case-sensitive).
+        2. Sparse format: e.g., "X1 Y3 Z0" (case-insensitive for Pauli chars, space-separated).
+        3. Identity: "" or "I" (case-insensitive).
 
         Args:
             s (str): The string representation.
-                - Dense format: e.g., "IXYZ" (case-sensitive).
-                - Sparse format: e.g., "X1 Y3 Z0" (case-insensitive for Pauli chars, space-separated).
-                - Identity: "" or "I" (case-insensitive).
 
         Returns:
             PauliString: The corresponding PauliString object.
@@ -36,5 +37,5 @@ class PauliString:
         ...
 
     def __repr__(self) -> str:
-        """Returns a printable representation of the PauliString object."""
+        """Returns a printable representation of the :class:`~necstar.PauliString` object."""
         ...

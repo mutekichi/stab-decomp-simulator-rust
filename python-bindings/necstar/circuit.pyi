@@ -8,10 +8,10 @@ class QuantumCircuit:
     """
     Represents a quantum circuit as a sequence of quantum gates.
 
-    A `QuantumCircuit` acts as a blueprint for a quantum computation. It holds
+    A :class:`~necstar.QuantumCircuit` acts as a blueprint for a quantum computation. It holds
     the number of qubits and an ordered list of quantum gate operations to be
     applied. This struct is the primary entry point for defining a computation.
-    Once built, it is typically compiled into a `QuantumState` via
+    Once built, it is typically compiled into a :class:`~necstar.QuantumState` via
     `QuantumState.from_circuit` to be simulated.
     """
 
@@ -27,7 +27,7 @@ class QuantumCircuit:
 
     @property
     def gates(self) -> List[QuantumGate]:
-        """A list of `QuantumGate` objects representing the gates in the circuit."""
+        """A list of :class:`~necstar.QuantumGate` objects representing the gates in the circuit."""
         ...
 
     def __init__(self, num_qubits: int) -> None:
@@ -40,13 +40,13 @@ class QuantumCircuit:
 
     @staticmethod
     def from_qasm_file(path: str) -> QuantumCircuit:
-        """Parses an OpenQASM 2.0 file into a `QuantumCircuit` object.
+        """Parses an OpenQASM 2.0 file into a :class:`~necstar.QuantumCircuit` object.
 
         Args:
             path (str): The file path to the OpenQASM 2.0 file.
 
         Returns:
-            QuantumCircuit: A `QuantumCircuit` object representing the parsed circuit.
+            QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the parsed circuit.
 
         Raises:
             FileNotFoundError: If the specified file cannot be read.
@@ -56,13 +56,13 @@ class QuantumCircuit:
 
     @staticmethod
     def from_qasm_str(qasm: str) -> QuantumCircuit:
-        """Parses an OpenQASM 2.0 string into a `QuantumCircuit` object.
+        """Parses an OpenQASM 2.0 string into a :class:`~necstar.QuantumCircuit` object.
 
         Args:
             qasm (str): A string containing the OpenQASM 2.0 circuit description.
 
         Returns:
-            QuantumCircuit: A `QuantumCircuit` object representing the parsed circuit.
+            QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the parsed circuit.
 
         Raises:
             ValueError: If the QASM string is invalid or unsupported.
@@ -89,13 +89,13 @@ class QuantumCircuit:
                 for reproducibility. Defaults to None (uses system entropy).
 
         Returns:
-            QuantumCircuit: A `QuantumCircuit` object representing the random Clifford
+            QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the random Clifford
             operator.
         """
         ...
 
     def append(self, other: QuantumCircuit) -> None:
-        """Appends the gates from another `QuantumCircuit` to this one.
+        """Appends the gates from another :class:`~necstar.QuantumCircuit` to this one.
 
         Args:
             other (QuantumCircuit): The circuit whose gates will be appended.
@@ -107,14 +107,14 @@ class QuantumCircuit:
         """Creates a new circuit by taking the tensor product of this circuit and another.
 
         The new circuit will have `self.num_qubits + other.num_qubits` qubits.
-        Gates from `self` are applied to the first qubits (indices 0 to self.num_qubits - 1),
-        and gates from `other` are applied to the subsequent qubits (indices self.num_qubits onwards).
+        Gates from `self` are applied to the first qubits (indices 0 to `self.num_qubits` - 1),
+        and gates from `other` are applied to the subsequent qubits (indices `self.num_qubits` onwards).
 
         Args:
             other (QuantumCircuit): The circuit to tensor with this one.
 
         Returns:
-            QuantumCircuit: A new `QuantumCircuit` representing the tensor product.
+            QuantumCircuit: A new :class:`~necstar.QuantumCircuit` representing the tensor product.
         """
         ...
 
