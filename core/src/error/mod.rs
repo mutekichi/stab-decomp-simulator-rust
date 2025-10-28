@@ -23,6 +23,9 @@ pub enum Error {
     #[error("Not implemented: {0}")]
     NotImplemented(String),
 
+    #[error("Direct application of non-Clifford gate {0} is not supported.")]
+    NonCliffordGateApplication(String),
+
     /// Error for mismatched qubit counts in operations involving two states (e.g., inner product).
     #[error(
         "The qubit counts of the two states must match for {}, got {} and {}.",

@@ -181,6 +181,7 @@ dependencies = [
 name = "necstar-py"
 version = "0.1.0"
 dependencies = [
+ "num-complex",
  "pyo3",
  "stab-decomp-simulator-rust",
 ]
@@ -286,6 +287,7 @@ dependencies = [
  "indoc",
  "libc",
  "memoffset",
+ "num-complex",
  "parking_lot",
  "portable-atomic",
  "pyo3-build-config",

@@ -1,9 +1,11 @@
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use std::collections::HashMap;
+use num_complex::Complex64;
 
-use stab_decomp_simulator_rust::prelude::QuantumState as RustQuantumState;
+use stab_decomp_simulator_rust::prelude::{QuantumGate, QuantumState as RustQuantumState};
 
+use crate::gate::PyQuantumGate;
 use crate::pauli_string::PyPauliString;
 
 // Helper function to convert Python seed (Option<u64>) to Rust seed (Option<[u8; 32]>)
@@ -31,20 +33,20 @@ impl PyQuantumState {
         Ok(PyQuantumState { inner: state })
     }
 
-    fn to_statevector(&self) -> PyResult<Vec<(f64, f64)>> {
+    fn to_statevector(&self) -> PyResult<Vec<Complex64>> {
         let sv = self
             .inner
             .to_statevector()
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
-        Ok(sv.iter().map(|c| (c.re, c.im)).collect())
+        Ok(sv.into_iter().map(|c| Complex64::new(c.re, c.im)).collect())
     }
 
-    fn inner_product(&self, other: &PyQuantumState) -> PyResult<(f64, f64)> {
+    fn inner_product(&self, other: &PyQuantumState) -> PyResult<Complex64> {
         let ip = self
             .inner
             .inner_product(&other.inner)
             .map_err(|e| PyValueError::new_err(e.to_string()))?;
-        Ok((ip.re, ip.im))
+        Ok(ip)
     }
 
     fn measure(&mut self, qargs: Vec<usize>, seed: Option<u64>) -> PyResult<Vec<bool>> {
@@ -116,6 +118,20 @@ impl PyQuantumState {
     fn discard(&mut self, qubit: usize) -> PyResult<()> {
         self.inner
             .discard(qubit)
+            .map_err(|e| PyValueError::new_err(e.to_string()))
+    }
+
+    fn apply_gate(&mut self, gate: &PyQuantumGate) -> PyResult<()> {
+        self.inner
+            .apply_gate(&gate.internal)
+            .map_err(|e| PyValueError::new_err(e.to_string()))
+    }
+
+    fn apply_gates(&mut self, gates: Vec<PyQuantumGate>) -> PyResult<()> {
+        let rust_gates: Vec<QuantumGate> =
+            gates.into_iter().map(|g| g.internal).collect();
+        self.inner
+            .apply_gates(&rust_gates)
             .map_err(|e| PyValueError::new_err(e.to_string()))
     }
 

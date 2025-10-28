@@ -8,5 +8,6 @@ name = "necstar"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pyo3 = { version = "0.21", features = ["extension-module"] }
+pyo3 = { version = "0.21", features = ["extension-module", "num-complex"] }
+num-complex = "*"
 stab-decomp-simulator-rust = { path = "../core" }

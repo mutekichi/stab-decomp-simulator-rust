@@ -90,6 +90,46 @@ def generate_pauli_strings(n: int) -> list[str]:
     return string_list
 
 
+def validate_exp_value(
+    n_qubits: int,
+    necstar_state: NcQuantumState,
+    qiskit_state: Statevector,
+) -> None:
+    pauli_strings = generate_pauli_strings(n_qubits)
+    for pauli_str in pauli_strings:
+        necstar_pauli = NcPauliString.from_str(pauli_str)
+        qiskit_pauli = QiskitPauli(pauli_str)
+
+        necstar_exp_value = necstar_state.exp_value(necstar_pauli)
+        qiskit_exp_value = qiskit_state.expectation_value(qiskit_pauli).real
+
+        assert abs(necstar_exp_value - qiskit_exp_value) < 1e-6, (
+            f"Mismatch for Pauli string {pauli_str}: "
+            f"necstar={necstar_exp_value}, qiskit={qiskit_exp_value}"
+        )
+    print("Expectation value validation passed.")
+
+
+def validate_statevector(
+    n_qubits: int,
+    necstar_state: NcQuantumState,
+    qiskit_state: Statevector,
+) -> None:
+    necstar_sv = necstar_state.to_statevector()
+    qiskit_sv = qiskit_state.data
+
+    assert len(necstar_sv) == len(qiskit_sv), (
+        f"Statevector length mismatch: necstar={len(necstar_sv)}, qiskit={len(qiskit_sv)}"
+    )
+
+    for i in range(len(necstar_sv)):
+        assert abs(necstar_sv[i] - qiskit_sv[i]) < 1e-6, (
+            f"Statevector element mismatch at index {i}: "
+            f"necstar={necstar_sv[i]}, qiskit={qiskit_sv[i]}"
+        )
+    print("Statevector validation passed.")
+
+
 def run_validation(
     n_qubits: int,
     num_single_clifford_each: int,
@@ -112,27 +152,37 @@ def run_validation(
     necstar_state = NcQuantumState.from_circuit(necstar_circuit)
     qiskit_state = Statevector(qiskit_circuit)
 
-    pauli_strings = generate_pauli_strings(n_qubits)
-    for pauli_str in pauli_strings:
-        necstar_pauli = NcPauliString.from_str(pauli_str)
-        qiskit_pauli = QiskitPauli(pauli_str)
+    outcome_0, qiskit_state = qiskit_state.measure([0])
+    outcome_1, qiskit_state = qiskit_state.measure([1])
 
-        necstar_exp_value = necstar_state.exp_value(necstar_pauli)
-        qiskit_exp_value = qiskit_state.expectation_value(qiskit_pauli).real
+    necstar_state.project_normalized(0, outcome_0 == '1')
+    necstar_state.project_normalized(1, outcome_1 == '1')
 
-        assert abs(necstar_exp_value - qiskit_exp_value) < 1e-6, (
-            f"Mismatch for Pauli string {pauli_str}: "
-            f"necstar={necstar_exp_value}, qiskit={qiskit_exp_value}"
-        )
+    qasm_after_measure = generate_random_circuit_qasm(
+        n_qubits,
+        num_single_clifford_each,
+        num_two_clifford_each,
+        0,
+        seed
+    )
+
+    necstar_circuit_after = NcQuantumCircuit.from_qasm_str(qasm_after_measure)
+    qiskit_circuit_after = qasm2.loads(qasm_after_measure, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
+
+    necstar_state.apply_gates(necstar_circuit_after.gates)
+    qiskit_state = qiskit_state.evolve(qiskit_circuit_after)
+
+    # validate_exp_value(n_qubits, necstar_state, qiskit_state)
+    validate_statevector(n_qubits, necstar_state, qiskit_state)
+
+    print("🎉validation passed successfully!")
 
 
 if __name__ == "__main__":
-    print(dir(NcQuantumGate))
-
     run_validation(
-        n_qubits=3,
-        num_single_clifford_each=2,
-        num_two_clifford_each=2,
-        num_t_each=2,
+        n_qubits=4,
+        num_single_clifford_each=10,
+        num_two_clifford_each=20,
+        num_t_each=4,
         seed=42
     )

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Dict, List, Optional, Tuple
 
 from necstar import PauliString
+from necstar.gate import QuantumGate
 
 from .circuit import QuantumCircuit
 
@@ -197,6 +198,36 @@ class QuantumState:
         ...
 
     # --- Gate Applications ---
+
+    def apply_gate(self, gate: QuantumGate) -> None:
+        """Applies a `QuantumGate` directly to the quantum state.
+
+        Note:
+            Only Clifford gates are supported for direct application. Attempting
+            to apply non-Clifford gates (e.g., T or T-dagger) will raise an error.
+
+        Args:
+            gate (QuantumGate): The quantum gate to apply.
+
+        Raises:
+            ValueError: If the gate application fails (e.g., unsupported gate).
+        """
+        ...
+
+    def apply_gates(self, gates: List[QuantumGate]) -> None:
+        """Applies a list of `QuantumGate`s directly to the quantum state.
+
+        Note:
+            Only Clifford gates are supported for direct application. Attempting
+            to apply non-Clifford gates (e.g., T or T-dagger) will raise an error.
+
+        Args:
+            gates (List[QuantumGate]): The list of quantum gates to apply in sequence.
+
+        Raises:
+            ValueError: If any gate application fails (e.g., unsupported gate).
+        """
+        ...
 
     def apply_x(self, qubit: int) -> None:
         """Applies a Pauli-X gate directly to the state.

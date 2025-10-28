@@ -9,7 +9,10 @@ pub(crate) use stabilizer_decomposed_state::StabilizerDecomposedState;
 pub(crate) use types::coefficient::Coefficient;
 
 use crate::{
-    circuit::QuantumCircuit,
+    circuit:: {
+        QuantumGate,
+        QuantumCircuit,
+    },
     error::Result,
     state::{
         compiler::{CircuitCompiler, StabDecompCompiler},
@@ -290,6 +293,34 @@ impl QuantumState {
     }
 
     // ===== Gate Applications =====
+
+    /// Applies a [`QuantumGate`] to the quantum state.
+    /// Note: Only Clifford gates are supported for direct application.
+    ///
+    /// ## Arguments
+    /// * `gate` - A reference to the [`QuantumGate`] to apply.
+    /// 
+    /// ## Returns
+    /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
+    pub fn apply_gate(&mut self, gate: &QuantumGate) -> Result<()> {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_gate(gate),
+        }
+    }
+
+    /// Applies a sequence of [`QuantumGate`]s to the quantum state.
+    /// Note: Only Clifford gates are supported for direct application.
+    /// 
+    /// ## Arguments
+    /// * `gates` - A slice of [`QuantumGate`]s to apply.
+    /// 
+    /// ## Returns
+    /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
+    pub fn apply_gates(&mut self, gates: &[QuantumGate]) -> Result<()> {
+        match &mut self.internal_state {
+            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_gates(gates),
+        }
+    }
 
     /// Applies a Pauli-X gate to the specified qubit.
     /// Time complexity: `O(χn)`
