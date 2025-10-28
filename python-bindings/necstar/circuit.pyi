@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import List, Optional
 
+from .gate import QuantumGate
+
 class QuantumCircuit:
     """
     Represents a quantum circuit as a sequence of quantum gates.
@@ -21,6 +23,11 @@ class QuantumCircuit:
     @property
     def num_gates(self) -> int:
         """The total number of gates in the circuit."""
+        ...
+
+    @property
+    def gates(self) -> List[QuantumGate]:
+        """A list of `QuantumGate` objects representing the gates in the circuit."""
         ...
 
     def __init__(self, num_qubits: int) -> None:

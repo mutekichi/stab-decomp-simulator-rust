@@ -7,6 +7,8 @@ use stab_decomp_simulator_rust::circuit::{
     QuantumGate as RustQuantumGate,
 };
 
+use crate::gate::PyQuantumGate;
+
 #[pyclass(name = "QuantumCircuit")]
 pub struct PyQuantumCircuit {
     pub(crate) inner: RustQuantumCircuit,
@@ -19,6 +21,26 @@ impl PyQuantumCircuit {
         PyQuantumCircuit {
             inner: RustQuantumCircuit::new(num_qubits),
         }
+    }
+
+    #[getter]
+    fn num_qubits(&self) -> usize {
+        self.inner.num_qubits
+    }
+
+    #[getter]
+    fn num_gates(&self) -> usize {
+        self.inner.gates.len()
+    }
+
+    #[getter]
+    fn gates(&self) -> Vec<PyQuantumGate> {
+        self.inner
+            .gates
+            .iter()
+            .cloned()
+            .map(|g| PyQuantumGate { internal: g })
+            .collect()
     }
 
     #[staticmethod]
@@ -185,11 +207,6 @@ impl PyQuantumCircuit {
     }
     fn apply_cz(&mut self, qarg1: usize, qarg2: usize) {
         self.inner.apply_cz(qarg1, qarg2);
-    }
-
-    #[getter]
-    fn num_gates(&self) -> usize {
-        self.inner.gates.len()
     }
 
     fn __str__(&self) -> String {

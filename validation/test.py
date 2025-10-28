@@ -4,6 +4,7 @@ from typing import Optional
 
 from necstar import PauliString as NcPauliString
 from necstar import QuantumCircuit as NcQuantumCircuit
+from necstar import QuantumGate as NcQuantumGate
 from necstar import QuantumState as NcQuantumState
 from qiskit import qasm2
 from qiskit.quantum_info import Pauli as QiskitPauli
@@ -126,6 +127,8 @@ def run_validation(
 
 
 if __name__ == "__main__":
+    print(dir(NcQuantumGate))
+
     run_validation(
         n_qubits=3,
         num_single_clifford_each=2,
