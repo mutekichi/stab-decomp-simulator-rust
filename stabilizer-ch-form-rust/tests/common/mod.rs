@@ -1,11 +1,7 @@
-use ndarray::{Array1, Array2};
+use ndarray::Array1;
 use num_complex::Complex64;
-use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
 use stabilizer_ch_form_rust::prelude::{CliffordCircuit, CliffordGate};
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-use std::path::Path;
+use std::f64::consts::FRAC_1_SQRT_2;
 
 #[allow(dead_code)]
 pub fn assert_eq_complex(a: Complex64, b: Complex64) {
@@ -37,98 +33,138 @@ pub fn assert_eq_complex_array1(a: &Array1<Complex64>, b: &Array1<Complex64>) {
     }
 }
 
-#[allow(dead_code)]
-pub fn load_statevector_from_file<P: AsRef<Path>>(
-    path: P,
-) -> Result<Array1<Complex64>, std::io::Error> {
-    let file = File::open(path)?;
-    let reader = BufReader::new(file);
-    let mut vec_data = Vec::new();
+// --- Naive StateVector Simulator for Reference ---
 
-    for line in reader.lines() {
-        let line_content = line?;
-        let parts: Vec<&str> = line_content.split(',').collect();
-        if parts.len() == 2 {
-            let real = parts[0]
-                .trim()
-                .parse::<f64>()
-                .expect("Failed to parse real part");
-            let imag = parts[1]
-                .trim()
-                .parse::<f64>()
-                .expect("Failed to parse imag part");
-            vec_data.push(Complex64::new(real, imag));
+type Matrix2x2 = [[Complex64; 2]; 2];
+
+const X_MATRIX: Matrix2x2 = [
+    [Complex64::new(0.0, 0.0), Complex64::new(1.0, 0.0)],
+    [Complex64::new(1.0, 0.0), Complex64::new(0.0, 0.0)],
+];
+const Y_MATRIX: Matrix2x2 = [
+    [Complex64::new(0.0, 0.0), Complex64::new(0.0, -1.0)],
+    [Complex64::new(0.0, 1.0), Complex64::new(0.0, 0.0)],
+];
+const Z_MATRIX: Matrix2x2 = [
+    [Complex64::new(1.0, 0.0), Complex64::new(0.0, 0.0)],
+    [Complex64::new(0.0, 0.0), Complex64::new(-1.0, 0.0)],
+];
+const H_MATRIX: Matrix2x2 = [
+    [
+        Complex64::new(FRAC_1_SQRT_2, 0.0),
+        Complex64::new(FRAC_1_SQRT_2, 0.0),
+    ],
+    [
+        Complex64::new(FRAC_1_SQRT_2, 0.0),
+        Complex64::new(-FRAC_1_SQRT_2, 0.0),
+    ],
+];
+const S_MATRIX: Matrix2x2 = [
+    [Complex64::new(1.0, 0.0), Complex64::new(0.0, 0.0)],
+    [Complex64::new(0.0, 0.0), Complex64::new(0.0, 1.0)],
+];
+const SDG_MATRIX: Matrix2x2 = [
+    [Complex64::new(1.0, 0.0), Complex64::new(0.0, 0.0)],
+    [Complex64::new(0.0, 0.0), Complex64::new(0.0, -1.0)],
+];
+const SQRT_X_MATRIX: Matrix2x2 = [
+    [Complex64::new(0.5, 0.5), Complex64::new(0.5, -0.5)],
+    [Complex64::new(0.5, -0.5), Complex64::new(0.5, 0.5)],
+];
+const SQRT_XDG_MATRIX: Matrix2x2 = [
+    [Complex64::new(0.5, -0.5), Complex64::new(0.5, 0.5)],
+    [Complex64::new(0.5, 0.5), Complex64::new(0.5, -0.5)],
+];
+
+#[allow(dead_code)]
+fn apply_single_qubit_gate(sv: &mut Array1<Complex64>, target_qubit: usize, matrix: &Matrix2x2) {
+    let n_qubits = (sv.len() as f64).log2() as usize;
+    let dim = 1 << n_qubits;
+    let mut sv_copy = sv.clone();
+
+    let m00 = matrix[0][0];
+    let m01 = matrix[0][1];
+    let m10 = matrix[1][0];
+    let m11 = matrix[1][1];
+
+    for i in 0..dim {
+        if (i >> target_qubit) & 1 == 0 {
+            let j = i | (1 << target_qubit);
+
+            let sv_i = sv[i];
+            let sv_j = sv[j];
+
+            sv_copy[i] = m00 * sv_i + m01 * sv_j;
+            sv_copy[j] = m10 * sv_i + m11 * sv_j;
         }
     }
-    Ok(Array1::from(vec_data))
+    *sv = sv_copy;
 }
 
-/// Prints a boolean vector (Array1<bool>) to the console in a readable format (e.g., [0, 1, 0]).
 #[allow(dead_code)]
-pub fn pretty_print_vec(name: &str, vec: &Array1<bool>) {
-    let s: String = vec
-        .iter()
-        .map(|&b| if b { '1' } else { '0' })
-        .collect::<String>();
-    println!("{}: [{}]", name, s);
-}
+fn apply_cx(sv: &mut Array1<Complex64>, control: usize, target: usize) {
+    let n_qubits = (sv.len() as f64).log2() as usize;
+    let dim = 1 << n_qubits;
 
-/// Prints a boolean matrix (Array2<bool>) to the console in a readable format.
-#[allow(dead_code)] // This is a debug utility, so allow it to be unused in some tests
-pub fn pretty_print_mat(name: &str, mat: &Array2<bool>) {
-    println!("{}: [", name);
-    for row in mat.rows() {
-        let s: String = row.iter().map(|&b| if b { '1' } else { '0' }).collect();
-        println!("  {}", s);
-    }
-    println!("]");
-}
-
-/// Generates a random quantum circuit with the specified number of qubits and gates.
-#[allow(dead_code)]
-pub fn random_circuit(n_qubits: usize, gate_count: usize, seed: Option<u64>) -> CliffordCircuit {
-    let mut circuit = CliffordCircuit::new(n_qubits);
-    let mut rng = match seed {
-        Some(s) => StdRng::seed_from_u64(s),
-        None => StdRng::from_entropy(),
-    };
-
-    for _ in 0..gate_count {
-        let gate_type = rng.gen_range(0..8);
-        match gate_type {
-            // 1-qubit gates
-            0..=5 => {
-                let q = rng.gen_range(0..n_qubits);
-                let gate = match gate_type {
-                    0 => CliffordGate::H(q),
-                    1 => CliffordGate::S(q),
-                    2 => CliffordGate::X(q),
-                    3 => CliffordGate::Y(q),
-                    4 => CliffordGate::Z(q),
-                    5 => CliffordGate::Sdg(q),
-                    _ => unreachable!(),
-                };
-                circuit.add_gate(gate);
-            }
-            // 2-qubit gates
-            6..=7 => {
-                if n_qubits < 2 {
-                    continue;
-                }
-                let q1 = rng.gen_range(0..n_qubits);
-                let mut q2 = rng.gen_range(0..n_qubits);
-                while q1 == q2 {
-                    q2 = rng.gen_range(0..n_qubits);
-                }
-                let gate = match gate_type {
-                    6 => CliffordGate::CX(q1, q2),
-                    7 => CliffordGate::CZ(q1, q2),
-                    _ => unreachable!(),
-                };
-                circuit.add_gate(gate);
-            }
-            _ => unreachable!(),
+    for i in 0..dim {
+        if ((i >> control) & 1 == 1) && ((i >> target) & 1 == 0) {
+            let j = i | (1 << target);
+            sv.swap(i, j);
         }
     }
-    circuit
+}
+
+#[allow(dead_code)]
+fn apply_cz(sv: &mut Array1<Complex64>, q1: usize, q2: usize) {
+    let n_qubits = (sv.len() as f64).log2() as usize;
+    let dim = 1 << n_qubits;
+
+    for i in 0..dim {
+        if ((i >> q1) & 1 == 1) && ((i >> q2) & 1 == 1) {
+            sv[i] *= -1.0;
+        }
+    }
+}
+
+#[allow(dead_code)]
+fn apply_swap(sv: &mut Array1<Complex64>, q1: usize, q2: usize) {
+    let n_qubits = (sv.len() as f64).log2() as usize;
+    let dim = 1 << n_qubits;
+
+    for i in 0..dim {
+        let bit1 = (i >> q1) & 1;
+        let bit2 = (i >> q2) & 1;
+
+        if bit1 != bit2 {
+            let j = i ^ (1 << q1) ^ (1 << q2);
+            if i < j {
+                sv.swap(i, j);
+            }
+        }
+    }
+}
+
+#[allow(dead_code)]
+pub fn get_reference_statevector(circuit: &CliffordCircuit) -> Array1<Complex64> {
+    let n = circuit.n_qubits;
+    let dim = 1 << n;
+    let mut sv = Array1::<Complex64>::zeros(dim);
+    sv[0] = Complex64::ONE;
+
+    for gate in &circuit.gates {
+        match gate {
+            CliffordGate::H(q) => apply_single_qubit_gate(&mut sv, *q, &H_MATRIX),
+            CliffordGate::X(q) => apply_single_qubit_gate(&mut sv, *q, &X_MATRIX),
+            CliffordGate::Y(q) => apply_single_qubit_gate(&mut sv, *q, &Y_MATRIX),
+            CliffordGate::Z(q) => apply_single_qubit_gate(&mut sv, *q, &Z_MATRIX),
+            CliffordGate::S(q) => apply_single_qubit_gate(&mut sv, *q, &S_MATRIX),
+            CliffordGate::Sdg(q) => apply_single_qubit_gate(&mut sv, *q, &SDG_MATRIX),
+            CliffordGate::SqrtX(q) => apply_single_qubit_gate(&mut sv, *q, &SQRT_X_MATRIX),
+            CliffordGate::SqrtXdg(q) => apply_single_qubit_gate(&mut sv, *q, &SQRT_XDG_MATRIX),
+            CliffordGate::CX(c, t) => apply_cx(&mut sv, *c, *t),
+            CliffordGate::CZ(q1, q2) => apply_cz(&mut sv, *q1, *q2),
+            CliffordGate::Swap(q1, q2) => apply_swap(&mut sv, *q1, *q2),
+        }
+    }
+    sv
 }
