@@ -4,6 +4,8 @@ build-backend = "maturin"
 
 [tool.maturin]
 manifest-path = "python-bindings/Cargo.toml"
+python-source = "python-bindings"
+
 [project]
 name = "necstar"
 version = "0.1.0"
