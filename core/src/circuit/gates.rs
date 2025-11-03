@@ -239,6 +239,24 @@ impl QuantumGate {
     }
 }
 
+impl From<CliffordGate> for QuantumGate {
+    fn from(clifford_gate: CliffordGate) -> Self {
+        match clifford_gate {
+            CliffordGate::H(q) => QuantumGate::H(q),
+            CliffordGate::X(q) => QuantumGate::X(q),
+            CliffordGate::Y(q) => QuantumGate::Y(q),
+            CliffordGate::Z(q) => QuantumGate::Z(q),
+            CliffordGate::S(q) => QuantumGate::S(q),
+            CliffordGate::Sdg(q) => QuantumGate::Sdg(q),
+            CliffordGate::SqrtX(q) => QuantumGate::SqrtX(q),
+            CliffordGate::SqrtXdg(q) => QuantumGate::SqrtXdg(q),
+            CliffordGate::CX(c, t) => QuantumGate::CX(c, t),
+            CliffordGate::CZ(q1, q2) => QuantumGate::CZ(q1, q2),
+            CliffordGate::Swap(q1, q2) => QuantumGate::Swap(q1, q2),
+        }
+    }
+}
+
 impl fmt::Display for QuantumGate {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {

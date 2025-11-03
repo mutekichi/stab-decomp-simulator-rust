@@ -1,7 +1,7 @@
+use num_complex::Complex64;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use std::collections::HashMap;
-use num_complex::Complex64;
 
 use stab_decomp_simulator_rust::prelude::{QuantumGate, QuantumState as RustQuantumState};
 
@@ -128,8 +128,7 @@ impl PyQuantumState {
     }
 
     fn apply_gates(&mut self, gates: Vec<PyQuantumGate>) -> PyResult<()> {
-        let rust_gates: Vec<QuantumGate> =
-            gates.into_iter().map(|g| g.internal).collect();
+        let rust_gates: Vec<QuantumGate> = gates.into_iter().map(|g| g.internal).collect();
         self.inner
             .apply_gates(&rust_gates)
             .map_err(|e| PyValueError::new_err(e.to_string()))

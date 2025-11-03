@@ -1,9 +1,8 @@
 use ndarray::Array1;
 use num_complex::Complex64;
-use stab_decomp_simulator_rust::prelude::*;
 use std::collections::HashMap;
 
-use stab_decomp_simulator_rust::circuit::random_clifford::random_clifford;
+use stabilizer_ch_form_rust::{StabilizerCHForm, circuit::random_clifford};
 
 /// A discrete representation of a complex amplitude of the form s * (1/sqrt(2))^r.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
@@ -125,7 +124,7 @@ fn test_random_clifford_uniformity() {
             println!("  ... generated {} / {} circuits", i + 1, total_samples);
         }
         let circuit = random_clifford(N_QUBITS, None);
-        let state = QuantumState::from_circuit(&circuit).unwrap();
+        let state = StabilizerCHForm::from_clifford_circuit(&circuit).unwrap();
         let mut sv = state.to_statevector().unwrap();
 
         normalize_global_phase(&mut sv);

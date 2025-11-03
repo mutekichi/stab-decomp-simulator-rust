@@ -1,4 +1,4 @@
-use stabilizer_ch_form_rust::types::pauli::{PauliString, Pauli};
+use stabilizer_ch_form_rust::types::pauli::{Pauli, PauliString};
 
 use crate::error::Result;
 use crate::state::{Coefficient, StabilizerDecomposedState};

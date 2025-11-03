@@ -17,9 +17,15 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             QuantumGate::CX(c, t) => self._apply_cx(*c, *t),
             QuantumGate::CZ(q1, q2) => self._apply_cz(*q1, *q2),
             QuantumGate::Swap(q1, q2) => self._apply_swap(*q1, *q2),
-            QuantumGate::T(_) => Err(crate::error::Error::NonCliffordGateApplication(gate.name().to_string())),
-            QuantumGate::Tdg(_) => Err(crate::error::Error::NonCliffordGateApplication(gate.name().to_string())),
-            QuantumGate::CCX(_, _, _) => Err(crate::error::Error::NonCliffordGateApplication(gate.name().to_string())),
+            QuantumGate::T(_) => Err(crate::error::Error::NonCliffordGateApplication(
+                gate.name().to_string(),
+            )),
+            QuantumGate::Tdg(_) => Err(crate::error::Error::NonCliffordGateApplication(
+                gate.name().to_string(),
+            )),
+            QuantumGate::CCX(_, _, _) => Err(crate::error::Error::NonCliffordGateApplication(
+                gate.name().to_string(),
+            )),
         }
     }
 

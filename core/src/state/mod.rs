@@ -9,10 +9,7 @@ pub(crate) use stabilizer_decomposed_state::StabilizerDecomposedState;
 pub(crate) use types::coefficient::Coefficient;
 
 use crate::{
-    circuit:: {
-        QuantumGate,
-        QuantumCircuit,
-    },
+    circuit::{QuantumCircuit, QuantumGate},
     error::Result,
     state::{
         compiler::{CircuitCompiler, StabDecompCompiler},
@@ -299,7 +296,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `gate` - A reference to the [`QuantumGate`] to apply.
-    /// 
+    ///
     /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_gate(&mut self, gate: &QuantumGate) -> Result<()> {
@@ -310,10 +307,10 @@ impl QuantumState {
 
     /// Applies a sequence of [`QuantumGate`]s to the quantum state.
     /// Note: Only Clifford gates are supported for direct application.
-    /// 
+    ///
     /// ## Arguments
     /// * `gates` - A slice of [`QuantumGate`]s to apply.
-    /// 
+    ///
     /// ## Returns
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_gates(&mut self, gates: &[QuantumGate]) -> Result<()> {
