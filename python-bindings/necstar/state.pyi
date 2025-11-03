@@ -42,7 +42,7 @@ class QuantumState:
         """
         ...
 
-    def to_statevector(self) -> List[Tuple[float, float]]:
+    def to_statevector(self) -> List[complex]:
         """Returns the statevector as a list of complex number tuples (real, imag).
 
         Note:
@@ -52,15 +52,14 @@ class QuantumState:
             The indexing follows the little-endian convention (like Qiskit).
 
         Returns:
-            List[Tuple[float, float]]: The statevector, where each tuple represents
-            the real and imaginary parts of an amplitude.
+
 
         Raises:
             ValueError: If the statevector calculation fails (e.g., too many qubits).
         """
         ...
 
-    def inner_product(self, other: QuantumState) -> Tuple[float, float]:
+    def inner_product(self, other: QuantumState) -> complex:
         """Computes the inner product <self|other> between this state and another.
 
         Args:
@@ -68,7 +67,7 @@ class QuantumState:
                 number of qubits.
 
         Returns:
-            Tuple[float, float]: The inner product as a tuple (real, imag).
+            complex: The inner product value as a complex number.
 
         Raises:
             ValueError: If the inner product calculation fails (e.g., qubit count mismatch).
