@@ -196,11 +196,11 @@ impl PyQuantumCircuit {
     fn apply_sdg(&mut self, target: usize) {
         self.inner.apply_sdg(target);
     }
-    fn apply_sqrtx(&mut self, target: usize) {
-        self.inner.apply_sqrtx(target);
+    fn apply_sqrt_x(&mut self, target: usize) {
+        self.inner.apply_sqrt_x(target);
     }
-    fn apply_sqrtxdg(&mut self, target: usize) {
-        self.inner.apply_sqrtxdg(target);
+    fn apply_sqrt_xdg(&mut self, target: usize) {
+        self.inner.apply_sqrt_xdg(target);
     }
     fn apply_t(&mut self, target: usize) {
         self.inner.apply_t(target);

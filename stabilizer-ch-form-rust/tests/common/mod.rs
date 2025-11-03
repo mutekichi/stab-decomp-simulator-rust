@@ -65,7 +65,7 @@ pub fn load_statevector_from_file<P: AsRef<Path>>(
 
 /// Prints a boolean vector (Array1<bool>) to the console in a readable format (e.g., [0, 1, 0]).
 #[allow(dead_code)]
-pub fn pretty_print_bool_vec(name: &str, vec: &Array1<bool>) {
+pub fn pretty_print_vec(name: &str, vec: &Array1<bool>) {
     let s: String = vec
         .iter()
         .map(|&b| if b { '1' } else { '0' })
@@ -75,25 +75,13 @@ pub fn pretty_print_bool_vec(name: &str, vec: &Array1<bool>) {
 
 /// Prints a boolean matrix (Array2<bool>) to the console in a readable format.
 #[allow(dead_code)] // This is a debug utility, so allow it to be unused in some tests
-pub fn pretty_print_bool_mat(name: &str, mat: &Array2<bool>) {
+pub fn pretty_print_mat(name: &str, mat: &Array2<bool>) {
     println!("{}: [", name);
     for row in mat.rows() {
         let s: String = row.iter().map(|&b| if b { '1' } else { '0' }).collect();
         println!("  {}", s);
     }
     println!("]");
-}
-
-/// Prints a complex vector (Array1<Complex64>) to the console in a readable format.
-#[allow(dead_code)]
-pub fn pretty_print_complex_vec(name: &str, vec: &Array1<Complex64>) {
-    let elements: Vec<String> = vec
-        .iter()
-        .map(|c| format!("{:.4}", c)) // Format each complex number to 4 decimal places
-        .collect();
-
-    let formatted_vec = elements.join(", ");
-    println!("{}: [{}]", name, formatted_vec);
 }
 
 /// Generates a random quantum circuit with the specified number of qubits and gates.
@@ -133,8 +121,8 @@ pub fn random_circuit(n_qubits: usize, gate_count: usize, seed: Option<u64>) -> 
                     q2 = rng.gen_range(0..n_qubits);
                 }
                 let gate = match gate_type {
-                    4 => CliffordGate::CX(q1, q2),
-                    5 => CliffordGate::CZ(q1, q2),
+                    6 => CliffordGate::CX(q1, q2),
+                    7 => CliffordGate::CZ(q1, q2),
                     _ => unreachable!(),
                 };
                 circuit.add_gate(gate);

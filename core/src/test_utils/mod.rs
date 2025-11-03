@@ -193,7 +193,7 @@ pub fn random_circuit_with_t_gate(
 #[allow(dead_code)]
 /// Creates a |Toffoli> state as a sample StabilizerDecomposedState.
 ///
-/// This state is defined as (|000> + |100> + |010> + |111>) / 2.
+/// This state is defined as (|000> + |001> + |010> + |111>) / 2.
 pub(crate) fn create_sample_stab_decomp_state() -> StabilizerDecomposedState<Complex64> {
     pub use std::f64::consts::FRAC_1_SQRT_2;
     // |0+0> part

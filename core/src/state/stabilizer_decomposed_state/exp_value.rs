@@ -49,10 +49,10 @@ mod test {
 
     #[test]
     fn test_exp_value() {
-        // sample_state = |000> + |100> + |010> + |111>
+        // sample_state = |000> + |001> + |010> + |111>
         let sample_state = crate::test_utils::create_sample_stab_decomp_state();
         let pauli_string =
-            stabilizer_ch_form_rust::types::pauli::PauliString::from_str("IIZ").unwrap();
+            stabilizer_ch_form_rust::types::pauli::PauliString::from_str("ZII").unwrap();
         let expected_result = 0.5;
         let result = sample_state._exp_value(&pauli_string).unwrap();
         dbg!(result);

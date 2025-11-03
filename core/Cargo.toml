@@ -14,4 +14,4 @@ rand = { version = "0.8", features = ["std_rng"] }
 rand_distr = "0.4"
 thiserror = "1.0"
 katexit = "0.1"
-stabilizer-ch-form-rust = { path = "./stabilizer-ch-form-rust" }
+stabilizer-ch-form-rust = { path = "../stabilizer-ch-form-rust" }

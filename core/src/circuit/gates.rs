@@ -1,5 +1,5 @@
 use crate::error::{Error, Result};
-use stabilizer_ch_form_rust::api::CliffordGate;
+use stabilizer_ch_form_rust::circuit::CliffordGate;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]

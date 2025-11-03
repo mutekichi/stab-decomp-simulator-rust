@@ -11,7 +11,7 @@ use error::{Error as CompileError, Result as CompileResult};
 use num_traits::One;
 use stabilizer_ch_form_rust::{
     StabilizerCHForm,
-    api::{CliffordCircuit, CliffordGate},
+    circuit::{CliffordCircuit, CliffordGate},
 };
 
 /// A trait for compilers that transform a `QuantumCircuit` blueprint into a

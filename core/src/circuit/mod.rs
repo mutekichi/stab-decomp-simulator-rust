@@ -20,7 +20,7 @@
 /// circuit.apply_cx(0, 1);
 ///
 /// // Compile the circuit to a state for simulation
-/// let state = QuantumState::from_circuit(&bell_circuit).unwrap();
+/// let mut state = QuantumState::from_circuit(&circuit).unwrap();
 ///
 /// // Sample measurement outcomes
 /// let shots = 1024;
@@ -33,7 +33,7 @@
 ///
 /// // Calculate an expectation value
 /// let pauli_str = PauliString::from_str("ZI").unwrap();
-/// let expectation = state.expectation_value(&pauli_str).unwrap();
+/// let expectation = state.exp_value(&pauli_str).unwrap();
 /// println!("Expectation value of {}: {}", pauli_str, expectation);
 ///
 /// // Apply a Clifford gate directly to the state
