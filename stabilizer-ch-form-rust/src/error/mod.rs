@@ -49,4 +49,7 @@ pub enum Error {
     /// Error for Pauli string parsing issues.
     #[error("Pauli string parsing error: {0}")]
     PauliStringParsingError(String),
+
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
 }

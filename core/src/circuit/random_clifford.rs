@@ -1,8 +1,5 @@
 use crate::circuit::{QuantumCircuit, QuantumGate};
-// stabilizer_ch_form_rust の関数を直接インポート
-use stabilizer_ch_form_rust::circuit::random_clifford as random_clifford_internal;
-
-// --- Public API Function ---
+use stabilizer_ch_form_rust::circuit::CliffordCircuit;
 
 /// Generates a random n-qubit Clifford circuit using the Bravyi-Maslov canonical form.
 ///
@@ -19,7 +16,7 @@ use stabilizer_ch_form_rust::circuit::random_clifford as random_clifford_interna
 /// # References
 /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford group," arXiv:2003.09412v2 (2021).
 pub fn random_clifford(n: usize, seed: Option<u64>) -> QuantumCircuit {
-    let clifford_circuit = random_clifford_internal(n, seed);
+    let clifford_circuit = CliffordCircuit::random_clifford(n, seed);
     let mut qc = QuantumCircuit::new(n);
     // Convert stabilizer_ch_form_rust::circuit::CliffordGate to core::circuit::QuantumGate
     let gates_iter = clifford_circuit.gates.into_iter().map(QuantumGate::from);
