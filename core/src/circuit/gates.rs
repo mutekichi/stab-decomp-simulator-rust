@@ -42,9 +42,9 @@ pub enum QuantumGate {
 
 impl QuantumGate {
     /// Checks if the gate is a single-qubit gate.
-    /// ### Returns
+    /// ## Returns
     /// * `bool` - `true` if the gate is a single-qubit gate, otherwise `false`.
-    /// ### Examples
+    /// ## Examples
     /// ```rust
     /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// let gate = QuantumGate::H(0);
@@ -69,9 +69,9 @@ impl QuantumGate {
     }
 
     /// Checks if the gate is a Clifford gate.
-    /// ### Returns
+    /// ## Returns
     /// * `bool` - `true` if the gate is a Clifford gate, otherwise `false`.
-    /// ### Examples
+    /// ## Examples
     /// ```rust
     /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// let gate = QuantumGate::H(0);
@@ -98,7 +98,7 @@ impl QuantumGate {
 
     /// Checks if the gate is a T-type gate.
     /// Note that this checks for both T and T-dagger gates.
-    /// ### Returns
+    /// ## Returns
     /// * `bool` - `true` if the gate is a T-type gate, otherwise `false`.
     pub fn is_t_type_gate(&self) -> bool {
         matches!(self, QuantumGate::T(_) | QuantumGate::Tdg(_))
@@ -106,7 +106,7 @@ impl QuantumGate {
 
     /// Checks if the gate is a T gate.
     /// Note that this only checks for the T gate, not T-dagger.
-    /// ### Returns
+    /// ## Returns
     /// * `bool` - `true` if the gate is a T gate, otherwise `false`.
     pub fn is_t_gate(&self) -> bool {
         matches!(self, QuantumGate::T(_))
@@ -114,7 +114,7 @@ impl QuantumGate {
 
     /// Checks if the gate is a T-dagger gate.
     ///
-    /// ### Returns
+    /// ## Returns
     /// * `bool` - `true` if the gate is a T-dagger gate, otherwise `false`.
     pub fn is_tdg_gate(&self) -> bool {
         matches!(self, QuantumGate::Tdg(_))
@@ -125,10 +125,10 @@ impl QuantumGate {
     /// The order of the indices is generally control qubits followed by target qubits,
     /// but it is not guaranteed for all gates.
     ///
-    /// ### Returns
+    /// ## Returns
     /// * `Vec<usize>` - A vector containing the qubit indices.
     ///
-    /// ### Examples
+    /// ## Examples
     /// ```rust
     /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     ///
@@ -164,7 +164,7 @@ impl QuantumGate {
     }
 
     /// Display the gate name.
-    /// ### Returns
+    /// ## Returns
     /// * `&'static str` - The name of the gate as a string slice.
     pub fn name(&self) -> &'static str {
         match self {
@@ -182,6 +182,37 @@ impl QuantumGate {
             QuantumGate::T(_) => "T",
             QuantumGate::Tdg(_) => "Tdg",
             QuantumGate::CCX(_, _, _) => "CCX",
+        }
+    }
+
+    /// Returns the QASM 2.0 string representation for this gate.
+    ///
+    /// ## Arguments
+    /// * `reg_name` - The name of the quantum register to use in the QASM output.
+    ///
+    /// ## Returns
+    /// * `String` - The QASM 2.0 string representation of the gate
+    pub(crate) fn to_qasm_str(&self, reg_name: &str) -> String {
+        match self {
+            QuantumGate::H(q) => format!("h {}[{}];", reg_name, q),
+            QuantumGate::X(q) => format!("x {}[{}];", reg_name, q),
+            QuantumGate::Y(q) => format!("y {}[{}];", reg_name, q),
+            QuantumGate::Z(q) => format!("z {}[{}];", reg_name, q),
+            QuantumGate::S(q) => format!("s {}[{}];", reg_name, q),
+            QuantumGate::Sdg(q) => format!("sdg {}[{}];", reg_name, q),
+            QuantumGate::SqrtX(q) => format!("sx {}[{}];", reg_name, q),
+            QuantumGate::SqrtXdg(q) => format!("sxdg {}[{}];", reg_name, q),
+            QuantumGate::T(q) => format!("t {}[{}];", reg_name, q),
+            QuantumGate::Tdg(q) => format!("tdg {}[{}];", reg_name, q),
+            QuantumGate::CX(c, t) => format!("cx {}[{}], {}[{}];", reg_name, c, reg_name, t),
+            QuantumGate::CZ(q1, q2) => format!("cz {}[{}], {}[{}];", reg_name, q1, reg_name, q2),
+            QuantumGate::Swap(q1, q2) => {
+                format!("swap {}[{}], {}[{}];", reg_name, q1, reg_name, q2)
+            }
+            QuantumGate::CCX(c1, c2, t) => format!(
+                "ccx {}[{}], {}[{}], {}[{}];",
+                reg_name, c1, reg_name, c2, reg_name, t
+            ),
         }
     }
 

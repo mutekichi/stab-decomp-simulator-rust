@@ -1,3 +1,12 @@
+mod gates;
+mod parser;
+mod random_clifford;
+
+pub use gates::QuantumGate;
+
+use crate::error::Result;
+use std::path::Path;
+
 /// Represents a quantum circuit as a sequence of quantum gates.
 ///
 /// A [`QuantumCircuit`] acts as a blueprint for a quantum computation. It holds the number of qubits
@@ -249,12 +258,55 @@ impl QuantumCircuit {
 
         new_circuit
     }
+
+    /// Generates a random n-qubit Clifford circuit using the Bravyi-Maslov canonical form.
+    ///
+    /// This function implements the O(n^2) algorithm described in the paper to sample a Clifford operator uniformly at random from the n-qubit Clifford group.
+    /// The resulting circuit is structured according to the canonical form U = F1 * H * S * F2. See the reference for details.
+    ///
+    /// # Arguments
+    /// * `n` - The number of qubits. Must be greater than 0.
+    /// * `seed` - An optional seed for the random number generator for reproducibility.
+    ///
+    /// # Returns
+    /// A [`QuantumCircuit`] object representing the random Clifford operator.
+    ///
+    /// # References
+    /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford group," arXiv:2003.09412v2 (2021).
+    pub fn random_clifford(n: usize, seed: Option<u64>) -> QuantumCircuit {
+        random_clifford::_random_clifford(n, seed)
+    }
+
+    /// Parses an OpenQASM 2.0 string into a `QuantumCircuit`.
+    ///
+    /// # Arguments
+    /// * `qasm_str` - A string slice containing the OpenQASM 2.0 circuit description.
+    pub fn from_qasm_str(qasm_str: &str) -> Result<Self> {
+        parser::_from_qasm_str(qasm_str)
+    }
+
+    /// Parses an OpenQASM 2.0 file into a `QuantumCircuit`.
+    ///
+    /// # Arguments
+    /// * `path` - A path to the QASM file.
+    pub fn from_qasm_file<P: AsRef<Path>>(path: P) -> Result<Self> {
+        parser::_from_qasm_file(path)
+    }
+
+    /// Converts the circuit to an OpenQASM 2.0 string.
+    ///
+    /// # Arguments
+    /// * `reg_name` - The name of the quantum register (e.g., "q").
+    pub fn to_qasm_str(&self, reg_name: &str) -> String {
+        parser::_to_qasm_str(self, reg_name)
+    }
+
+    /// Writes the circuit to an OpenQASM 2.0 file.
+    ///
+    /// # Arguments
+    /// * `path` - The path to the output file.
+    /// * `reg_name` - The name of the quantum register (e.g., "q").
+    pub fn to_qasm_file<P: AsRef<Path>>(&self, path: P, reg_name: &str) -> Result<()> {
+        parser::_to_qasm_file(self, path, reg_name)
+    }
 }
-
-pub mod gates;
-pub mod parser;
-pub mod random_clifford;
-
-pub use gates::QuantumGate;
-pub use parser::{from_qasm_file, from_qasm_str};
-pub use random_clifford::random_clifford;

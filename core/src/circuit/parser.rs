@@ -1,8 +1,10 @@
 use crate::circuit::QuantumCircuit;
 use crate::circuit::QuantumGate;
+use crate::error::{Error, Result};
 use regex::Regex;
 use std::collections::HashMap;
 use std::fs;
+use std::io::Write;
 use std::path::Path;
 
 /// Parses an OpenQASM 2.0 string into a `QuantumCircuit`.
@@ -12,7 +14,7 @@ use std::path::Path;
 ///
 /// ### Returns
 /// A `Result` containing the parsed `QuantumCircuit` or a `String` error message.
-pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
+pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
     lazy_static::lazy_static! {
         static ref QREG_RE: Regex = Regex::new(r"qreg\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\[\s*(\d+)\s*\]\s*;").unwrap();
         static ref GATE1_RE: Regex = Regex::new(r"([a-z_]+)\s+([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\]\s*;").unwrap();
@@ -64,11 +66,13 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
 
         if let Some(caps) = QREG_RE.captures(line) {
             if num_qubits.is_some() {
-                return Err("Multiple qreg declarations are not supported.".to_string());
+                return Err(Error::QasmParsingError(
+                    "Multiple qreg declarations are not supported.".to_string(),
+                ));
             }
-            let size = caps[2]
-                .parse::<usize>()
-                .map_err(|e| format!("Invalid qreg size in line: '{}' ({})", line, e))?;
+            let size = caps[2].parse::<usize>().map_err(|e| {
+                Error::QasmParsingError(format!("Invalid qreg size in line: '{}' ({})", line, e))
+            })?;
             num_qubits = Some(size);
             continue;
         }
@@ -87,15 +91,24 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
         if let Some(caps) = GATE3_RE.captures(line) {
             let gate_name = &caps[1];
             if let Some(gate_fn) = THREE_QUBIT_GATES.get(gate_name) {
-                let q1 = caps[3]
-                    .parse::<usize>()
-                    .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
-                let q2 = caps[5]
-                    .parse::<usize>()
-                    .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
-                let q3 = caps[7]
-                    .parse::<usize>()
-                    .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
+                let q1 = caps[3].parse::<usize>().map_err(|e| {
+                    Error::QasmParsingError(format!(
+                        "Invalid qubit index in line: '{}' ({})",
+                        line, e
+                    ))
+                })?;
+                let q2 = caps[5].parse::<usize>().map_err(|e| {
+                    Error::QasmParsingError(format!(
+                        "Invalid qubit index in line: '{}' ({})",
+                        line, e
+                    ))
+                })?;
+                let q3 = caps[7].parse::<usize>().map_err(|e| {
+                    Error::QasmParsingError(format!(
+                        "Invalid qubit index in line: '{}' ({})",
+                        line, e
+                    ))
+                })?;
                 gates.push(gate_fn(q1, q2, q3));
                 matched = true;
             }
@@ -106,12 +119,18 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
             if let Some(caps) = GATE2_RE.captures(line) {
                 let gate_name = &caps[1];
                 if let Some(gate_fn) = TWO_QUBIT_GATES.get(gate_name) {
-                    let q1 = caps[3]
-                        .parse::<usize>()
-                        .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
-                    let q2 = caps[5]
-                        .parse::<usize>()
-                        .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
+                    let q1 = caps[3].parse::<usize>().map_err(|e| {
+                        Error::QasmParsingError(format!(
+                            "Invalid qubit index in line: '{}' ({})",
+                            line, e
+                        ))
+                    })?;
+                    let q2 = caps[5].parse::<usize>().map_err(|e| {
+                        Error::QasmParsingError(format!(
+                            "Invalid qubit index in line: '{}' ({})",
+                            line, e
+                        ))
+                    })?;
                     gates.push(gate_fn(q1, q2));
                     matched = true;
                 }
@@ -123,9 +142,12 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
             if let Some(caps) = GATE1_RE.captures(line) {
                 let gate_name = &caps[1];
                 if let Some(gate_fn) = SINGLE_QUBIT_GATES.get(gate_name) {
-                    let qarg = caps[3]
-                        .parse::<usize>()
-                        .map_err(|e| format!("Invalid qubit index in line: '{}' ({})", line, e))?;
+                    let qarg = caps[3].parse::<usize>().map_err(|e| {
+                        Error::QasmParsingError(format!(
+                            "Invalid qubit index in line: '{}' ({})",
+                            line, e
+                        ))
+                    })?;
                     gates.push(gate_fn(qarg));
                     matched = true;
                 }
@@ -133,7 +155,10 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
         }
 
         if !matched {
-            return Err(format!("Unrecognized or malformed line: {}", line));
+            return Err(Error::QasmParsingError(format!(
+                "Unrecognized or malformed line: {}",
+                line
+            )));
         }
     }
 
@@ -143,7 +168,9 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
             gates,
         })
     } else {
-        Err("qreg declaration not found in QASM string.".to_string())
+        Err(Error::QasmParsingError(
+            "qreg declaration not found in QASM string.".to_string(),
+        ))
     }
 }
 
@@ -153,9 +180,43 @@ pub fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit, String> {
 /// * `path` - A reference to a path of the OpenQASM 2.0 file.
 /// ### Returns
 /// A `Result` containing the parsed `QuantumCircuit` or a `String` error message.
-pub fn from_qasm_file<P: AsRef<Path>>(path: P) -> Result<QuantumCircuit, String> {
-    let qasm_content = fs::read_to_string(path.as_ref())
-        .map_err(|e| format!("Failed to read file '{}': {}", path.as_ref().display(), e))?;
+pub(crate) fn _from_qasm_file<P: AsRef<Path>>(path: P) -> Result<QuantumCircuit> {
+    let qasm_content = fs::read_to_string(path.as_ref()).map_err(|e| {
+        Error::QasmParsingError(format!(
+            "Failed to read file '{}': {}",
+            path.as_ref().display(),
+            e
+        ))
+    })?;
 
-    from_qasm_str(&qasm_content)
+    _from_qasm_str(&qasm_content)
+}
+
+pub(crate) fn _to_qasm_str(circuit: &QuantumCircuit, reg_name: &str) -> String {
+    let mut lines = Vec::new();
+    lines.push("OPENQASM 2.0;".to_string());
+    lines.push("include \"qelib1.inc\";".to_string());
+    lines.push(format!("qreg {}[{}];", reg_name, circuit.num_qubits));
+
+    for gate in &circuit.gates {
+        lines.push(gate.to_qasm_str(reg_name));
+    }
+
+    lines.join("\n")
+}
+
+/// Writes the circuit to an OpenQASM 2.0 file.
+///
+/// # Arguments
+/// * `path` - The path to the output file.
+/// * `reg_name` - The name of the quantum register (e.g., "q").
+pub(crate) fn _to_qasm_file<P: AsRef<Path>>(
+    circuit: &QuantumCircuit,
+    path: P,
+    reg_name: &str,
+) -> Result<()> {
+    let qasm_str = circuit.to_qasm_str(reg_name);
+    let mut file = std::fs::File::create(path)?;
+    file.write_all(qasm_str.as_bytes())?;
+    Ok(())
 }

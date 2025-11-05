@@ -2,9 +2,7 @@ use pyo3::exceptions::{PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
 
 use stab_decomp_simulator_rust::circuit::{
-    from_qasm_file as rust_from_qasm_file, from_qasm_str as rust_from_qasm_str,
-    random_clifford as rust_random_clifford, QuantumCircuit as RustQuantumCircuit,
-    QuantumGate as RustQuantumGate,
+    QuantumCircuit as RustQuantumCircuit, QuantumGate as RustQuantumGate,
 };
 
 use crate::gate::PyQuantumGate;
@@ -45,7 +43,7 @@ impl PyQuantumCircuit {
 
     #[staticmethod]
     fn from_qasm_file(path: String) -> PyResult<Self> {
-        let rust_circuit = rust_from_qasm_file(&path).map_err(|e| {
+        let rust_circuit = RustQuantumCircuit::from_qasm_file(&path).map_err(|e| {
             PyFileNotFoundError::new_err(format!("Failed to read QASM file: {}", e))
         })?;
         Ok(PyQuantumCircuit {
@@ -55,16 +53,26 @@ impl PyQuantumCircuit {
 
     #[staticmethod]
     fn from_qasm_str(qasm: String) -> PyResult<Self> {
-        let rust_circuit = rust_from_qasm_str(&qasm)
+        let rust_circuit = RustQuantumCircuit::from_qasm_str(&qasm)
             .map_err(|e| PyValueError::new_err(format!("Failed to parse QASM string: {}", e)))?;
         Ok(PyQuantumCircuit {
             inner: rust_circuit,
         })
     }
 
+    fn to_qasm_str(&self, reg_name: String) -> String {
+        self.inner.to_qasm_str(&reg_name)
+    }
+
+    fn to_qasm_file(&self, path: String, reg_name: String) -> PyResult<()> {
+        self.inner
+            .to_qasm_file(&path, &reg_name)
+            .map_err(|e| PyValueError::new_err(format!("Failed to write QASM file: {}", e)))
+    }
+
     #[staticmethod]
     fn random_clifford(n: usize, seed: Option<u64>) -> Self {
-        let rust_circuit = rust_random_clifford(n, seed);
+        let rust_circuit = RustQuantumCircuit::random_clifford(n, seed);
         PyQuantumCircuit {
             inner: rust_circuit,
         }

@@ -69,6 +69,26 @@ class QuantumCircuit:
         """
         ...
 
+    def to_qasm_str(self, reg_name: str) -> str:
+        """Generates the OpenQASM 2.0 string representation of the circuit.
+
+        Args:
+            reg_name (str): The name of the quantum register (e.g., "q").
+
+        Returns:
+            str: A string containing the OpenQASM 2.0 representation of the circuit.
+        """
+        ...
+
+    def to_qasm_file(self, path: str, reg_name: str) -> None:
+        """Writes the circuit to an OpenQASM 2.0 file.
+
+        Args:
+            path (str): The path to the output file.
+            reg_name (str): The name of the quantum register (e.g., "q").
+        """
+        ...
+
     @staticmethod
     def random_clifford(n: int, seed: Optional[int] = None) -> QuantumCircuit:
         """Generates a random n-qubit Clifford circuit using the canonical form decomposition presented in Ref. [1].

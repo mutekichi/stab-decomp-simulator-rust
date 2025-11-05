@@ -54,4 +54,10 @@ pub enum Error {
 
     #[error(transparent)]
     ChForm(#[from] ChFormError),
+
+    #[error("QASM parsing error: {0}")]
+    QasmParsingError(String),
+
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
 }
