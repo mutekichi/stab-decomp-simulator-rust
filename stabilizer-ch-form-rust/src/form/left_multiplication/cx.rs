@@ -35,6 +35,12 @@ impl StabilizerCHForm {
         }
 
         // 2. Update matrices
+        // NOTE: `.to_owned()` is used to create an explicit copy.
+        // This avoids a borrow checker error, which disallows simultaneous
+        // immutable (`.row(control)`) and mutable (`.row_mut(target)`)
+        // borrows of `self.mat_g`, even though our logic guarantees
+        // `control != target` (no aliasing).
+        // This prioritizes safety over a minor copy overhead.
         let g_control_row = self.mat_g.row(control).to_owned();
         let mut g_target_row = self.mat_g.row_mut(target);
         g_target_row ^= &g_control_row;
@@ -46,6 +52,27 @@ impl StabilizerCHForm {
         let m_target_row = self.mat_m.row(target).to_owned();
         let mut m_control_row = self.mat_m.row_mut(control);
         m_control_row ^= &m_target_row;
+
+        /*
+        // --- Unsafe alternative (for reference) ---
+        // An `unsafe` block could avoid the `.to_owned()` copy by using
+        // raw pointers, trusting the `control != target` check.
+        // This would be faster but sacrifices compile-time safety.
+        unsafe {
+            let self_ptr: *mut Self = self;
+            let g_control_row = (*self_ptr).mat_g.row(control);
+            let mut g_target_row = (*self_ptr).mat_g.row_mut(target);
+            g_target_row ^= &g_control_row;
+
+            let f_target_row = (*self_ptr).mat_f.row(target);
+            let mut f_control_row = (*self_ptr).mat_f.row_mut(control);
+            f_control_row ^= &f_target_row;
+
+            let m_target_row = (*self_ptr).mat_m.row(target);
+            let mut m_control_row = (*self_ptr).mat_m.row_mut(control);
+            m_control_row ^= &m_target_row;
+        }
+        */
 
         Ok(())
     }

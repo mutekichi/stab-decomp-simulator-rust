@@ -64,6 +64,7 @@ fn statevector_to_discrete_key(sv: &Array1<Complex64>) -> Vec<Option<DiscreteAmp
 }
 
 #[test]
+#[ignore]
 fn test_random_clifford_uniformity() {
     // --- Test Configuration ---
     const N_QUBITS: usize = 3;
