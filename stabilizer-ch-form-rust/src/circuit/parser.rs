@@ -20,9 +20,15 @@ use std::path::Path;
 /// A `Result` containing the parsed `CliffordCircuit` or a `String` error message.
 pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
     lazy_static::lazy_static! {
-        static ref QREG_RE: Regex = Regex::new(r"qreg\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\[\s*(\d+)\s*\]\s*;").unwrap();
-        static ref GATE1_RE: Regex = Regex::new(r"([a-z_]+)\s+([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\]\s*;").unwrap();
-        static ref GATE2_RE: Regex = Regex::new(r"([a-z_]+)\s+([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\],\s*([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\]\s*;").unwrap();
+        static ref QREG_RE: Regex = Regex::new(
+            r"qreg\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\[\s*(\d+)\s*\]\s*;"
+        ).unwrap();
+        static ref GATE1_RE: Regex = Regex::new(
+            r"([a-z_]+)\s+([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\]\s*;"
+        ).unwrap();
+        static ref GATE2_RE: Regex = Regex::new(
+            r"([a-z_]+)\s+([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\],\s*([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\]\s*;"
+        ).unwrap();
 
         static ref SINGLE_QUBIT_GATES: HashMap<&'static str, fn(usize) -> CliffordGate> = {
             let mut m = HashMap::new();

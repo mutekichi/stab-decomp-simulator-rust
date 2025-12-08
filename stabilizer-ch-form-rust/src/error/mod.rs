@@ -19,7 +19,7 @@ pub enum Error {
 
     /// Error for impossible projection during measurement.
     #[error(
-        "Impossible projection on qubit {qubit_index}: cannot project determined state |{}> onto |{}>.",
+        "Impossible projection on qubit {qubit_index}: cannot project determined state |{}> onto|{}>.",
         if *desired { 0 } else { 1 },
         if *desired { 1 } else { 0 }
     )]

@@ -61,7 +61,8 @@ struct CliffordParams {
 }
 
 /// Generates the parameter matrices for the Hadamard-free layers F1 and F2.
-/// This implementation follows Algorithm 2 and the rules C1-C5 from Theorem 1 in arXiv:2003.09412v2.
+/// This implementation follows Algorithm 2 and the rules C1-C5 from Theorem 1 in
+/// arXiv:2003.09412v2.
 fn _generate_clifford_params<R: Rng>(n: usize, rng: &mut R) -> CliffordParams {
     let (h, s) = _sample_quantum_mallows(n, rng);
 
