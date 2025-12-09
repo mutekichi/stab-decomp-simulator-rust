@@ -18,7 +18,7 @@ impl StabilizerCHForm {
         // if t_q == 1, (y_q, z_q) = (1,0)
         // if t_q == 0, (y_q, z_q) = (0,1)
         if vec_t[pivot] {
-            self.vec_s = vec_u.clone();
+            self.vec_s.assign(vec_u);
 
             match delta {
                 PhaseFactor::PLUS_ONE => {
@@ -65,7 +65,7 @@ impl StabilizerCHForm {
                 _ => unreachable!(),
             }
         } else {
-            self.vec_s = vec_t.clone();
+            self.vec_s.assign(vec_t);
 
             match delta {
                 PhaseFactor::PLUS_ONE => {

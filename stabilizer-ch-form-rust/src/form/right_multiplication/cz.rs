@@ -16,8 +16,8 @@ impl StabilizerCHForm {
             return Err(Error::DuplicateQubitIndices(q1));
         }
 
-        let f1_col = self.mat_f.column(q1).to_owned();
-        let f2_col = self.mat_f.column(q2).to_owned();
+        let f1_col = self.mat_f.column(q1);
+        let f2_col = self.mat_f.column(q2);
 
         let mut m1_col = self.mat_m.column_mut(q1);
         m1_col ^= &f2_col;

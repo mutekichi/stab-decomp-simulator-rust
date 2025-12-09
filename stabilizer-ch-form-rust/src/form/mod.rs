@@ -30,6 +30,7 @@ mod get_qubit_state;
 mod inner_product;
 mod kron;
 mod left_multiplication;
+mod matrix_operations;
 mod measure;
 mod permute;
 mod project;
@@ -38,110 +39,9 @@ mod right_multiplication;
 mod statevector;
 
 impl StabilizerCHForm {
-    /// Computes the tensor product of this state with another.
-    ///
-    /// Returns: |self> ⊗ |other>
-    pub fn kron(&self, other: &StabilizerCHForm) -> Result<StabilizerCHForm> {
-        self._kron(other)
-    }
-
-    /// Discards the specified qubit from the state.
-    ///
-    /// NOTE: This function assumes that the qubit `qarg` has already been
-    /// projected onto the |0> state.
-    ///
-    /// # Errors
-    //// Returns an `ChFormError` if the qubit index is out of bounds. Note that
-    /// this function does not check if the qubit is properly projected onto |0>.
-    pub fn discard(&mut self, qarg: usize) -> Result<()> {
-        self._discard(qarg)
-    }
-
-    /// Returns a new StabilizerCHForm with the qubits permuted.
-    ///
-    /// # Arguments
-    ///
-    /// * `axes` - A slice representing the new order of qubits. For `n` qubits,
-    ///   this must be a permutation of `[0, 1, ..., n-1]`.
-    pub fn permuted(&self, axes: &[usize]) -> Result<Self> {
-        self._permuted(axes)
-    }
-
-    /// Permutes the qubits of the state in-place.
-    ///
-    /// # Arguments
-    ///
-    /// * `axes` - A slice representing the new order of qubits. For `n` qubits,
-    ///   this must be a permutation of `[0, 1, ..., n-1]`.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the length of `axes` is not equal to the number of qubits.
-    pub fn permute(&mut self, axes: &[usize]) -> Result<()> {
-        self._permute(axes)
-    }
-
-    /// Returns a new StabilizerCHForm with the specified qubit discarded.
-    ///
-    /// NOTE: This function assumes that the qubit `qarg` has already been
-    /// projected onto the |0> state.
-    pub fn discarded(&self, qarg: usize) -> Result<StabilizerCHForm> {
-        let mut self_clone = self.clone();
-        self_clone.discard(qarg)?;
-        Ok(self_clone)
-    }
-
-    /// Projects a qubit onto a computational basis state (`|0>` or `|1>`).
-    ///
-    /// This operation modifies the stabilizer state in place.
-    ///
-    /// In a stabilizer state, measuring a qubit in the computational basis yields either a
-    /// deterministic outcome (`|0>` or `|1>`) or a perfectly random one (50% probability for each).
-    /// This function attempts to force the qubit into the specified `outcome`, succeeding if the projection
-    /// is physically possible.
-    ///
-    /// # Arguments
-    ///
-    /// * `qarg`: The index of the qubit to project.
-    /// * `outcome`: The desired basis state to project onto (`false` for `|0>`, `true` for `|1>`).
-    ///
-    /// # Returns
-    ///
-    /// A `Result` indicating the outcome of the projection:
-    ///
-    /// * `Ok(true)` if the projection was **deterministic**. This means the qubit was already
-    ///   in the desired state. The stabilizer state is unchanged.
-    /// * `Ok(false)` if the projection was **non-deterministic** (probabilistic). This means the
-    ///   qubit was in a superposition and has now been collapsed to the desired state. The
-    ///   stabilizer state has been updated.
-    ///
-    /// # Errors
-    ///
-    /// Returns an `ChFormError` if the projection is impossible. This occurs when the qubit has a
-    /// deterministic value that is orthogonal to the desired `outcome` (e.g., attempting to
-    /// project a qubit in state `|0>` onto `|1>`).
-    pub fn project(&mut self, qarg: usize, outcome: bool) -> Result<bool> {
-        self._project(qarg, outcome)
-    }
-
-    /// Computes the inner product 〈self|other〉.
-    ///
-    /// This method works by finding a sequence of Clifford operations that
-    /// transforms the state |self> into the |0...0> state, and then applying
-    /// the same sequence of operations to |other>. The inner product is then
-    /// derived from the resulting state's amplitude at the |0...0> basis state.
-    pub fn inner_product(&self, other: &StabilizerCHForm) -> Result<num_complex::Complex64> {
-        self._inner_product(other)
-    }
-
-    pub fn measure(&mut self, qarg: usize) -> Result<bool> {
-        self._measure(qarg)
-    }
-
-    pub fn to_statevector(&self) -> Result<ndarray::Array1<Complex64>> {
-        self._to_statevector()
-    }
-
+    /// Creates a new StabilizerCHForm representing the |0...0> state for `n` qubits.
+    /// ## Arguments
+    /// * `n` - The number of qubits.
     pub fn new(n: usize) -> Result<Self> {
         if n == 0 {
             return Err(Error::InvalidNumQubits(n));
@@ -165,10 +65,15 @@ impl StabilizerCHForm {
         })
     }
 
+    /// Returns the number of qubits in the stabilizer state.
     pub fn n_qubits(&self) -> usize {
         self.n
     }
 
+    /// Sets the global phase of the stabilizer state.
+    ///
+    /// ## Arguments
+    /// * `phase` - A unit complex number representing the desired global phase.
     pub fn set_global_phase(&mut self, phase: Complex64) {
         if (phase.norm_sqr() - 1.0).abs() > 1e-8 {
             panic!("Global phase must be a unit complex number.");
@@ -176,10 +81,145 @@ impl StabilizerCHForm {
         self.omega = phase;
     }
 
+    /// Returns the global phase of the stabilizer state.
+    ///
+    /// ## Returns
+    /// A unit complex number representing the global phase.
     pub fn global_phase(&self) -> Complex64 {
         self.omega
     }
 
+    /// Computes the tensor product of this state with another: |self> ⊗ |other>.
+    ///
+    /// ## Arguments
+    /// * `other` - The other StabilizerCHForm to tensor with.
+    ///
+    /// ## Returns
+    /// A `Result` containing the new `StabilizerCHForm` representing the tensor product state.
+    pub fn kron(&self, other: &StabilizerCHForm) -> Result<StabilizerCHForm> {
+        self._kron(other)
+    }
+
+    /// Discards the specified qubit from the state.
+    ///
+    /// NOTE: This function assumes that the qubit `qarg` has already been
+    /// projected onto the |0> state.
+    ///
+    /// # Arguments
+    /// * `qarg` - The index of the qubit to discard.
+    ///
+    /// ## Errors
+    /// Returns an `ChFormError` if the qubit index is out of bounds. Note that
+    /// this function does not check if the qubit is properly projected onto |0>.
+    pub fn discard(&mut self, qarg: usize) -> Result<()> {
+        self._discard(qarg)
+    }
+
+    /// Returns a new StabilizerCHForm with the qubits permuted.
+    ///
+    /// ## Arguments
+    /// * `axes` - A slice representing the new order of qubits. For `n` qubits,
+    ///   this must be a permutation of `[0, 1, ..., n-1]`.
+    ///
+    /// ## Returns
+    /// A `Result` containing the new `StabilizerCHForm` with permuted qubits.
+    pub fn permuted(&self, axes: &[usize]) -> Result<Self> {
+        self._permuted(axes)
+    }
+
+    /// Permutes the qubits of the state in-place.
+    ///
+    /// ## Arguments
+    /// * `axes` - A slice representing the new order of qubits. For `n` qubits,
+    ///   this must be a permutation of `[0, 1, ..., n-1]`.
+    ///
+    /// ## Errors
+    /// Errors if the length of `axes` is not equal to the number of qubits.
+    pub fn permute(&mut self, axes: &[usize]) -> Result<()> {
+        self._permute(axes)
+    }
+
+    /// Returns a new StabilizerCHForm with the specified qubit discarded.
+    ///
+    /// NOTE: This function assumes that the qubit `qarg` has already been
+    /// projected onto the |0> state.
+    ///
+    /// ## Arguments
+    /// * `qarg` - The index of the qubit to discard.
+    ///
+    /// ## Returns
+    /// A `Result` containing the new `StabilizerCHForm` with the specified qubit discarded.
+    pub fn discarded(&self, qarg: usize) -> Result<StabilizerCHForm> {
+        let mut self_clone = self.clone();
+        self_clone.discard(qarg)?;
+        Ok(self_clone)
+    }
+
+    /// Projects a qubit onto a computational basis state (`|0>` or `|1>`).
+    ///
+    /// This operation modifies the stabilizer state in place.
+    ///
+    /// In a stabilizer state, measuring a qubit in the computational basis yields either a
+    /// deterministic outcome (`|0>` or `|1>`) or a perfectly random one (50% probability for each).
+    /// This function attempts to force the qubit into the specified `outcome`, succeeding if the
+    /// projection is physically possible.
+    ///
+    /// ## Arguments
+    /// * `qarg`: The index of the qubit to project.
+    /// * `outcome`: The desired basis state to project onto (`false` for `|0>`, `true` for `|1>`).
+    ///
+    /// ## Returns
+    /// A `Result` indicating the outcome of the projection:
+    /// * `Ok(true)` if the projection was **deterministic**. This means the qubit was already
+    ///   in the desired state. The stabilizer state is unchanged.
+    /// * `Ok(false)` if the projection was **non-deterministic** (probabilistic). This means the
+    ///   qubit was in a superposition and has now been collapsed to the desired state. The
+    ///   stabilizer state has been updated.
+    ///
+    /// ## Errors
+    /// Returns an `ChFormError` if the projection is impossible. This occurs when the qubit has a
+    /// deterministic value that is orthogonal to the desired `outcome` (e.g., attempting to
+    /// project a qubit in state `|0>` onto `|1>`).
+    pub fn project(&mut self, qarg: usize, outcome: bool) -> Result<bool> {
+        self._project(qarg, outcome)
+    }
+
+    /// Computes the inner product 〈self|other〉.
+    ///
+    /// ## Arguments
+    /// * `other` - The other StabilizerCHForm to compute the inner product with.
+    ///
+    /// ## Returns
+    /// A `Result` containing the complex inner product value.
+    pub fn inner_product(&self, other: &StabilizerCHForm) -> Result<num_complex::Complex64> {
+        self._inner_product(other)
+    }
+
+    /// Measures the specified qubit in the computational basis.
+    ///
+    /// ## Arguments
+    /// * `qarg` - The index of the qubit to measure.
+    ///
+    /// ## Returns
+    /// A `Result` containing the measurement outcome: `false` for `|0>`, `true` for `|1>`.
+    pub fn measure(&mut self, qarg: usize) -> Result<bool> {
+        self._measure(qarg)
+    }
+
+    /// Represents this state as a statevector.
+    ///
+    /// NOTE:
+    ///  * This implementation iterates over all 2^n basis states. This functionality is
+    /// mainly for testing and debugging purposes.
+    ///  * Uses little-endian convention for basis states.
+    pub fn to_statevector(&self) -> Result<ndarray::Array1<Complex64>> {
+        self._to_statevector()
+    }
+
+    /// Constructs a `StabilizerCHForm` from a `CliffordCircuit`.
+    ///
+    /// ## Arguments
+    /// * `circuit` - The `CliffordCircuit` to convert.
     pub fn from_clifford_circuit(circuit: &CliffordCircuit) -> Result<Self> {
         let mut ch_form = StabilizerCHForm::new(circuit.n_qubits)?;
 

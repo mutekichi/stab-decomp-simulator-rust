@@ -39,34 +39,22 @@ impl StabilizerCHForm {
         let vec_u = &self.vec_s ^ (&f_row & &not_vec_v) ^ (&m_row & &self.vec_v);
 
         // eq. (49) of arXiv:1808.00128
-        // alpha
         let alpha = g_row
             .iter()
             .zip(&self.vec_v)
             .zip(&self.vec_s)
-            .filter(|&((&g, &v), &s)| g && !v && s)
-            .count()
-            % 2
-            != 0;
-        // beta
-        let beta = {
-            let term1_is_odd = m_row
-                .iter()
-                .zip(&not_vec_v)
-                .zip(&self.vec_s)
-                .fold(false, |acc, ((&m, &nv), &s)| acc ^ (m && nv && s));
-            let term2_is_odd = f_row
-                .iter()
-                .zip(&self.vec_v)
-                .zip(m_row)
-                .fold(false, |acc, ((&f, &v), &m)| acc ^ (f && v && m));
-            let term3_is_odd = f_row
-                .iter()
-                .zip(&self.vec_v)
-                .zip(&self.vec_s)
-                .fold(false, |acc, ((&f, &v), &s)| acc ^ (f && v && s));
-            term1_is_odd ^ term2_is_odd ^ term3_is_odd
-        };
+            .fold(false, |acc, ((&g, &v), &s)| acc ^ (g && !v && s));
+
+        let beta = m_row
+            .iter()
+            .zip(f_row.iter())
+            .zip(self.vec_v.iter())
+            .zip(self.vec_s.iter())
+            .fold(false, |acc, (((&m, &f), &v), &s)| {
+                let t1 = m & !v & s;
+                let t23 = f & v & (m ^ s);
+                acc ^ t1 ^ t23
+            });
 
         (vec_t, vec_u, alpha, beta)
     }

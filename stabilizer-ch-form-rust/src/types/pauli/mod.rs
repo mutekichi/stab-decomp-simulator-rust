@@ -10,7 +10,27 @@ mod pauli_term;
 pub use pauli_string::Pauli;
 pub use pauli_term::PauliTerm;
 
-/// TODO: Documentation
+/// Represents a multi-qubit Pauli operator.
+/// You can represent it in either dense or sparse format.
+/// - Dense: `"IXYZ"` ( Q0=X, Q1=Y, Q2=Z, Q3=I )
+/// - Sparse: `"X1 Y3"` ( Q1=X, Q3=Y, others=I )
+///
+/// ## Examples
+/// ```rust
+/// use stabilizer_ch_form_rust::types::pauli::PauliString;
+/// use stabilizer_ch_form_rust::types::pauli::Pauli;
+///
+/// // Parsing dense Pauli string
+/// let dense: PauliString = "IXYZ".parse().unwrap();
+/// assert_eq!(dense, PauliString::Dense(vec![Pauli::X, Pauli::Y, Pauli::Z, Pauli::I]));
+///
+/// // Parsing sparse Pauli string
+/// let sparse: PauliString = "X1 Y3".parse().unwrap();
+/// assert_eq!(sparse, PauliString::Sparse(vec![
+///     PauliTerm { op: Pauli::X, qubit: 1 },
+///     PauliTerm { op: Pauli::Y, qubit: 3 },
+/// ]));
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PauliString {
     Dense(Vec<Pauli>),
@@ -83,7 +103,7 @@ fn parse_sparse(s: &str) -> Result<PauliString> {
     Ok(PauliString::Sparse(terms))
 }
 
-/// Implements FromStr for PauliString to allow parsing from strings.
+/// Implements `FromStr` for PauliString to allow parsing from strings.
 impl FromStr for PauliString {
     type Err = Error;
 

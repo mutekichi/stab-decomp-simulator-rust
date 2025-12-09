@@ -10,7 +10,7 @@ impl StabilizerCHForm {
             return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
 
-        let f_col = self.mat_f.column(qarg).to_owned();
+        let f_col = self.mat_f.column(qarg);
         let mut m_col = self.mat_m.column_mut(qarg);
         m_col ^= &f_col;
 

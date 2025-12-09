@@ -15,17 +15,12 @@ impl StabilizerCHForm {
             return Err(Error::DuplicateQubitIndices(control));
         }
 
-        let g_target_col = self.mat_g.column(target).to_owned();
-        let mut g_control_col = self.mat_g.column_mut(control);
-        g_control_col ^= &g_target_col;
-
-        let f_control_col = self.mat_f.column(control).to_owned();
-        let mut f_target_col = self.mat_f.column_mut(target);
-        f_target_col ^= &f_control_col;
-
-        let m_target_col = self.mat_m.column(target).to_owned();
-        let mut m_control_col = self.mat_m.column_mut(control);
-        m_control_col ^= &m_target_col;
+        // mat_g[:, target] ^= mat_g[:, control]
+        Self::xor_columns(&mut self.mat_g, control, target);
+        // mat_f[:, control] ^= mat_f[:, target]
+        Self::xor_columns(&mut self.mat_f, target, control);
+        // mat_m[:, control] ^= mat_m[:, target]
+        Self::xor_columns(&mut self.mat_m, control, target);
 
         Ok(())
     }

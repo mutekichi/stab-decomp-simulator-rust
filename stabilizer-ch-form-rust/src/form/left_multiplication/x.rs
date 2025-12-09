@@ -2,7 +2,6 @@ use crate::{
     StabilizerCHForm,
     error::{Error, Result},
 };
-use ndarray::Array1;
 
 impl StabilizerCHForm {
     // Applies the Pauli-X gate to the qubit at index `qarg`.
@@ -14,49 +13,36 @@ impl StabilizerCHForm {
         if qarg >= self.n {
             return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
-        // calculate u appearing in eq.(48) of arXiv:1808.00128 :
-        // $$
-        // u_j = s_j \oplus (F_{p,j} \land \lnot v_j) \oplus (M_{p,j} \land v_j)
-        // $$
         let f_row = self.mat_f.row(qarg);
         let m_row = self.mat_m.row(qarg);
 
-        let u: Array1<bool> = self
-            .vec_s
+        // calculate beta appearing in eq.(49) of arXiv:1808.00128
+        let beta = m_row
             .iter()
-            .zip(self.vec_v.iter())
             .zip(f_row.iter())
-            .zip(m_row.iter())
-            .map(|(((&s, &v), &f), &m)| s ^ (f & !v) ^ (m & v))
-            .collect();
+            .zip(self.vec_v.iter())
+            .zip(self.vec_s.iter())
+            .fold(false, |acc, (((&m, &f), &v), &s)| {
+                let t1 = m & !v & s;
+                let t23 = f & v & (m ^ s);
+                acc ^ t1 ^ t23
+            });
 
-        let term1 = m_row
-            .iter()
-            .zip(&self.vec_v)
-            .zip(&self.vec_s)
-            .filter(|&((&m, &v), &s)| m && !v && s)
-            .count();
-        let term2 = f_row
-            .iter()
-            .zip(&self.vec_v)
-            .zip(m_row)
-            .filter(|&((&f, &v), &m)| f && v && m)
-            .count();
-        let term3 = f_row
-            .iter()
-            .zip(&self.vec_v)
-            .zip(&self.vec_s)
-            .filter(|&((&f, &v), &s)| f && v && s)
-            .count();
-        let beta = (term1 + term2 + term3) % 2;
-
-        if beta == 1 {
+        if beta {
             self.phase_factor = self.phase_factor.flipped();
         }
 
-        self.phase_factor *= self.gamma[qarg];
+        // calculate u appearing in eq.(48) of arXiv:1808.00128
+        self.vec_s
+            .iter_mut()
+            .zip(self.vec_v.iter())
+            .zip(f_row.iter())
+            .zip(m_row.iter())
+            .for_each(|(((s, &v), &f), &m)| {
+                *s ^= (f & !v) ^ (m & v);
+            });
 
-        self.vec_s = u;
+        self.phase_factor *= self.gamma[qarg];
 
         Ok(())
     }
