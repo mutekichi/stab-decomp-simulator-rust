@@ -6,18 +6,6 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-/// Parses an OpenQASM 2.0 string into a `CliffordCircuit`.
-///
-/// This is a simplified parser that supports `qreg` declarations and
-/// a standard set of Clifford gates.
-/// It ignores comments, headers, and includes.
-/// **Note:** `measure` operations are detected and ignored, with a warning printed to stderr.
-///
-/// # Arguments
-/// * `qasm_str` - A string slice containing the OpenQASM 2.0 circuit description.
-///
-/// # Returns
-/// A `Result` containing the parsed `CliffordCircuit` or a `String` error message.
 pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
     lazy_static::lazy_static! {
         static ref QREG_RE: Regex = Regex::new(
@@ -126,13 +114,6 @@ pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
     }
 }
 
-/// Parses an OpenQASM 2.0 file into a `CliffordCircuit`.
-///
-/// # Arguments
-/// * `path` - A path to the QASM file.
-///
-/// # Returns
-/// A `Result` containing the parsed `CliffordCircuit` or a `String` error message.
 pub(crate) fn _from_qasm_file<P: AsRef<Path>>(path: P) -> Result<CliffordCircuit> {
     let qasm_content = fs::read_to_string(path.as_ref()).map_err(|e| {
         Error::QasmParsingError(format!(
@@ -145,10 +126,6 @@ pub(crate) fn _from_qasm_file<P: AsRef<Path>>(path: P) -> Result<CliffordCircuit
     _from_qasm_str(&qasm_content)
 }
 
-/// Converts the circuit to an OpenQASM 2.0 string.
-///
-/// # Arguments
-/// * `reg_name` - The name of the quantum register (e.g., "q").
 pub(crate) fn _to_qasm_str(circuit: &CliffordCircuit, reg_name: &str) -> String {
     let mut lines = Vec::new();
     lines.push("OPENQASM 2.0;".to_string());
@@ -161,11 +138,7 @@ pub(crate) fn _to_qasm_str(circuit: &CliffordCircuit, reg_name: &str) -> String 
 
     lines.join("\n")
 }
-/// Writes the circuit to an OpenQASM 2.0 file.
-///
-/// # Arguments
-/// * `path` - The path to the output file.
-/// * `reg_name` - The name of the quantum register (e.g., "q").
+
 pub(crate) fn _to_qasm_file<P: AsRef<std::path::Path>>(
     circuit: &CliffordCircuit,
     path: P,

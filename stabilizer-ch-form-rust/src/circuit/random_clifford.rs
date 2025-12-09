@@ -183,6 +183,11 @@ fn _apply_permutation_layer(qc: &mut CliffordCircuit, s_perm: &Array1<usize>) {
     }
 }
 
+/// Generates a uniformly random Clifford circuit on `n` qubits.
+///
+/// ## References
+/// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
+/// group," arXiv:2003.09412v2 (2021).
 pub(crate) fn _random_clifford(n: usize, seed: Option<u64>) -> CliffordCircuit {
     let mut rng = match seed {
         Some(s) => rand::rngs::StdRng::seed_from_u64(s),

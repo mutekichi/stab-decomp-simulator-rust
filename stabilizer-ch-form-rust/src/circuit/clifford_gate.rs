@@ -1,5 +1,6 @@
 use std::fmt;
 
+/// Represents a Clifford gate in a quantum circuit.
 #[derive(Debug, Clone, PartialEq)]
 pub enum CliffordGate {
     H(usize),
