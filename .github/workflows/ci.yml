@@ -56,7 +56,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
 
       - name: Cache Cargo registry
         uses: actions/cache@v4
@@ -72,8 +71,11 @@ jobs:
       - name: Install poetry
         run: pip install poetry
 
+      - name: Configure poetry
+        run: poetry config vertualenvs.in-project true
+
       - name: Install Python dependencies
-        run: poetry install --no-intraction
+        run: poetry install --no-interaction
 
       - name: Build and Install Python bindings
         run: poetry run maturin develop --release --manifest-path python-bindings/Cargo.toml
