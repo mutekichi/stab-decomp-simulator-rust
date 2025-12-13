@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  rust-test:
+    name: Rust Test & Lint (including sub-crates)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+         
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Check code formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run clippy linter
+        run: cargo clippy --all -- -D warnings
+
+      - name: Run tests
+        run: cargo test --workspace
+
+  python-test:
+    name: Python Binding Test
+    runs-on: ubuntu-latest
+    strategy: 
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'poetry'
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+            key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install poetry
+        run: pip install poetry
+
+      - name: Install Python dependencies
+        run: poetry install --no-intraction
+
+      - name: Build and Install Python bindings
+        run: poetry run maturin develop --release --manifest-path python-bindings/Cargo.toml
+
+      - name: Run Python tests
+        run: poetry run pytest tests/python 
+        
