@@ -17,12 +17,11 @@ pub use pauli_term::PauliTerm;
 ///
 /// ## Examples
 /// ```rust
-/// use stabilizer_ch_form_rust::types::pauli::PauliString;
-/// use stabilizer_ch_form_rust::types::pauli::Pauli;
+/// use stabilizer_ch_form_rust::types::pauli::{ Pauli, PauliTerm, PauliString };
 ///
 /// // Parsing dense Pauli string
 /// let dense: PauliString = "IXYZ".parse().unwrap();
-/// assert_eq!(dense, PauliString::Dense(vec![Pauli::X, Pauli::Y, Pauli::Z, Pauli::I]));
+/// assert_eq!(dense, PauliString::Dense(vec![Pauli::Z, Pauli::Y, Pauli::X, Pauli::I]));
 ///
 /// // Parsing sparse Pauli string
 /// let sparse: PauliString = "X1 Y3".parse().unwrap();
