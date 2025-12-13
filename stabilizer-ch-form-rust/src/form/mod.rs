@@ -210,7 +210,7 @@ impl StabilizerCHForm {
     ///
     /// NOTE:
     ///  * This implementation iterates over all 2^n basis states. This functionality is
-    /// mainly for testing and debugging purposes.
+    ///    mainly for testing and debugging purposes.
     ///  * Uses little-endian convention for basis states.
     pub fn to_statevector(&self) -> Result<ndarray::Array1<Complex64>> {
         self._to_statevector()

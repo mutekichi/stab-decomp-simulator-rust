@@ -109,7 +109,7 @@ impl PyQuantumGate {
     }
 
     fn __repr__(&self) -> String {
-        format!("<QuantumGate: {}>", self.internal.to_string())
+        format!("<QuantumGate: {}>", self.internal)
     }
 
     #[getter]

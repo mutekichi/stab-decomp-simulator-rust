@@ -25,7 +25,7 @@ impl PyPauliString {
     }
 
     fn __repr__(&self) -> String {
-        format!("PauliString('{}')", self.inner.to_string())
+        format!("PauliString('{}')", self.inner)
     }
 
     #[getter]

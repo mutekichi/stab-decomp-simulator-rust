@@ -144,7 +144,7 @@ pub(crate) fn _to_qasm_file<P: AsRef<std::path::Path>>(
     path: P,
     reg_name: &str,
 ) -> Result<()> {
-    let qasm_str = _to_qasm_str(&circuit, reg_name);
+    let qasm_str = _to_qasm_str(circuit, reg_name);
     let mut file = std::fs::File::create(path)?;
     file.write_all(qasm_str.as_bytes())?;
     Ok(())

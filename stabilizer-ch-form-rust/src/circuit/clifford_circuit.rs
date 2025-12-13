@@ -174,7 +174,7 @@ impl CliffordCircuit {
     ///
     /// ## References
     /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
-    /// group," arXiv:2003.09412v2 (2021).
+    ///   group," arXiv:2003.09412v2 (2021).
     pub fn random_clifford(n_qubits: usize, seed: Option<u64>) -> Self {
         random_clifford::_random_clifford(n_qubits, seed)
     }

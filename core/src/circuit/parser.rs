@@ -15,13 +15,17 @@ use std::path::Path;
 /// ### Returns
 /// A `Result` containing the parsed `QuantumCircuit` or a `String` error message.
 pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
+    type Gate1Fn = fn(usize) -> QuantumGate;
+    type Gate2Fn = fn(usize, usize) -> QuantumGate;
+    type Gate3Fn = fn(usize, usize, usize) -> QuantumGate;
+
     lazy_static::lazy_static! {
         static ref QREG_RE: Regex = Regex::new(r"qreg\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\[\s*(\d+)\s*\]\s*;").unwrap();
         static ref GATE1_RE: Regex = Regex::new(r"([a-z_]+)\s+([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\]\s*;").unwrap();
         static ref GATE2_RE: Regex = Regex::new(r"([a-z_]+)\s+([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\],\s*([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\]\s*;").unwrap();
         static ref GATE3_RE: Regex = Regex::new(r"([a-z_]+)\s+([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\],\s*([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\],\s*([a-zA-Z][a-zA-Z0-9_]*)\[(\d+)\]\s*;").unwrap();
 
-        static ref SINGLE_QUBIT_GATES: HashMap<&'static str, fn(usize) -> QuantumGate> = {
+        static ref SINGLE_QUBIT_GATES: HashMap<&'static str, Gate1Fn> = {
             let mut m = HashMap::new();
             m.insert("h", QuantumGate::H as fn(usize) -> QuantumGate);
             m.insert("x", QuantumGate::X as fn(usize) -> QuantumGate);
@@ -31,12 +35,12 @@ pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
             m.insert("sdg", QuantumGate::Sdg as fn(usize) -> QuantumGate);
             m.insert("sx", QuantumGate::SqrtX as fn(usize) -> QuantumGate);
             m.insert("sxdg", QuantumGate::SqrtXdg as fn(usize) -> QuantumGate);
-            m.insert("t", QuantumGate::T as fn(usize) -> QuantumGate);
+            m.insert("t", QuantumGate::T as Gate1Fn);
             m.insert("tdg", QuantumGate::Tdg as fn(usize) -> QuantumGate);
             m
         };
 
-        static ref TWO_QUBIT_GATES: HashMap<&'static str, fn(usize, usize) -> QuantumGate> = {
+        static ref TWO_QUBIT_GATES: HashMap<&'static str, Gate2Fn> = {
             let mut m = HashMap::new();
             m.insert("cx", QuantumGate::CX as fn(usize, usize) -> QuantumGate);
             m.insert("cz", QuantumGate::CZ as fn(usize, usize) -> QuantumGate);
@@ -44,7 +48,7 @@ pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
             m
         };
 
-        static ref THREE_QUBIT_GATES: HashMap<&'static str, fn(usize, usize, usize) -> QuantumGate> = {
+        static ref THREE_QUBIT_GATES: HashMap<&'static str, Gate3Fn> = {
             let mut m = HashMap::new();
             m.insert("ccx", QuantumGate::CCX as fn(usize, usize, usize) -> QuantumGate);
             m
@@ -115,42 +119,38 @@ pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
         }
 
         // Check for 2-qubit gates if not matched
-        if !matched {
-            if let Some(caps) = GATE2_RE.captures(line) {
-                let gate_name = &caps[1];
-                if let Some(gate_fn) = TWO_QUBIT_GATES.get(gate_name) {
-                    let q1 = caps[3].parse::<usize>().map_err(|e| {
-                        Error::QasmParsingError(format!(
-                            "Invalid qubit index in line: '{}' ({})",
-                            line, e
-                        ))
-                    })?;
-                    let q2 = caps[5].parse::<usize>().map_err(|e| {
-                        Error::QasmParsingError(format!(
-                            "Invalid qubit index in line: '{}' ({})",
-                            line, e
-                        ))
-                    })?;
-                    gates.push(gate_fn(q1, q2));
-                    matched = true;
-                }
+        if !matched && let Some(caps) = GATE2_RE.captures(line) {
+            let gate_name = &caps[1];
+            if let Some(gate_fn) = TWO_QUBIT_GATES.get(gate_name) {
+                let q1 = caps[3].parse::<usize>().map_err(|e| {
+                    Error::QasmParsingError(format!(
+                        "Invalid qubit index in line: '{}' ({})",
+                        line, e
+                    ))
+                })?;
+                let q2 = caps[5].parse::<usize>().map_err(|e| {
+                    Error::QasmParsingError(format!(
+                        "Invalid qubit index in line: '{}' ({})",
+                        line, e
+                    ))
+                })?;
+                gates.push(gate_fn(q1, q2));
+                matched = true;
             }
         }
 
         // Check for 1-qubit gates if not matched
-        if !matched {
-            if let Some(caps) = GATE1_RE.captures(line) {
-                let gate_name = &caps[1];
-                if let Some(gate_fn) = SINGLE_QUBIT_GATES.get(gate_name) {
-                    let qarg = caps[3].parse::<usize>().map_err(|e| {
-                        Error::QasmParsingError(format!(
-                            "Invalid qubit index in line: '{}' ({})",
-                            line, e
-                        ))
-                    })?;
-                    gates.push(gate_fn(qarg));
-                    matched = true;
-                }
+        if !matched && let Some(caps) = GATE1_RE.captures(line) {
+            let gate_name = &caps[1];
+            if let Some(gate_fn) = SINGLE_QUBIT_GATES.get(gate_name) {
+                let qarg = caps[3].parse::<usize>().map_err(|e| {
+                    Error::QasmParsingError(format!(
+                        "Invalid qubit index in line: '{}' ({})",
+                        line, e
+                    ))
+                })?;
+                gates.push(gate_fn(qarg));
+                matched = true;
             }
         }
 
