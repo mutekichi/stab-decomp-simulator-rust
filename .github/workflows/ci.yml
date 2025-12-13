@@ -72,7 +72,7 @@ jobs:
         run: pip install poetry
 
       - name: Configure poetry
-        run: poetry config vertualenvs.in-project true
+        run: poetry config virtualenvs.in-project true
 
       - name: Install Python dependencies
         run: poetry install --no-interaction
