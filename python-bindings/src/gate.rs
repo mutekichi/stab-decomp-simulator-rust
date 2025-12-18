@@ -112,12 +112,10 @@ impl PyQuantumGate {
         format!("<QuantumGate: {}>", self.internal)
     }
 
-    #[getter]
     pub fn is_clifford(&self) -> bool {
         self.internal.is_clifford()
     }
 
-    #[getter]
     pub fn is_t_type(&self) -> bool {
         self.internal.is_t_type_gate()
     }

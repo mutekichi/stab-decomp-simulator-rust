@@ -90,12 +90,10 @@ class QuantumGate:
         """A list of qubit indices that the gate acts upon."""
         ...
 
-    @property
     def is_clifford(self) -> bool:
         """Returns True if the gate is a Clifford gate, False otherwise."""
         ...
 
-    @property
     def is_t_type(self) -> bool:
         """Returns True if the gate is a T or Tdg gate, False otherwise."""
         ...
@@ -105,5 +103,5 @@ class QuantumGate:
         ...
 
     def __repr__(self) -> str:
-        """Returns a developer-friendly representation of the QuantumGate object."""
-        ...
+        """Returns a detailed string representation of the QuantumGate object.
+        (e.g., '<QuantumGate: X(0)>', '<QuantumGate: CX(1, 2)>')."""
