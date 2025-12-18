@@ -10,10 +10,16 @@ docs/_build/
 
 # Python cache files
 __pycache__/
-*.py[cod] # .pyc, .pyo, .pyd
 
 # Compiled Python extension module
 *.so
+*.pyd
+*.pyd.lib
+*.pyd.exp
+*.pyd.pdb
+
+# Maturin build artifacts
+dist/
 
 # IDE/Editor specific files (Examples)
 .vscode/
