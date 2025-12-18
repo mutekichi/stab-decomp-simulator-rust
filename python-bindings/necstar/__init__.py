@@ -1,3 +1,4 @@
+from . import necstar
 from .necstar import *
 
 __doc__ = necstar.__doc__
