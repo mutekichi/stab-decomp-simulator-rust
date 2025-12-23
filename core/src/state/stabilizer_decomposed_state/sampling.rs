@@ -94,13 +94,17 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             return Ok(());
         }
 
-        let prob_zero = state_zero._norm_squared()?
+        let mut prob_zero = state_zero._norm_squared()?
             / (state_zero._norm_squared()? + state_one._norm_squared()?);
+
+        // Ensure probability is not larger than 1 due to numerical errors
+        prob_zero = prob_zero.clamp(0.0, 1.0);
 
         // Sample the number of 0 outcomes using a binomial distribution
         let binom = match Binomial::new(current_shots as u64, prob_zero) {
             Ok(b) => b,
             Err(e) => {
+                eprintln!("{}", prob_zero);
                 return Err(Error::Binomial(e));
             }
         };

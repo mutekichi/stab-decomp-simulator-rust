@@ -142,6 +142,16 @@ impl QuantumState {
     /// ## Returns
     /// A [`Result`] containing a vector of boolean measurement results or an [`Error`](crate::error::Error).
     pub fn measure(&mut self, qargs: &[usize], seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
+        // Check for duplicate qubit indices naively
+        for i in 0..qargs.len() {
+            let qarg_1 = &qargs[i];
+            for j in (i + 1)..qargs.len() {
+                let qarg_2 = &qargs[j];
+                if qarg_1 == qarg_2 {
+                    return Err(crate::error::Error::DuplicateQubitIndices(*qarg_1));
+                }
+            }
+        }
         match &mut self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => state._measure(qargs, seed),
         }
@@ -186,6 +196,19 @@ impl QuantumState {
         shots: usize,
         seed: Option<[u8; 32]>,
     ) -> Result<ShotCount> {
+        // Check for duplicate qubit indices naively
+        for i in 0..qargs.len() {
+            let qarg_1 = &qargs[i];
+            for j in (i + 1)..qargs.len() {
+                let qarg_2 = &qargs[j];
+                if qarg_1 == qarg_2 {
+                    return Err(crate::error::Error::DuplicateQubitIndices(*qarg_1));
+                }
+            }
+        }
+        if qargs.is_empty() {
+            return Err(crate::error::Error::EmptyQubitIndices);
+        }
         match &self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => {
                 state._sample(qargs, shots, seed)

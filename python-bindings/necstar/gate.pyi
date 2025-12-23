@@ -52,7 +52,8 @@ class QuantumGate:
 
     @staticmethod
     def cx(control: int, target: int) -> QuantumGate:
-        """Creates a CX (CNOT) gate acting on the specified control and target qubits."""
+        """Creates a CX (CNOT) gate acting on the specified control and target
+        qubits."""
         ...
 
     @staticmethod
@@ -77,7 +78,8 @@ class QuantumGate:
 
     @staticmethod
     def ccx(control1: int, control2: int, target: int) -> QuantumGate:
-        """Creates a Toffoli (CCX) gate acting on the specified control and target qubits."""
+        """Creates a Toffoli (CCX) gate acting on the specified control and target
+        qubits."""
         ...
 
     @property

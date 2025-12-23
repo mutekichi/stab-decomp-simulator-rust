@@ -7,13 +7,15 @@ from .gate import QuantumGate
 class QuantumCircuit:
     """
     Represents a quantum circuit as a sequence of quantum gates.
-
-    A :class:`~necstar.QuantumCircuit` acts as a blueprint for a quantum computation. It holds
-    the number of qubits and an ordered list of quantum gate operations to be
-    applied. This struct is the primary entry point for defining a computation.
-    Once built, it is typically compiled into a :class:`~necstar.QuantumState` via
-    `QuantumState.from_circuit` to be simulated.
     """
+
+    def __init__(self, num_qubits: int) -> None:
+        """Initializes a QuantumCircuit with the specified number of qubits.
+
+        Args:
+            num_qubits (int): The number of qubits in the circuit.
+        """
+        ...
 
     @property
     def num_qubits(self) -> int:
@@ -27,15 +29,8 @@ class QuantumCircuit:
 
     @property
     def gates(self) -> List[QuantumGate]:
-        """A list of :class:`~necstar.QuantumGate` objects representing the gates in the circuit."""
-        ...
-
-    def __init__(self, num_qubits: int) -> None:
-        """Initializes a QuantumCircuit with the specified number of qubits.
-
-        Args:
-            num_qubits (int): The number of qubits in the circuit. Must be greater than 0.
-        """
+        """A list of :class:`~necstar.QuantumGate` objects representing the gates in
+        the circuit."""
         ...
 
     @staticmethod
@@ -46,7 +41,8 @@ class QuantumCircuit:
             path (str): The file path to the OpenQASM 2.0 file.
 
         Returns:
-            QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the parsed circuit.
+            QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the
+                parsed circuit.
 
         Raises:
             FileNotFoundError: If the specified file cannot be read.
@@ -62,7 +58,8 @@ class QuantumCircuit:
             qasm (str): A string containing the OpenQASM 2.0 circuit description.
 
         Returns:
-            QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the parsed circuit.
+            QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the
+                parsed circuit.
 
         Raises:
             ValueError: If the QASM string is invalid or unsupported.
@@ -91,7 +88,8 @@ class QuantumCircuit:
 
     @staticmethod
     def random_clifford(n: int, seed: Optional[int] = None) -> QuantumCircuit:
-        """Generates a random n-qubit Clifford circuit using the canonical form decomposition presented in Ref. [1].
+        """Generates a random n-qubit Clifford circuit using the canonical form
+        decomposition presented in Ref. [1].
 
         This function implements the O(n^2) algorithm described in the paper
         to sample a Clifford operator uniformly at random from the n-qubit
@@ -100,8 +98,9 @@ class QuantumCircuit:
         Clifford circuits, H is a layer of Hadamard gates, and S is a permutation
         of qubits.
 
-        References:
-            [1] S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford group," arXiv:2003.09412v2 (2021).
+        ### References:
+            [1] S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure\
+                of the Clifford   group," arXiv:2003.09412v2 (2021).
 
         Args:
             n (int): The number of qubits. Must be greater than 0.
@@ -109,8 +108,8 @@ class QuantumCircuit:
                 for reproducibility. Defaults to None (uses system entropy).
 
         Returns:
-            QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the random Clifford
-            operator.
+            QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the
+            random Clifford operator.
         """
         ...
 
@@ -124,17 +123,20 @@ class QuantumCircuit:
         ...
 
     def tensor(self, other: QuantumCircuit) -> QuantumCircuit:
-        """Creates a new circuit by taking the tensor product of this circuit and another.
+        """Creates a new circuit by taking the tensor product of this circuit and
+        another.
 
         The new circuit will have `self.num_qubits + other.num_qubits` qubits.
-        Gates from `self` are applied to the first qubits (indices 0 to `self.num_qubits` - 1),
-        and gates from `other` are applied to the subsequent qubits (indices `self.num_qubits` onwards).
+        Gates from `self` are applied to the first qubits (indices 0 to
+        `self.num_qubits` - 1), and gates from `other` are applied to the subsequent
+        qubits (indices `self.num_qubits` onwards).
 
         Args:
             other (QuantumCircuit): The circuit to tensor with this one.
 
         Returns:
-            QuantumCircuit: A new :class:`~necstar.QuantumCircuit` representing the tensor product.
+            QuantumCircuit: A new :class:`~necstar.QuantumCircuit` representing the
+            tensor product.
         """
         ...
 
@@ -143,11 +145,12 @@ class QuantumCircuit:
 
         Args:
             gate_name (str): The name of the gate (case-insensitive).
-                Supported names include: 'h', 'x', 'y', 'z', 's', 'sdg',
-                'sqrtx', 'sqrtxdg', 't', 'tdg', 'cx' (or 'cnot'), 'cz', 'swap', 'ccx'.
+                Supported names include: `'h'`, `'x'`, `'y'`, `'z'`, `'s'`, `'sdg'`,
+                `'sqrtx'`, `'sqrtxdg'`, `'t'`, `'tdg'`, `'cx'`, `'cz'`, `'swap'`,
+                `'ccx'`.
             qubits (List[int]): A list of qubit indices the gate acts upon.
                 The number of indices must match the gate's arity
-                (e.g., 1 for 'h', 2 for 'cx', 3 for 'ccx').
+                (e.g., 1 for `'h'`, 2 for `'cx'`, 3 for `'ccx'`).
                 For multi-qubit gates, the order is generally control qubits
                 followed by target qubits.
 

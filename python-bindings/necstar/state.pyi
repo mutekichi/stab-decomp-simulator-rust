@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 from .circuit import QuantumCircuit
 from .gate import QuantumGate
@@ -9,11 +9,6 @@ from .pauli_string import PauliString
 class QuantumState:
     """
     Represents a simulated quantum state using the stabilizer decomposition method.
-
-    This class provides the primary interface for simulating quantum computations
-    defined by a :class:`~necstar.QuantumCircuit`. It encapsulates the internal state representation
-    and offers methods for performing measurements, sampling, calculating expectation
-    values, and applying Clifford gates directly.
     """
 
     @property
@@ -28,7 +23,8 @@ class QuantumState:
 
     @staticmethod
     def from_circuit(circuit: QuantumCircuit) -> QuantumState:
-        """Creates a new :class:`~necstar.QuantumState` by compiling a :class:`~necstar.QuantumCircuit`.
+        """Creates a new :class:`~necstar.QuantumState` by compiling a
+        :class:`~necstar.QuantumCircuit`.
 
         Args:
             circuit (QuantumCircuit): The quantum circuit to be simulated.
@@ -37,7 +33,8 @@ class QuantumState:
             QuantumState: The compiled quantum state ready for simulation.
 
         Raises:
-            ValueError: If the circuit compilation fails (e.g., contains unsupported gates).
+            ValueError: If the circuit compilation fails (e.g., contains unsupported
+            gates).
         """
         ...
 
@@ -45,13 +42,14 @@ class QuantumState:
         """Returns the statevector as a list of complex number tuples (real, imag).
 
         Note:
-            This function computes the full, dense statevector of size :math:`2^n`, which
-            can be computationally expensive and memory-intensive for a large
-            number of qubits (:math:`n`). It is primarily intended for testing and debugging.
+            This function computes the full, dense statevector of size :math:`2^n`,
+            which can be computationally expensive and memory-intensive for a large
+            number of qubits (:math:`n`). It is primarily intended for testing and
+            debugging.
             The indexing follows the little-endian convention (like Qiskit).
 
         Returns:
-
+            List[complex]: The statevector represented as a list of complex numbers.
 
         Raises:
             ValueError: If the statevector calculation fails (e.g., too many qubits).
@@ -69,13 +67,14 @@ class QuantumState:
             complex: The inner product value as a complex number.
 
         Raises:
-            ValueError: If the inner product calculation fails (e.g., qubit count mismatch).
+            ValueError: If the inner product calculation fails (e.g., qubit count
+                mismatch).
         """
         ...
 
     def measure(self, qargs: List[int], seed: Optional[int] = None) -> List[bool]:
-        """Measures the specified qubits in the computational basis. The state collapses according
-        to the measurement results.
+        """Measures the specified qubits in the computational basis. The state
+        collapses according to the measurement results.
 
         Args:
             qargs (List[int]): A list of qubit indices to measure.
@@ -83,8 +82,8 @@ class QuantumState:
                 to ensure reproducibility. Defaults to None.
 
         Returns:
-            List[bool]: A list of boolean measurement outcomes (False for :math:`|0\\rangle`,
-            True for :math:`|1\\rangle`).
+            List[bool]: A list of boolean measurement outcomes (False for
+            :math:`|0\\rangle`, True for :math:`|1\\rangle`).
 
         Raises:
             ValueError: If measurement fails (e.g., invalid qubit index).
@@ -108,8 +107,11 @@ class QuantumState:
         """
         ...
 
-    def sample(self, qargs: List[int], shots: int, seed: Optional[int] = None) -> Dict[str, int]:
-        """Samples measurement outcomes for the specified qubits without collapsing the state.
+    def sample(
+        self, qargs: List[int], shots: int, seed: Optional[int] = None
+    ) -> Dict[str, int]:
+        """Samples measurement outcomes for the specified qubits without collapsing the
+        state.
 
         This method efficiently gathers measurement statistics without modifying the
         internal state, making it suitable for repeated analysis. It uses a
@@ -146,17 +148,20 @@ class QuantumState:
         ...
 
     def project_normalized(self, qubit: int, outcome: bool) -> None:
-        """Projects the state onto a computational basis state for a specific qubit and normalizes.
+        """Projects the state onto a computational basis state for a specific qubit and
+        normalizes.
 
         This is equivalent to a projective measurement in the Z-basis. The state
         is modified in place.
 
         Args:
             qubit (int): The index of the qubit to project.
-            outcome (bool): The desired basis state (False for :math:`|0\\rangle`, True for :math:`|1\\rangle`).
+            outcome (bool): The desired basis state (False for :math:`|0\\rangle`, True
+                for :math:`|1\\rangle`).
 
         Raises:
-            ValueError: If the projection is impossible (e.g., projecting :math:`|0\\rangle` onto :math:`|1\\rangle`).
+            ValueError: If the projection is impossible (e.g., projecting
+                :math:`|0\\rangle` onto :math:`|1\\rangle`).
         """
         ...
 
@@ -168,12 +173,13 @@ class QuantumState:
 
         Args:
             qubit (int): The index of the qubit to project.
-            outcome (bool): The desired basis state (False for :math:`|0\\rangle`, True for :math:`|1\\rangle`).
+            outcome (bool): The desired basis state (False for :math:`|0\\rangle`, True
+                for :math:`|1\\rangle`).
 
         Raises:
             ValueError: If the projection operation encounters an internal error,
-            though it won't raise an error for impossible projections resulting
-            in a zero-norm state.
+                though it won't raise an error for impossible projections resulting
+                in a zero-norm state.
         """
         ...
 
@@ -182,11 +188,12 @@ class QuantumState:
 
         Reduces the total number of qubits by one and modifies the state in place.
 
-        Important:
-            This function MUST only be called on a qubit that has been projected
-            to the :math:`|0\\rangle` state and is disentangled from all others. Failure to meet
-            this precondition will lead to incorrect results. No verification is performed
-            for performance reasons. Use `project_normalized(qubit, False)` first if needed.
+        ### Important:
+        This function MUST only be called on a qubit that has been projected
+        to the :math:`|0\\rangle` state and is disentangled from all others.
+        Failure to meet this precondition will lead to incorrect results. No
+        verification is performed for performance reasons. Use
+        `project_normalized(qubit, False)` first if needed.
 
         Args:
             qubit (int): The index of the qubit to discard.
@@ -214,11 +221,12 @@ class QuantumState:
         ...
 
     def apply_gates(self, gates: List[QuantumGate]) -> None:
-        """Applies a list of :class:`~necstar.QuantumGate` s directly to the quantum state.
+        """Applies a list of :class:`~necstar.QuantumGate` s directly to the quantum
+        state.
 
-        Note:
-            Only Clifford gates are supported for direct application. Attempting
-            to apply non-Clifford gates (e.g., T or T-dagger) will raise an error.
+        ### Note:
+        Only Clifford gates are supported for direct application. Attempting
+        to apply non-Clifford gates (e.g., T or T-dagger) will raise an error.
 
         Args:
             gates (List[QuantumGate]): The list of quantum gates to apply in sequence.
@@ -351,7 +359,6 @@ class QuantumState:
             ValueError: If the gate application fails.
         """
         ...
-
     # --- Properties ---
 
     def norm(self) -> float:
