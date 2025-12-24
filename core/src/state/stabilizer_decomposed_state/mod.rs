@@ -40,7 +40,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         }
     }
 
-    pub(crate) fn _validate_qargs(&self, qargs: &[usize]) -> Result<()> {
+    pub(crate) fn validate_qargs(&self, qargs: &[usize]) -> Result<()> {
         let num_qubits = self.num_qubits;
         // Check for Empty qargs
         if qargs.is_empty() {
@@ -65,7 +65,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         Ok(())
     }
 
-    pub(crate) fn _amplify_global_factor(&mut self, factor: Complex64) {
+    pub(crate) fn amplify_global_factor(&mut self, factor: Complex64) {
         self.global_factor *= factor;
     }
 }

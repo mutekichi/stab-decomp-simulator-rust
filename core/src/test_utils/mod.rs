@@ -11,7 +11,7 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 
 #[allow(dead_code)]
-pub fn assert_eq_complex(a: Complex64, b: Complex64) {
+pub(crate) fn assert_eq_complex(a: Complex64, b: Complex64) {
     let diff = (a - b).norm();
     assert!(
         diff <= 1e-8,
@@ -24,7 +24,7 @@ pub fn assert_eq_complex(a: Complex64, b: Complex64) {
 }
 
 #[allow(dead_code)]
-pub fn assert_eq_complex_array1(a: &Array1<Complex64>, b: &Array1<Complex64>) {
+pub(crate) fn assert_eq_complex_array1(a: &Array1<Complex64>, b: &Array1<Complex64>) {
     assert_eq!(a.len(), b.len(), "Arrays have different lengths.");
     for (i, (x, y)) in a.iter().zip(b.iter()).enumerate() {
         let diff = (x - y).norm();
@@ -41,7 +41,7 @@ pub fn assert_eq_complex_array1(a: &Array1<Complex64>, b: &Array1<Complex64>) {
 }
 
 #[allow(dead_code)]
-pub fn load_statevector_from_file<P: AsRef<Path>>(
+pub(crate) fn load_statevector_from_file<P: AsRef<Path>>(
     path: P,
 ) -> Result<Array1<Complex64>, std::io::Error> {
     let file = File::open(path)?;
@@ -68,7 +68,7 @@ pub fn load_statevector_from_file<P: AsRef<Path>>(
 
 /// Prints a boolean vector (`Array1<bool>`) to the console in a readable format (e.g., [0, 1, 0]).
 #[allow(dead_code)]
-pub fn pretty_print_bool_vec(name: &str, vec: &Array1<bool>) {
+pub(crate) fn pretty_print_bool_vec(name: &str, vec: &Array1<bool>) {
     let s: String = vec
         .iter()
         .map(|&b| if b { '1' } else { '0' })
@@ -78,7 +78,7 @@ pub fn pretty_print_bool_vec(name: &str, vec: &Array1<bool>) {
 
 /// Prints a boolean matrix (`Array2<bool>`) to the console in a readable format.
 #[allow(dead_code)] // This is a debug utility, so allow it to be unused in some tests
-pub fn pretty_print_bool_mat(name: &str, mat: &Array2<bool>) {
+pub(crate) fn pretty_print_bool_mat(name: &str, mat: &Array2<bool>) {
     println!("{}: [", name);
     for row in mat.rows() {
         let s: String = row.iter().map(|&b| if b { '1' } else { '0' }).collect();
@@ -89,7 +89,7 @@ pub fn pretty_print_bool_mat(name: &str, mat: &Array2<bool>) {
 
 /// Prints a complex vector (`Array1<Complex64>`) to the console in a readable format.
 #[allow(dead_code)]
-pub fn pretty_print_complex_vec(name: &str, vec: &Array1<Complex64>) {
+pub(crate) fn pretty_print_complex_vec(name: &str, vec: &Array1<Complex64>) {
     let elements: Vec<String> = vec
         .iter()
         .map(|c| format!("{:.4}", c)) // Format each complex number to 4 decimal places
@@ -101,7 +101,7 @@ pub fn pretty_print_complex_vec(name: &str, vec: &Array1<Complex64>) {
 
 /// Generates a random quantum circuit with the specified number of qubits and gates.
 #[allow(dead_code)]
-pub fn random_circuit_with_t_gate(
+pub(crate) fn random_circuit_with_t_gate(
     n_qubits: usize,
     clifford_gate_count: usize,
     t_type_gate_count: usize,

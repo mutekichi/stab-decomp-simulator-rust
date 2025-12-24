@@ -10,9 +10,9 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
                 for (qubit, &op) in ops.iter().enumerate() {
                     match op {
                         Pauli::I => {}
-                        Pauli::X => self._apply_x(qubit)?,
-                        Pauli::Y => self._apply_y(qubit)?,
-                        Pauli::Z => self._apply_z(qubit)?,
+                        Pauli::X => self.apply_x(qubit)?,
+                        Pauli::Y => self.apply_y(qubit)?,
+                        Pauli::Z => self.apply_z(qubit)?,
                     }
                 }
             }
@@ -20,9 +20,9 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
                 for term in terms {
                     match term.op {
                         Pauli::I => {}
-                        Pauli::X => self._apply_x(term.qubit)?,
-                        Pauli::Y => self._apply_y(term.qubit)?,
-                        Pauli::Z => self._apply_z(term.qubit)?,
+                        Pauli::X => self.apply_x(term.qubit)?,
+                        Pauli::Y => self.apply_y(term.qubit)?,
+                        Pauli::Z => self.apply_z(term.qubit)?,
                     }
                 }
             }

@@ -96,7 +96,7 @@ impl QuantumState {
     /// A [`Result`] containing the compiled [`QuantumState`] or a [`Error`](crate::error::Error).
     pub fn from_circuit(circuit: &QuantumCircuit) -> Result<Self> {
         let compiler = StabDecompCompiler::new();
-        let internal_state = compiler._compile(circuit)?;
+        let internal_state = compiler.compile(circuit)?;
         Ok(Self { internal_state })
     }
 
@@ -112,7 +112,7 @@ impl QuantumState {
     /// A [`Result`] containing the statevector as an `Array1<Complex64>` or an [`Error`](crate::error::Error).
     pub fn to_statevector(&self) -> Result<Array1<num_complex::Complex64>> {
         match &self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._to_statevector(),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.to_statevector(),
         }
     }
 
@@ -128,7 +128,7 @@ impl QuantumState {
             (
                 InternalState::StabilizerDecomposedStateScalar(state1),
                 InternalState::StabilizerDecomposedStateScalar(state2),
-            ) => state1._inner_product(state2),
+            ) => state1.inner_product(state2),
         }
     }
 
@@ -143,7 +143,7 @@ impl QuantumState {
     /// A [`Result`] containing a vector of boolean measurement results or an [`Error`](crate::error::Error).
     pub fn measure(&mut self, qargs: &[usize], seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._measure(qargs, seed),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.measure(qargs, seed),
         }
     }
 
@@ -157,7 +157,7 @@ impl QuantumState {
     /// A [`Result`] containing a vector of boolean measurement results or an [`Error`](crate::error::Error).
     pub fn measure_all(&mut self, seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._measure_all(seed),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.measure_all(seed),
         }
     }
 
@@ -188,7 +188,7 @@ impl QuantumState {
     ) -> Result<ShotCount> {
         match &self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => {
-                state._sample(qargs, shots, seed)
+                state.sample(qargs, shots, seed)
             }
         }
     }
@@ -202,7 +202,7 @@ impl QuantumState {
     /// A [`Result`] containing the expectation value as `f64` or an [`Error`](crate::error::Error).
     pub fn exp_value(&self, pauli_string: &PauliString) -> Result<f64> {
         match &self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._exp_value(pauli_string),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.exp_value(pauli_string),
         }
     }
 
@@ -224,7 +224,7 @@ impl QuantumState {
     pub fn project_normalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
         match &mut self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => {
-                state._project_normalized(qubit, outcome)
+                state.project_normalized(qubit, outcome)
             }
         }
     }
@@ -259,7 +259,7 @@ impl QuantumState {
     pub fn project_unnormalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
         match &mut self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => {
-                state._project_unnormalized(qubit, outcome)
+                state.project_unnormalized(qubit, outcome)
             }
         }
     }
@@ -285,7 +285,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error) if the qubit index is out of bounds.
     pub fn discard(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._discard(qubit),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.discard(qubit),
         }
     }
 
@@ -301,7 +301,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_gate(&mut self, gate: &QuantumGate) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_gate(gate),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_gate(gate),
         }
     }
 
@@ -315,7 +315,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_gates(&mut self, gates: &[QuantumGate]) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_gates(gates),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_gates(gates),
         }
     }
 
@@ -329,7 +329,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_x(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_x(qubit),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_x(qubit),
         }
     }
 
@@ -342,7 +342,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_y(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_y(qubit),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_y(qubit),
         }
     }
 
@@ -355,7 +355,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_z(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_z(qubit),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_z(qubit),
         }
     }
 
@@ -368,7 +368,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_h(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_h(qubit),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_h(qubit),
         }
     }
 
@@ -381,7 +381,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_s(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_s(qubit),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_s(qubit),
         }
     }
 
@@ -394,7 +394,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_sdg(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_sdg(qubit),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_sdg(qubit),
         }
     }
 
@@ -407,7 +407,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_sqrt_x(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_sqrt_x(qubit),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_sqrt_x(qubit),
         }
     }
 
@@ -420,7 +420,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_sqrt_xdg(&mut self, qubit: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_sqrt_xdg(qubit),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_sqrt_xdg(qubit),
         }
     }
 
@@ -435,7 +435,7 @@ impl QuantumState {
     pub fn apply_cx(&mut self, control: usize, target: usize) -> Result<()> {
         match &mut self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => {
-                state._apply_cx(control, target)
+                state.apply_cx(control, target)
             }
         }
     }
@@ -450,7 +450,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_cz(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._apply_cz(qarg1, qarg2),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_cz(qarg1, qarg2),
         }
     }
 
@@ -464,9 +464,7 @@ impl QuantumState {
     /// A [`Result`] which is `Ok(())` on success, or an [`Error`](crate::error::Error).
     pub fn apply_swap(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
         match &mut self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => {
-                state._apply_swap(qarg1, qarg2)
-            }
+            InternalState::StabilizerDecomposedStateScalar(state) => state.apply_swap(qarg1, qarg2),
         }
     }
 
@@ -499,7 +497,7 @@ impl QuantumState {
     /// * `f64` - The norm of the state, which should be 1.0 for a valid quantum state.
     pub fn norm(&self) -> Result<f64> {
         match &self.internal_state {
-            InternalState::StabilizerDecomposedStateScalar(state) => state._norm(),
+            InternalState::StabilizerDecomposedStateScalar(state) => state.norm(),
         }
     }
 }

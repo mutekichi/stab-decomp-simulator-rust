@@ -8,14 +8,14 @@ use rand::rngs::StdRng;
 use rand_distr::{Binomial, Distribution};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    pub(crate) fn _sample(
+    pub(crate) fn sample(
         &self,
         qargs: &[usize],
         shots: usize,
         seed: Option<[u8; 32]>,
     ) -> Result<ShotCount> {
         // ShotCount: HashMap<Vec<bool>, usize>
-        self._validate_qargs(qargs)?;
+        self.validate_qargs(qargs)?;
         let mut shot_count: ShotCount = ShotCount::new();
         let mut rng = match seed {
             Some(s) => StdRng::from_seed(s),
@@ -23,7 +23,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         };
         // Sort qargs to
         // Start the recursive sampling process
-        self._recursive_sample(
+        self.recursive_sample(
             qargs,
             0,
             shots,
@@ -36,7 +36,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     }
 
     /// Used to recursively sample from the stabilizer decomposed state.
-    fn _recursive_sample(
+    fn recursive_sample(
         &self,
         qubit_indices: &[usize],
         current_qarg: usize,
@@ -60,14 +60,14 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         // calculate the probabilities of measuring 0 and 1.
         let mut state_zero = self.clone();
         let mut state_one = self.clone();
-        let proj_zero_result = state_zero._project_unnormalized(qarg, false);
-        let proj_one_result = state_one._project_unnormalized(qarg, true);
+        let proj_zero_result = state_zero.project_unnormalized(qarg, false);
+        let proj_one_result = state_one.project_unnormalized(qarg, true);
 
         if proj_zero_result.is_err() {
             // Projection to |0> is impossible, all shots must be |1>
             current_outcome.push(true);
             // If the projection to |0> is impossible, the projection to |1> must be possible
-            state_one._recursive_sample(
+            state_one.recursive_sample(
                 qubit_indices,
                 current_qarg + 1,
                 current_shots,
@@ -83,7 +83,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             // Projection to |1> is impossible, all shots must be |0>
             current_outcome.push(false);
             // If the projection to |1> is impossible, the projection to |0> must be possible
-            state_zero._recursive_sample(
+            state_zero.recursive_sample(
                 qubit_indices,
                 current_qarg + 1,
                 current_shots,
@@ -95,8 +95,8 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             return Ok(());
         }
 
-        let mut prob_zero = state_zero._norm_squared()?
-            / (state_zero._norm_squared()? + state_one._norm_squared()?);
+        let mut prob_zero =
+            state_zero.norm_squared()? / (state_zero.norm_squared()? + state_one.norm_squared()?);
 
         // Ensure probability is not larger than 1 due to numerical errors
         prob_zero = prob_zero.clamp(0.0, 1.0);
@@ -117,7 +117,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         // forward the current outcome with a 0 measurement result
         current_outcome.push(false);
         // Recurse for the next qubit with the number of 0 and 1 outcomes
-        state_zero._recursive_sample(
+        state_zero.recursive_sample(
             qubit_indices,
             current_qarg + 1,
             num_zeros,
@@ -131,7 +131,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         current_outcome.push(true);
 
         // Recurse for the next qubit with the number of 1 outcomes
-        state_one._recursive_sample(
+        state_one.recursive_sample(
             qubit_indices,
             current_qarg + 1,
             num_ones,
@@ -158,7 +158,7 @@ mod test {
         let shots = 6400;
         let qargs = vec![0, 1, 2];
         let seed = None;
-        let result = sample_state._sample(&qargs, shots, seed);
+        let result = sample_state.sample(&qargs, shots, seed);
         match result {
             Ok(shot_count) => {
                 for (outcome, count) in shot_count.iter() {
@@ -196,7 +196,7 @@ mod test {
             seed: Option<[u8; 32]>,
             samples_to_print: usize,
         ) {
-            let result = state._sample(qargs, shots, seed);
+            let result = state.sample(qargs, shots, seed);
             match result {
                 Ok(shot_count) => {
                     println!("Showing up to {} samples:", samples_to_print);

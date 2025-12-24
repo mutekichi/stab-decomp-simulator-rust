@@ -274,7 +274,7 @@ impl QuantumCircuit {
     /// # References
     /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford group," arXiv:2003.09412v2 (2021).
     pub fn random_clifford(n: usize, seed: Option<u64>) -> QuantumCircuit {
-        random_clifford::_random_clifford(n, seed)
+        random_clifford::random_clifford(n, seed)
     }
 
     /// Parses an OpenQASM 2.0 string into a `QuantumCircuit`.
@@ -282,7 +282,7 @@ impl QuantumCircuit {
     /// # Arguments
     /// * `qasm_str` - A string slice containing the OpenQASM 2.0 circuit description.
     pub fn from_qasm_str(qasm_str: &str) -> Result<Self> {
-        parser::_from_qasm_str(qasm_str)
+        parser::from_qasm_str(qasm_str)
     }
 
     /// Parses an OpenQASM 2.0 file into a `QuantumCircuit`.
@@ -290,7 +290,7 @@ impl QuantumCircuit {
     /// # Arguments
     /// * `path` - A path to the QASM file.
     pub fn from_qasm_file<P: AsRef<Path>>(path: P) -> Result<Self> {
-        parser::_from_qasm_file(path)
+        parser::from_qasm_file(path)
     }
 
     /// Converts the circuit to an OpenQASM 2.0 string.
@@ -298,7 +298,7 @@ impl QuantumCircuit {
     /// # Arguments
     /// * `reg_name` - The name of the quantum register (e.g., "q").
     pub fn to_qasm_str(&self, reg_name: &str) -> String {
-        parser::_to_qasm_str(self, reg_name)
+        parser::to_qasm_str(self, reg_name)
     }
 
     /// Writes the circuit to an OpenQASM 2.0 file.
@@ -307,6 +307,6 @@ impl QuantumCircuit {
     /// * `path` - The path to the output file.
     /// * `reg_name` - The name of the quantum register (e.g., "q").
     pub fn to_qasm_file<P: AsRef<Path>>(&self, path: P, reg_name: &str) -> Result<()> {
-        parser::_to_qasm_file(self, path, reg_name)
+        parser::to_qasm_file(self, path, reg_name)
     }
 }

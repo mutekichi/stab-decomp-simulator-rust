@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use crate::error::{Error, Result};
 use crate::state::{StabilizerDecomposedState, types::scalar::Scalar};
 use stabilizer_ch_form_rust::prelude::*;
@@ -6,7 +7,9 @@ use stabilizer_ch_form_rust::prelude::*;
 /// |Toffoli> = (|000> + |100> + |010> + |111>) / 2
 ///           = (|0+0> + |1,Bell>) / sqrt(2)
 /// as a StabilizerDecomposedState<Scalar>
-pub(crate) fn _construct_toffoli_state() -> Result<StabilizerDecomposedState<Scalar>> {
+///
+/// Note: Toffoli state injection is not implemented yet.
+pub(crate) fn construct_toffoli_state() -> Result<StabilizerDecomposedState<Scalar>> {
     // |0+0> part
     let mut stab1 = StabilizerCHForm::new(3)?;
     stab1.apply_h(1)?;
@@ -26,15 +29,12 @@ pub(crate) fn _construct_toffoli_state() -> Result<StabilizerDecomposedState<Sca
     ))
 }
 
-pub(crate) fn _construct_toffoli_tensor_state(
+pub(crate) fn construct_toffoli_tensor_state(
     num_tensors: usize,
 ) -> Result<StabilizerDecomposedState<Scalar>> {
     match num_tensors {
         0 => Err(Error::InvalidNumQubits(num_tensors)),
-        1 => _construct_toffoli_state(),
-        _ => {
-            Ok(_construct_toffoli_tensor_state(num_tensors - 1)?
-                .kron(&_construct_toffoli_state()?)?)
-        }
+        1 => construct_toffoli_state(),
+        _ => Ok(construct_toffoli_tensor_state(num_tensors - 1)?.kron(&construct_toffoli_state()?)?),
     }
 }

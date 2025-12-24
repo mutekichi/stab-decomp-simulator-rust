@@ -4,19 +4,19 @@ use crate::state::Coefficient;
 use crate::state::StabilizerDecomposedState;
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    pub fn _apply_gate(&mut self, gate: &QuantumGate) -> Result<()> {
+    pub(crate) fn apply_gate(&mut self, gate: &QuantumGate) -> Result<()> {
         match gate {
-            QuantumGate::H(q) => self._apply_h(*q),
-            QuantumGate::X(q) => self._apply_x(*q),
-            QuantumGate::Y(q) => self._apply_y(*q),
-            QuantumGate::Z(q) => self._apply_z(*q),
-            QuantumGate::S(q) => self._apply_s(*q),
-            QuantumGate::Sdg(q) => self._apply_sdg(*q),
-            QuantumGate::SqrtX(q) => self._apply_sqrt_x(*q),
-            QuantumGate::SqrtXdg(q) => self._apply_sqrt_xdg(*q),
-            QuantumGate::CX(c, t) => self._apply_cx(*c, *t),
-            QuantumGate::CZ(q1, q2) => self._apply_cz(*q1, *q2),
-            QuantumGate::Swap(q1, q2) => self._apply_swap(*q1, *q2),
+            QuantumGate::H(q) => self.apply_h(*q),
+            QuantumGate::X(q) => self.apply_x(*q),
+            QuantumGate::Y(q) => self.apply_y(*q),
+            QuantumGate::Z(q) => self.apply_z(*q),
+            QuantumGate::S(q) => self.apply_s(*q),
+            QuantumGate::Sdg(q) => self.apply_sdg(*q),
+            QuantumGate::SqrtX(q) => self.apply_sqrt_x(*q),
+            QuantumGate::SqrtXdg(q) => self.apply_sqrt_xdg(*q),
+            QuantumGate::CX(c, t) => self.apply_cx(*c, *t),
+            QuantumGate::CZ(q1, q2) => self.apply_cz(*q1, *q2),
+            QuantumGate::Swap(q1, q2) => self.apply_swap(*q1, *q2),
             QuantumGate::T(_) => Err(crate::error::Error::NonCliffordGateApplication(
                 gate.name().to_string(),
             )),
@@ -29,64 +29,64 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         }
     }
 
-    pub fn _apply_gates(&mut self, gates: &[QuantumGate]) -> Result<()> {
+    pub(crate) fn apply_gates(&mut self, gates: &[QuantumGate]) -> Result<()> {
         for gate in gates {
-            self._apply_gate(gate)?;
+            self.apply_gate(gate)?;
         }
         Ok(())
     }
 
     // Single-qubit gates
-    pub fn _apply_x(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn apply_x(&mut self, qarg: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_x(qarg)?
         }
         Ok(())
     }
 
-    pub fn _apply_y(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn apply_y(&mut self, qarg: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_y(qarg)?
         }
         Ok(())
     }
 
-    pub fn _apply_z(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn apply_z(&mut self, qarg: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_z(qarg)?;
         }
         Ok(())
     }
 
-    pub fn _apply_h(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn apply_h(&mut self, qarg: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_h(qarg)?;
         }
         Ok(())
     }
 
-    pub fn _apply_s(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn apply_s(&mut self, qarg: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_s(qarg)?;
         }
         Ok(())
     }
 
-    pub fn _apply_sdg(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn apply_sdg(&mut self, qarg: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_sdg(qarg)?;
         }
         Ok(())
     }
 
-    pub fn _apply_sqrt_x(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn apply_sqrt_x(&mut self, qarg: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_sqrt_x(qarg)?;
         }
         Ok(())
     }
 
-    pub fn _apply_sqrt_xdg(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn apply_sqrt_xdg(&mut self, qarg: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_sqrt_xdg(qarg)?;
         }
@@ -94,21 +94,21 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     }
 
     // Two-qubit gates
-    pub fn _apply_cx(&mut self, control: usize, target: usize) -> Result<()> {
+    pub(crate) fn apply_cx(&mut self, control: usize, target: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_cx(control, target)?;
         }
         Ok(())
     }
 
-    pub fn _apply_cz(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
+    pub(crate) fn apply_cz(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_cz(qarg1, qarg2)?;
         }
         Ok(())
     }
 
-    pub fn _apply_swap(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
+    pub(crate) fn apply_swap(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
         for stab in self.stabilizers.iter_mut() {
             stab.apply_swap(qarg1, qarg2)?;
         }

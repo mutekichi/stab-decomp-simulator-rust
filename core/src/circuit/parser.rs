@@ -14,7 +14,7 @@ use std::path::Path;
 ///
 /// ### Returns
 /// A `Result` containing the parsed `QuantumCircuit` or a `String` error message.
-pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
+pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
     type Gate1Fn = fn(usize) -> QuantumGate;
     type Gate2Fn = fn(usize, usize) -> QuantumGate;
     type Gate3Fn = fn(usize, usize, usize) -> QuantumGate;
@@ -180,7 +180,7 @@ pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
 /// * `path` - A reference to a path of the OpenQASM 2.0 file.
 /// ### Returns
 /// A `Result` containing the parsed `QuantumCircuit` or a `String` error message.
-pub(crate) fn _from_qasm_file<P: AsRef<Path>>(path: P) -> Result<QuantumCircuit> {
+pub(crate) fn from_qasm_file<P: AsRef<Path>>(path: P) -> Result<QuantumCircuit> {
     let qasm_content = fs::read_to_string(path.as_ref()).map_err(|e| {
         Error::QasmParsingError(format!(
             "Failed to read file '{}': {}",
@@ -189,10 +189,10 @@ pub(crate) fn _from_qasm_file<P: AsRef<Path>>(path: P) -> Result<QuantumCircuit>
         ))
     })?;
 
-    _from_qasm_str(&qasm_content)
+    from_qasm_str(&qasm_content)
 }
 
-pub(crate) fn _to_qasm_str(circuit: &QuantumCircuit, reg_name: &str) -> String {
+pub(crate) fn to_qasm_str(circuit: &QuantumCircuit, reg_name: &str) -> String {
     let mut lines = Vec::new();
     lines.push("OPENQASM 2.0;".to_string());
     lines.push("include \"qelib1.inc\";".to_string());
@@ -210,7 +210,7 @@ pub(crate) fn _to_qasm_str(circuit: &QuantumCircuit, reg_name: &str) -> String {
 /// # Arguments
 /// * `path` - The path to the output file.
 /// * `reg_name` - The name of the quantum register (e.g., "q").
-pub(crate) fn _to_qasm_file<P: AsRef<Path>>(
+pub(crate) fn to_qasm_file<P: AsRef<Path>>(
     circuit: &QuantumCircuit,
     path: P,
     reg_name: &str,

@@ -8,7 +8,6 @@ use crate::state::types::{
 };
 
 /// Represents a scalar value in the form `phase * 2^(-r/2)` or zero.
-/// NOTE: Should be changed to pub(crate)
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Scalar {
     Zero,
@@ -16,10 +15,12 @@ pub(crate) enum Scalar {
 }
 
 impl Scalar {
+    /// The scalar value representing one.
     pub(crate) const ONE: Self = Scalar::NonZero {
         phase: PhaseFactor::PLUS_ONE,
         r: 0,
     };
+    /// The scalar value representing 1/sqrt(2).
     pub(crate) const ONE_OVER_SQRT_2: Self = Scalar::NonZero {
         phase: PhaseFactor::PLUS_ONE,
         r: 1,
@@ -60,6 +61,7 @@ impl From<Scalar> for Complex64 {
 }
 
 impl Conj for Scalar {
+    /// Returns the complex conjugate of the scalar.
     fn conj(&self) -> Self {
         match self {
             Scalar::Zero => Scalar::Zero,
