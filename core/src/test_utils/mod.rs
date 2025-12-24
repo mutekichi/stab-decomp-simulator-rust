@@ -200,7 +200,7 @@ pub(crate) fn create_sample_stab_decomp_state() -> StabilizerDecomposedState<Com
     let mut stab1 = StabilizerCHForm::new(3).unwrap();
     stab1.apply_h(1).unwrap();
 
-    // |1,Bell> part
+    // |Bell,1> part
     let mut stab2 = StabilizerCHForm::new(3).unwrap();
     stab2.apply_x(0).unwrap();
     stab2.apply_h(1).unwrap();
