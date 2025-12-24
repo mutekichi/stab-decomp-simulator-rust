@@ -39,6 +39,12 @@ pub enum Error {
         right: usize,
     },
 
+    #[error("Measurements of more than 128 qubits are not supoprted.")]
+    MeasurementTooManyQubits,
+
+    #[error("Sampling more than 128 qubits is not supported.")]
+    SamplingTooManyQubits,
+
     #[error(
         "Impossible projection on qubit {qubit_index}: cannot project determined state |{}> onto |{}>.",
         if *desired { 0 } else { 1 },

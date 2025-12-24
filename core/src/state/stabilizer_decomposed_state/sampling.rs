@@ -1,7 +1,7 @@
 use crate::{
     error::{Error, Result},
     state::{Coefficient, StabilizerDecomposedState},
-    types::shot_count::ShotCount,
+    types::shot_count::{OutcomeInteger, SamplingBuffer, ShotCount},
 };
 use rand::SeedableRng;
 use rand::rngs::StdRng;
@@ -14,35 +14,42 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         shots: usize,
         seed: Option<[u8; 32]>,
     ) -> Result<ShotCount> {
-        // ShotCount: HashMap<Vec<bool>, usize>
         self.validate_qargs(qargs)?;
-        let mut shot_count: ShotCount = ShotCount::new();
+
+        let num_qubits = qargs.len();
+
         let mut rng = match seed {
             Some(s) => StdRng::from_seed(s),
             None => StdRng::from_entropy(),
         };
-        // Sort qargs to
-        // Start the recursive sampling process
-        self.recursive_sample(
-            qargs,
-            0,
-            shots,
-            &mut Vec::with_capacity(qargs.len()),
-            &mut shot_count,
-            &mut rng,
-        )?;
 
-        Ok(shot_count)
+        let buffer = if num_qubits <= 32 {
+            let mut outcomes = Vec::new();
+            self.recursive_sample(qargs, 0, shots, u32::zero(), &mut outcomes, &mut rng)?;
+            SamplingBuffer::U32(outcomes)
+        } else if num_qubits <= 64 {
+            let mut outcomes = Vec::new();
+            self.recursive_sample(qargs, 0, shots, u64::zero(), &mut outcomes, &mut rng)?;
+            SamplingBuffer::U64(outcomes)
+        } else if num_qubits <= 128 {
+            let mut outcomes = Vec::new();
+            self.recursive_sample(qargs, 0, shots, u128::zero(), &mut outcomes, &mut rng)?;
+            SamplingBuffer::U128(outcomes)
+        } else {
+            return Err(Error::SamplingTooManyQubits);
+        };
+
+        Ok(buffer.finalize(num_qubits))
     }
 
     /// Used to recursively sample from the stabilizer decomposed state.
-    fn recursive_sample(
+    fn recursive_sample<I: OutcomeInteger>(
         &self,
         qubit_indices: &[usize],
         current_qarg: usize,
         current_shots: usize,
-        current_outcome: &mut Vec<bool>,
-        shot_count: &mut ShotCount,
+        current_outcome: I,
+        outcome_counts: &mut Vec<(I, usize)>,
         rng: &mut StdRng,
     ) -> Result<()> {
         // There are no shots to process, stop the recursion
@@ -51,7 +58,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         }
         // Base case: If we've processed all qubits, record the result
         if current_qarg == qubit_indices.len() {
-            *shot_count.entry(current_outcome.clone()).or_insert(0) += current_shots;
+            outcome_counts.push((current_outcome, current_shots));
             return Ok(());
         }
         let qarg = qubit_indices[current_qarg];
@@ -63,35 +70,34 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         let proj_zero_result = state_zero.project_unnormalized(qarg, false);
         let proj_one_result = state_one.project_unnormalized(qarg, true);
 
+        let next_bits = current_outcome.set_bit(current_qarg);
+
         if proj_zero_result.is_err() {
             // Projection to |0> is impossible, all shots must be |1>
-            current_outcome.push(true);
             // If the projection to |0> is impossible, the projection to |1> must be possible
             state_one.recursive_sample(
                 qubit_indices,
                 current_qarg + 1,
                 current_shots,
-                current_outcome,
-                shot_count,
+                next_bits,
+                outcome_counts,
                 rng,
             )?;
-            current_outcome.pop();
             return Ok(());
         }
 
         if proj_one_result.is_err() {
             // Projection to |1> is impossible, all shots must be |0>
-            current_outcome.push(false);
+            // We do not set the bit since it is already 0
             // If the projection to |1> is impossible, the projection to |0> must be possible
             state_zero.recursive_sample(
                 qubit_indices,
                 current_qarg + 1,
                 current_shots,
                 current_outcome,
-                shot_count,
+                outcome_counts,
                 rng,
             )?;
-            current_outcome.pop();
             return Ok(());
         }
 
@@ -114,34 +120,25 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         let num_zeros = binom.sample(rng) as usize;
         let num_ones = current_shots - num_zeros;
 
-        // forward the current outcome with a 0 measurement result
-        current_outcome.push(false);
-        // Recurse for the next qubit with the number of 0 and 1 outcomes
+        // Recurse for outcome 0
         state_zero.recursive_sample(
             qubit_indices,
             current_qarg + 1,
             num_zeros,
             current_outcome,
-            shot_count,
+            outcome_counts,
             rng,
         )?;
 
-        // backtrack the current outcome to replace the last entry with a 1 measurement result
-        current_outcome.pop();
-        current_outcome.push(true);
-
-        // Recurse for the next qubit with the number of 1 outcomes
+        // Recurse for outcome 1
         state_one.recursive_sample(
             qubit_indices,
             current_qarg + 1,
             num_ones,
-            current_outcome,
-            shot_count,
+            next_bits,
+            outcome_counts,
             rng,
         )?;
-
-        // backtrack the current outcome to remove the last entry
-        current_outcome.pop();
 
         Ok(())
     }
