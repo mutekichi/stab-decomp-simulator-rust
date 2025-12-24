@@ -15,7 +15,7 @@ use stabilizer_ch_form_rust::circuit::CliffordCircuit;
 ///
 /// # References
 /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford group," arXiv:2003.09412v2 (2021).
-pub(crate) fn _random_clifford(n: usize, seed: Option<u64>) -> QuantumCircuit {
+pub(crate) fn random_clifford(n: usize, seed: Option<u64>) -> QuantumCircuit {
     let clifford_circuit = CliffordCircuit::random_clifford(n, seed);
     let mut qc = QuantumCircuit::new(n);
     // Convert stabilizer_ch_form_rust::circuit::CliffordGate to core::circuit::QuantumGate

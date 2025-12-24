@@ -8,7 +8,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// Converts the stabilizer decomposed state to a statevector representation.
     /// Note that the state is represented as a dense vector, which may be inefficient for large number of qubits.
     /// The indexing of the statevector is in little-endian order like in Qiskit.
-    pub(crate) fn _to_statevector(&self) -> Result<Array1<Complex64>> {
+    pub(crate) fn to_statevector(&self) -> Result<Array1<Complex64>> {
         const MAX_QUBITS_FOR_STATEVECTOR: usize = 28;
         if self.num_qubits > MAX_QUBITS_FOR_STATEVECTOR {
             return Err(Error::StatevectorTooLarge(self.num_qubits));
@@ -33,7 +33,7 @@ mod tests {
     fn test_to_statevector() {
         // sample_state = |000> + |100> + |010> + |111>
         let sample_state = create_sample_stab_decomp_state();
-        let statevector = sample_state._to_statevector().unwrap();
+        let statevector = sample_state.to_statevector().unwrap();
         let expected_statevector = array![
             Complex64::new(0.5, 0.0),
             Complex64::new(0.5, 0.0),

@@ -52,7 +52,8 @@ class QuantumGate:
 
     @staticmethod
     def cx(control: int, target: int) -> QuantumGate:
-        """Creates a CX (CNOT) gate acting on the specified control and target qubits."""
+        """Creates a CX (CNOT) gate acting on the specified control and target
+        qubits."""
         ...
 
     @staticmethod
@@ -77,7 +78,8 @@ class QuantumGate:
 
     @staticmethod
     def ccx(control1: int, control2: int, target: int) -> QuantumGate:
-        """Creates a Toffoli (CCX) gate acting on the specified control and target qubits."""
+        """Creates a Toffoli (CCX) gate acting on the specified control and target
+        qubits."""
         ...
 
     @property
@@ -90,12 +92,10 @@ class QuantumGate:
         """A list of qubit indices that the gate acts upon."""
         ...
 
-    @property
     def is_clifford(self) -> bool:
         """Returns True if the gate is a Clifford gate, False otherwise."""
         ...
 
-    @property
     def is_t_type(self) -> bool:
         """Returns True if the gate is a T or Tdg gate, False otherwise."""
         ...
@@ -105,5 +105,5 @@ class QuantumGate:
         ...
 
     def __repr__(self) -> str:
-        """Returns a developer-friendly representation of the QuantumGate object."""
-        ...
+        """Returns a detailed string representation of the QuantumGate object.
+        (e.g., '<QuantumGate: X(0)>', '<QuantumGate: CX(1, 2)>')."""

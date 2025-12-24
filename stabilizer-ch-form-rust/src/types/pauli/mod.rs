@@ -76,6 +76,7 @@ fn parse_sparse(s: &str) -> Result<PauliString> {
         return Ok(PauliString::Sparse(vec![]));
     }
 
+    let mut seen_qubits = std::collections::BTreeSet::new();
     for term_str in s.split_whitespace() {
         if let Some(cap) = TERM_RE.captures(term_str) {
             let op_char = cap.get(1).unwrap().as_str();
@@ -90,7 +91,14 @@ fn parse_sparse(s: &str) -> Result<PauliString> {
             let qubit = index_str.parse::<usize>().map_err(|_| {
                 Error::PauliStringParsingError(format!("invalid qubit index: {}", index_str))
             })?;
+            if seen_qubits.contains(&qubit) {
+                return Err(Error::PauliStringParsingError(format!(
+                    "duplicate Pauli operator on qubit {} in string: '{}'",
+                    qubit, s
+                )));
+            }
             terms.push(PauliTerm { op, qubit });
+            seen_qubits.insert(qubit);
         } else {
             return Err(Error::PauliStringParsingError(format!(
                 "invalid sparse Pauli term: '{}' in string: '{}'",

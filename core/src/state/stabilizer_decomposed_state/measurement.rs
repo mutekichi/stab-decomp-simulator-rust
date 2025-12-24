@@ -5,12 +5,8 @@ use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    pub(crate) fn _measure(
-        &mut self,
-        qargs: &[usize],
-        seed: Option<[u8; 32]>,
-    ) -> Result<Vec<bool>> {
-        self._validate_measure_args(qargs)?;
+    pub(crate) fn measure(&mut self, qargs: &[usize], seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
+        self.validate_qargs(qargs)?;
         let mut rng = match seed {
             Some(s) => rand::rngs::StdRng::from_seed(s),
             None => rand::rngs::StdRng::from_entropy(),
@@ -18,25 +14,25 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         let mut outcomes = Vec::with_capacity(qargs.len());
 
         for &qubit in qargs {
-            let outcome = self._measure_single_qubit(qubit, &mut rng)?;
+            let outcome = self.measure_single_qubit(qubit, &mut rng)?;
             outcomes.push(outcome);
         }
 
         Ok(outcomes)
     }
 
-    pub(crate) fn _measure_all(&mut self, seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
+    pub(crate) fn measure_all(&mut self, seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
         let num_qubits = self.num_qubits;
         let qargs: Vec<usize> = (0..num_qubits).collect();
-        self._measure(&qargs, seed)
+        self.measure(&qargs, seed)
     }
 
-    fn _measure_single_qubit(&mut self, qubit: usize, rng: &mut StdRng) -> Result<bool> {
+    fn measure_single_qubit(&mut self, qubit: usize, rng: &mut StdRng) -> Result<bool> {
         let mut state_zero = self.clone();
         let mut state_one = self.clone();
 
-        let can_project_zero = state_zero._project_unnormalized(qubit, false).is_ok();
-        let can_project_one = state_one._project_unnormalized(qubit, true).is_ok();
+        let can_project_zero = state_zero.project_unnormalized(qubit, false).is_ok();
+        let can_project_one = state_one.project_unnormalized(qubit, true).is_ok();
 
         // Match statement now returns a tuple: (measurement outcome, squared norm of the resulting unnormalized state)
         let (measurement_outcome, norm_sq_after_proj) = match (can_project_zero, can_project_one) {
@@ -50,18 +46,18 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             (true, false) => {
                 // Deterministic outcome: 0.
                 // The norm squared of state_zero should be the original norm squared (i.e., 1.0).
-                let norm_sq = state_zero._norm_squared()?;
+                let norm_sq = state_zero.norm_squared()?;
                 (false, norm_sq)
             }
             (false, true) => {
                 // Deterministic outcome: 1.
-                let norm_sq = state_one._norm_squared()?;
+                let norm_sq = state_one.norm_squared()?;
                 (true, norm_sq)
             }
             (true, true) => {
                 // Superposition case.
-                let prob_zero = state_zero._norm_squared()?;
-                let prob_one = state_one._norm_squared()?;
+                let prob_zero = state_zero.norm_squared()?;
+                let prob_one = state_one.norm_squared()?;
                 let total_prob = prob_zero + prob_one;
 
                 if total_prob.abs() < 1e-12 {
@@ -97,19 +93,9 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             ));
         }
 
-        self._amplify_global_factor(Complex64::new(1.0 / norm, 0.0));
+        self.amplify_global_factor(Complex64::new(1.0 / norm, 0.0));
 
         Ok(measurement_outcome)
-    }
-
-    fn _validate_measure_args(&self, qargs: &[usize]) -> Result<()> {
-        let num_qubits = self.num_qubits;
-        for &q in qargs {
-            if q >= num_qubits {
-                return Err(Error::QubitIndexOutOfBounds(q, num_qubits));
-            }
-        }
-        Ok(())
     }
 }
 
@@ -125,11 +111,11 @@ mod tests {
         let mut counts = std::collections::HashMap::new();
         for _ in 0..trials {
             let mut state = sample_state.clone();
-            let outcome = state._measure_all(None).unwrap();
+            let outcome = state.measure_all(None).unwrap();
             *counts.entry(outcome).or_insert(0) += 1;
             dbg!(state.global_factor);
-            dbg!(state._norm().unwrap());
-            assert!((state._norm().unwrap() - 1.0).abs() < 1e-10);
+            dbg!(state.norm().unwrap());
+            assert!((state.norm().unwrap() - 1.0).abs() < 1e-10);
         }
         for (outcome, count) in counts {
             let outcome_str: String = outcome.iter().map(|&b| if b { '1' } else { '0' }).collect();
@@ -165,11 +151,11 @@ mod tests {
         // Expected: 3/8: [0,0,0], 1/8: [0,0,1], 3/16: [1,0,0], 1/16: [1,0,1], 3/16: [1,1,0], 1/16: [1,1,1]
         for _ in 0..trials {
             let mut state = large_state.clone();
-            let outcome = state._measure(&qubits_to_measure, None).unwrap();
+            let outcome = state.measure(&qubits_to_measure, None).unwrap();
             *counts.entry(outcome).or_insert(0) += 1;
             dbg!(state.global_factor);
-            dbg!(state._norm().unwrap());
-            assert!((state._norm().unwrap() - 1.0).abs() < 1e-10);
+            dbg!(state.norm().unwrap());
+            assert!((state.norm().unwrap() - 1.0).abs() < 1e-10);
         }
         for (outcome, count) in counts {
             let outcome_str: String = outcome.iter().map(|&b| if b { '1' } else { '0' }).collect();

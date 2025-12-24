@@ -5,7 +5,7 @@ use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// calculates the norm of the state
-    pub(crate) fn _norm_squared(&self) -> Result<f64> {
+    pub(crate) fn norm_squared(&self) -> Result<f64> {
         let mut sum = Complex64::new(0.0, 0.0);
         let terms: Vec<_> = self
             .stabilizers
@@ -30,7 +30,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
     }
 
     /// calculates the norm of the state
-    pub(crate) fn _norm(&self) -> Result<f64> {
-        Ok(self._norm_squared()?.sqrt())
+    pub(crate) fn norm(&self) -> Result<f64> {
+        Ok(self.norm_squared()?.sqrt())
     }
 }

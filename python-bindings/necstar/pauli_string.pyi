@@ -3,8 +3,8 @@ from __future__ import annotations
 class PauliString:
     """
     Represents a multi-qubit Pauli operator.
-
-    Can be initialized from a string in either dense ("IXYZ") or sparse ("X1 Y3") format.
+    Can be initialized from a string in either dense ("IXYZ") or sparse ("X1 Y3")
+    format.
     The identity operator can be represented by an empty string "" or "I".
     """
 
@@ -15,10 +15,11 @@ class PauliString:
 
     @staticmethod
     def from_str(s: str) -> PauliString:
-        """Creates a :class:`~necstar.PauliString` object from a string representation. Supports:
-
+        """Creates a :class:`~necstar.PauliString` object from a string representation.
+        Supports:
         1. Dense format: e.g., "IXYZ" (case-sensitive).
-        2. Sparse format: e.g., "X1 Y3 Z0" (case-insensitive for Pauli chars, space-separated).
+        2. Sparse format: e.g., "X1 Y3 Z0" (case-insensitive for Pauli chars,
+                space-separated).
         3. Identity: "" or "I" (case-insensitive).
 
         Args:
@@ -37,5 +38,6 @@ class PauliString:
         ...
 
     def __repr__(self) -> str:
-        """Returns a printable representation of the :class:`~necstar.PauliString` object."""
+        """Returns a printable representation of the :class:`~necstar.PauliString`
+        object."""
         ...

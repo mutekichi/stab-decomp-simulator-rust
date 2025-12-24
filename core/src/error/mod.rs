@@ -46,6 +46,12 @@ pub enum Error {
     )]
     ImpossibleProjection { qubit_index: usize, desired: bool },
 
+    #[error("Duplicate qubit index found: {0}.")]
+    DuplicateQubitIndex(usize),
+
+    #[error("Qubit index list is empty.")]
+    EmptyQubitIndices,
+
     #[error(transparent)]
     Compile(#[from] CompileError),
 

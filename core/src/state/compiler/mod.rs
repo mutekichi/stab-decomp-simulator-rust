@@ -3,7 +3,7 @@ use crate::{
     circuit::QuantumCircuit,
     state::{
         InternalState, StabilizerDecomposedState,
-        magic_states::t_state::_construct_t_tensor_state,
+        magic_states::t_state::construct_t_tensor_state,
         types::{coefficient::Amplify, scalar::Scalar},
     },
 };
@@ -17,7 +17,7 @@ use stabilizer_ch_form_rust::{
 /// A trait for compilers that transform a `QuantumCircuit` blueprint into a
 /// computable `InternalState`.
 pub(crate) trait CircuitCompiler {
-    fn _compile(&self, circuit: &QuantumCircuit) -> Result<InternalState, CompileError>;
+    fn compile(&self, circuit: &QuantumCircuit) -> Result<InternalState, CompileError>;
 }
 
 /// A compiler that implements the stabilizer decomposition simulation method.
@@ -35,7 +35,7 @@ impl StabDecompCompiler {
 }
 
 impl CircuitCompiler for StabDecompCompiler {
-    fn _compile(&self, circuit: &QuantumCircuit) -> CompileResult<InternalState> {
+    fn compile(&self, circuit: &QuantumCircuit) -> CompileResult<InternalState> {
         let num_qubits_original = circuit.num_qubits;
         let mut num_t_type_gates = 0;
         let mut clifford_ops: Vec<CliffordGate> = Vec::new();
@@ -74,7 +74,7 @@ impl CircuitCompiler for StabDecompCompiler {
         }
 
         // Initialize the T-tensor state for the ancilla qubits.
-        let t_tensor_state = _construct_t_tensor_state(num_t_type_gates).unwrap();
+        let t_tensor_state = construct_t_tensor_state(num_t_type_gates).unwrap();
 
         let mut final_stabilizers: Vec<StabilizerCHForm> = Vec::new();
         let mut final_coefficients: Vec<Scalar> = Vec::new();

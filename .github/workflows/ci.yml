@@ -81,5 +81,5 @@ jobs:
         run: poetry run maturin develop --release --manifest-path python-bindings/Cargo.toml
 
       - name: Run Python tests
-        run: poetry run pytest tests/python 
+        run: poetry run pytest
         

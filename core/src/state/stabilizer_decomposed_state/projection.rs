@@ -5,9 +5,9 @@ use crate::{
 };
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    pub(crate) fn _project_normalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
-        self._project_unnormalized(qubit, outcome)?;
-        let norm = self._norm()?;
+    pub(crate) fn project_normalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
+        self.project_unnormalized(qubit, outcome)?;
+        let norm = self.norm()?;
         if norm == 0.0 {
             return Err(Error::ImpossibleProjection {
                 qubit_index: qubit,
@@ -20,7 +20,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
 
     // NOTE: This function always successes even if the projection is impossible for the state.
     //       When the projection is impossible, the norm of the state becomes zero.
-    pub(crate) fn _project_unnormalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
+    pub(crate) fn project_unnormalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
         // Filter out stabilizers that cannot be projected to the desired outcome
         // NOTE: We can optimize this by avoiding the allocation of a new vector
         //       and instead using `retain` if performance becomes an issue.

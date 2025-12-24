@@ -6,7 +6,7 @@ use crate::state::{Coefficient, StabilizerDecomposedState};
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// Computes the inner product between two `StabilizerDecomposedState` instances.
     /// i.e. ⟨self|other⟩
-    pub(crate) fn _inner_product(&self, other: &Self) -> Result<Complex64> {
+    pub(crate) fn inner_product(&self, other: &Self) -> Result<Complex64> {
         let mut result = Complex64::new(0.0, 0.0);
 
         for (stab1, coeff1) in self.stabilizers.iter().zip(self.coefficients.iter()) {
