@@ -15,6 +15,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         seed: Option<[u8; 32]>,
     ) -> Result<ShotCount> {
         // ShotCount: HashMap<Vec<bool>, usize>
+        self._validate_qargs(qargs)?;
         let mut shot_count: ShotCount = ShotCount::new();
         let mut rng = match seed {
             Some(s) => StdRng::from_seed(s),

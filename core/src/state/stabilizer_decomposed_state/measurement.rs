@@ -10,7 +10,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         qargs: &[usize],
         seed: Option<[u8; 32]>,
     ) -> Result<Vec<bool>> {
-        self._validate_measure_args(qargs)?;
+        self._validate_qargs(qargs)?;
         let mut rng = match seed {
             Some(s) => rand::rngs::StdRng::from_seed(s),
             None => rand::rngs::StdRng::from_entropy(),
@@ -100,16 +100,6 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         self._amplify_global_factor(Complex64::new(1.0 / norm, 0.0));
 
         Ok(measurement_outcome)
-    }
-
-    fn _validate_measure_args(&self, qargs: &[usize]) -> Result<()> {
-        let num_qubits = self.num_qubits;
-        for &q in qargs {
-            if q >= num_qubits {
-                return Err(Error::QubitIndexOutOfBounds(q, num_qubits));
-            }
-        }
-        Ok(())
     }
 }
 

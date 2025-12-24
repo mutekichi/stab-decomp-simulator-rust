@@ -66,11 +66,9 @@ def test_state_sampling():
 
 def test_state_measurement():
     trials = 20
-    for _ in range(trials):
+    for i in range(trials):
         toffoli_state = make_toffoli_state()
-
-        measured_bits = toffoli_state.measure([0, 1, 2], seed=123)
-
+        measured_bits = toffoli_state.measure([0, 1, 2], seed=i)
         outcome_str = "".join(map(str, map(int, measured_bits)))
         expected_outcomes = {"000", "100", "010", "111"}
         assert (

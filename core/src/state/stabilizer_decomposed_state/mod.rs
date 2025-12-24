@@ -11,8 +11,9 @@ pub mod sampling;
 pub mod statevector;
 
 use num_complex::Complex64;
-use stabilizer_ch_form_rust::prelude::*;
+use stabilizer_ch_form_rust::StabilizerCHForm;
 
+use crate::error::{Error, Result};
 use crate::state::Coefficient;
 
 #[derive(Clone, Debug)]
@@ -37,6 +38,31 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
             coefficients,
             global_factor: Complex64::new(1.0, 0.0),
         }
+    }
+
+    pub(crate) fn _validate_qargs(&self, qargs: &[usize]) -> Result<()> {
+        let num_qubits = self.num_qubits;
+        // Check for Empty qargs
+        if qargs.is_empty() {
+            return Err(Error::EmptyQubitIndices);
+        }
+        // Check for out-of-bounds indices
+        for &q in qargs {
+            if q >= num_qubits {
+                return Err(Error::QubitIndexOutOfBounds(q, num_qubits));
+            }
+        }
+        // Check for duplicate indices
+        if qargs.len() > 1 {
+            let mut sorted = qargs.to_vec();
+            sorted.sort_unstable();
+            for window in sorted.windows(2) {
+                if window[0] == window[1] {
+                    return Err(Error::DuplicateQubitIndex(window[0]));
+                }
+            }
+        }
+        Ok(())
     }
 
     pub(crate) fn _amplify_global_factor(&mut self, factor: Complex64) {
