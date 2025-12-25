@@ -4,9 +4,16 @@ use crate::form::types::{InternalGate, PhaseFactor};
 use num_complex::Complex64;
 
 impl StabilizerCHForm {
-    // TODO: Implement batch inner product calculation since the result of
-    // `_self._get_normalize_to_zero_ops()` can be reused.
-    pub(crate) fn _inner_product(&self, other: &StabilizerCHForm) -> Result<Complex64> {
+    /// Computes the inner product 〈self|other〉.
+    ///
+    /// ## Arguments
+    /// * `other` - The other StabilizerCHForm to compute the inner product with.
+    ///
+    /// ## Returns
+    /// A `Result` containing the complex inner product value.
+    pub fn inner_product(&self, other: &StabilizerCHForm) -> Result<Complex64> {
+        // TODO: Implement batch inner product calculation since the result of
+        // `_self._get_normalize_to_zero_ops()` can be reused.
         if self.n != other.n {
             return Err(Error::QubitCountMismatch {
                 operation: "calculating inner product",
@@ -63,17 +70,17 @@ impl StabilizerCHForm {
             if pivot_row != j {
                 // Swap rows j and pivot_row using CNOTs: (k,j), (j,k), (k,j)
                 ops.push(InternalGate::CX(pivot_row, j));
-                self_clone._left_multiply_cx(pivot_row, j)?;
+                self_clone.left_multiply_cx(pivot_row, j)?;
                 ops.push(InternalGate::CX(j, pivot_row));
-                self_clone._left_multiply_cx(j, pivot_row)?;
+                self_clone.left_multiply_cx(j, pivot_row)?;
                 ops.push(InternalGate::CX(pivot_row, j));
-                self_clone._left_multiply_cx(pivot_row, j)?;
+                self_clone.left_multiply_cx(pivot_row, j)?;
             }
 
             for i in 0..n {
                 if i != j && self_clone.mat_g[[i, j]] {
                     ops.push(InternalGate::CX(j, i));
-                    self_clone._left_multiply_cx(j, i)?;
+                    self_clone.left_multiply_cx(j, i)?;
                 }
             }
         }
@@ -83,7 +90,7 @@ impl StabilizerCHForm {
             for c in (r + 1)..n {
                 if self_clone.mat_m[[r, c]] {
                     ops.push(InternalGate::CZ(r, c));
-                    self_clone._left_multiply_cz(r, c)?;
+                    self_clone.left_multiply_cz(r, c)?;
                 }
             }
         }
@@ -92,7 +99,7 @@ impl StabilizerCHForm {
         for q in 0..n {
             if self_clone.mat_m[[q, q]] {
                 ops.push(InternalGate::Sdg(q));
-                self_clone._left_multiply_sdg(q)?;
+                self_clone.left_multiply_sdg(q)?;
             }
         }
 
@@ -100,7 +107,7 @@ impl StabilizerCHForm {
         for i in 0..n {
             if self_clone.vec_v[i] {
                 ops.push(InternalGate::H(i));
-                self_clone._left_multiply_h(i)?;
+                self_clone.left_multiply_h(i)?;
             }
         }
 
@@ -108,7 +115,7 @@ impl StabilizerCHForm {
         for i in 0..n {
             if self_clone.vec_s[i] {
                 ops.push(InternalGate::X(i));
-                self_clone._left_multiply_x(i)?;
+                self_clone.left_multiply_x(i)?;
             }
         }
 
@@ -119,12 +126,12 @@ impl StabilizerCHForm {
         let mut new_state = self.clone();
         for op in ops {
             match op {
-                InternalGate::H(q) => new_state._left_multiply_h(*q)?,
+                InternalGate::H(q) => new_state.left_multiply_h(*q)?,
                 // InternalGate::S(q) => new_state._left_multiply_s(*q),
-                InternalGate::Sdg(q) => new_state._left_multiply_sdg(*q)?,
-                InternalGate::X(q) => new_state._left_multiply_x(*q)?,
-                InternalGate::CX(c, t) => new_state._left_multiply_cx(*c, *t)?,
-                InternalGate::CZ(c, t) => new_state._left_multiply_cz(*c, *t)?,
+                InternalGate::Sdg(q) => new_state.left_multiply_sdg(*q)?,
+                InternalGate::X(q) => new_state.left_multiply_x(*q)?,
+                InternalGate::CX(c, t) => new_state.left_multiply_cx(*c, *t)?,
+                InternalGate::CZ(c, t) => new_state.left_multiply_cz(*c, *t)?,
             }
         }
         Ok(new_state)

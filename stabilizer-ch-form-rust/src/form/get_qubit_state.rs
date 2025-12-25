@@ -3,7 +3,7 @@ use crate::error::{Error, Result};
 use crate::form::types::QubitState;
 
 impl StabilizerCHForm {
-    pub(crate) fn _get_qubit_state(&self, qarg: usize) -> Result<QubitState> {
+    pub(crate) fn get_qubit_state(&self, qarg: usize) -> Result<QubitState> {
         if qarg >= self.n {
             return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }

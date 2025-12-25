@@ -5,7 +5,12 @@ use crate::{
 };
 
 impl StabilizerCHForm {
-    pub(crate) fn _left_multiply_cx(&mut self, control: usize, target: usize) -> Result<()> {
+    /// Left-multiplies the state by a CNOT (CX) gate with control qubit `control` and target qubit `target`.
+    ///
+    /// See around eq.(49) of arXiv:1808.00128 for details.
+    ///
+    /// Time complexity: O(n)
+    pub(crate) fn left_multiply_cx(&mut self, control: usize, target: usize) -> Result<()> {
         if control >= self.n {
             return Err(Error::QubitIndexOutOfBounds(control, self.n));
         }
@@ -16,7 +21,7 @@ impl StabilizerCHForm {
             return Err(Error::DuplicateQubitIndices(control));
         }
 
-        // 1. Update gamma (must be done before matrix updates)
+        // Update gamma
         let m_control_row = self.mat_m.row(control);
         let f_target_row = self.mat_f.row(target);
         let dot_product_is_one = m_control_row
@@ -34,7 +39,7 @@ impl StabilizerCHForm {
             self.gamma[control] = gamma_c * gamma_t;
         }
 
-        // 2. Update matrices
+        // Update matrices
         // mat_g[target, :] ^= mat_g[control, :]
         Self::xor_rows(&mut self.mat_g, target, control);
         // mat_f[control, :] ^= mat_f[target, :]

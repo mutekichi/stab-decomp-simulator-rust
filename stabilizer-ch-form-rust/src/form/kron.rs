@@ -2,7 +2,14 @@ use crate::{StabilizerCHForm, error::Result};
 use ndarray::{Axis, s};
 
 impl StabilizerCHForm {
-    pub fn _kron(&self, other: &StabilizerCHForm) -> Result<StabilizerCHForm> {
+    /// Computes the tensor product of this state with another: |self> ⊗ |other>.
+    ///
+    /// ## Arguments
+    /// * `other` - The other StabilizerCHForm to tensor with.
+    ///
+    /// ## Returns
+    /// A `Result` containing the new `StabilizerCHForm` representing the tensor product state.
+    pub fn kron(&self, other: &StabilizerCHForm) -> Result<StabilizerCHForm> {
         let n_total = self.n + other.n;
         let mut new_state = StabilizerCHForm::new(n_total)?;
 

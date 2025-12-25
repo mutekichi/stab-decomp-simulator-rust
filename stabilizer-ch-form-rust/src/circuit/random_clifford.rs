@@ -2,11 +2,9 @@ use crate::circuit::{CliffordCircuit, CliffordGate};
 use ndarray::{Array1, Array2};
 use rand::{Rng, SeedableRng};
 
-// --- Private Helper Functions ---
-
-/// Samples h (Hadamard layer) and S (Permutation layer) from the quantum Mallows distribution.
+/// Samples H (Hadamard layer) and S (Permutation layer) from the quantum Mallows distribution.
 /// This implementation is based on Algorithm 1 and Lemma 6 from arXiv:2003.09412v2.
-fn _sample_quantum_mallows<R: Rng>(n: usize, rng: &mut R) -> (Array1<u8>, Array1<usize>) {
+fn sample_quantum_mallows<R: Rng>(n: usize, rng: &mut R) -> (Array1<u8>, Array1<usize>) {
     let mut h = Array1::zeros(n);
     let mut s_perm = Array1::from_elem(n, 0);
     let mut available_indices: Vec<usize> = (0..n).collect();
@@ -63,8 +61,8 @@ struct CliffordParams {
 /// Generates the parameter matrices for the Hadamard-free layers F1 and F2.
 /// This implementation follows Algorithm 2 and the rules C1-C5 from Theorem 1 in
 /// arXiv:2003.09412v2.
-fn _generate_clifford_params<R: Rng>(n: usize, rng: &mut R) -> CliffordParams {
-    let (h, s) = _sample_quantum_mallows(n, rng);
+fn generate_clifford_params<R: Rng>(n: usize, rng: &mut R) -> CliffordParams {
+    let (h, s) = sample_quantum_mallows(n, rng);
 
     let mut gamma1 = Array2::zeros((n, n));
     let mut delta1 = Array2::eye(n);
@@ -95,14 +93,14 @@ fn _generate_clifford_params<R: Rng>(n: usize, rng: &mut R) -> CliffordParams {
             let (h_i, h_j) = (h[i] == 1, h[j] == 1);
             let (s_i, s_j) = (s[i], s[j]);
 
-            // --- Gamma1 (CZ gates) based on C1 & C2 ---
+            // Gamma1 (CZ gates) based on C1 & C2
             if (s_i < s_j || h_j) && h_i || h_j && s_j < s_i {
                 let b = rng.gen_range(0..=1);
                 gamma1[[i, j]] = b;
                 gamma1[[j, i]] = b;
             }
 
-            // --- Delta1 (CNOT gates) based on C3, C4, C5 ---
+            // Delta1 (CNOT gates) based on C3, C4, C5
             if (s_i < s_j || h_j) && (s_i > s_j || !h_i) && (h_j || !h_i) {
                 delta1[[i, j]] = rng.gen_range(0..=1);
             }
@@ -122,7 +120,7 @@ fn _generate_clifford_params<R: Rng>(n: usize, rng: &mut R) -> CliffordParams {
 }
 
 /// Applies a Hadamard-free layer (F) to the quantum circuit.
-fn _apply_hadamard_free_layer(
+fn apply_hadamard_free_layer(
     qc: &mut CliffordCircuit,
     n: usize,
     gamma: &Array2<u8>,
@@ -132,7 +130,7 @@ fn _apply_hadamard_free_layer(
 ) {
     // Apply gates in reverse order of the canonical form: CNOT -> CZ/S -> Pauli.
 
-    // 1. CNOT layer from Delta matrix.
+    // CNOT layer from Delta matrix.
     for j in 0..n {
         for i in (j + 1)..n {
             if delta[[i, j]] == 1 {
@@ -141,7 +139,7 @@ fn _apply_hadamard_free_layer(
         }
     }
 
-    // 2. CZ and S (Phase) layer from Gamma matrix.
+    // CZ and S (Phase) layer from Gamma matrix.
     for i in 0..n {
         if gamma[[i, i]] == 1 {
             qc.add_gate(CliffordGate::S(i));
@@ -153,7 +151,7 @@ fn _apply_hadamard_free_layer(
         }
     }
 
-    // 3. Pauli layer (only for F2).
+    // Pauli layer (only for F2).
     if let (Some(z), Some(x)) = (pauli_z, pauli_x) {
         for i in 0..n {
             if z[i] == 1 && x[i] == 1 {
@@ -168,7 +166,7 @@ fn _apply_hadamard_free_layer(
 }
 
 /// Applies a permutation layer (S) using a sequence of SWAP gates.
-fn _apply_permutation_layer(qc: &mut CliffordCircuit, s_perm: &Array1<usize>) {
+fn apply_permutation_layer(qc: &mut CliffordCircuit, s_perm: &Array1<usize>) {
     let n = s_perm.len();
     let mut p: Vec<usize> = (0..n).collect();
 
@@ -193,15 +191,11 @@ pub(crate) fn random_clifford(n: usize, seed: Option<u64>) -> CliffordCircuit {
         Some(s) => rand::rngs::StdRng::seed_from_u64(s),
         None => rand::rngs::StdRng::from_entropy(),
     };
-
-    let params = _generate_clifford_params(n, &mut rng);
-
+    let params = generate_clifford_params(n, &mut rng);
     let mut qc = CliffordCircuit::new(n);
 
     // Build the circuit U = F1 * H * S * F2 by applying gates in reverse order.
-
-    // 1. Apply F2 layer.
-    _apply_hadamard_free_layer(
+    apply_hadamard_free_layer(
         &mut qc,
         n,
         &params.gamma2,
@@ -209,19 +203,13 @@ pub(crate) fn random_clifford(n: usize, seed: Option<u64>) -> CliffordCircuit {
         Some(&params.pauli2_z),
         Some(&params.pauli2_x),
     );
-
-    // 2. Apply S (Permutation) layer.
-    _apply_permutation_layer(&mut qc, &params.s);
-
-    // 3. Apply H (Hadamard) layer.
+    apply_permutation_layer(&mut qc, &params.s);
     for i in 0..n {
         if params.h[i] == 1 {
             qc.add_gate(CliffordGate::H(i));
         }
     }
-
-    // 4. Apply F1 layer.
-    _apply_hadamard_free_layer(&mut qc, n, &params.gamma1, &params.delta1, None, None);
+    apply_hadamard_free_layer(&mut qc, n, &params.gamma1, &params.delta1, None, None);
 
     qc
 }

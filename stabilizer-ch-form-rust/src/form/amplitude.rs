@@ -36,7 +36,7 @@ impl StabilizerCHForm {
         let mut ch_form_clone = self.clone();
         for (i, &bit) in s.iter().enumerate() {
             if bit {
-                ch_form_clone._left_multiply_x(i)?;
+                ch_form_clone.left_multiply_x(i)?;
             }
         }
 

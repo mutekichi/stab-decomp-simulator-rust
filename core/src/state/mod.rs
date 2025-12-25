@@ -59,22 +59,19 @@ use crate::{
 /// // 2. Compile the circuit into a QuantumState
 /// let mut state = QuantumState::from_circuit(&circuit).unwrap();
 ///
+/// // (optional) Apply a gate directly to the state
+/// state.apply_x(0).unwrap();
+///
 /// // 3. Perform operations on the state
-/// // Sample measurement outcomes
+/// // - Sample measurement outcomes
 /// let shots = 1024;
 /// let samples = state.sample(&[0, 1], shots, None).unwrap();
 /// println!("Measurement samples: {:?}", samples);
 ///
-/// // Calculate an expectation value
+/// // - Calculate an expectation value
 /// let pauli_z0 = PauliString::from_str("ZI").unwrap();
 /// let exp_val = state.exp_value(&pauli_z0).unwrap();
 /// println!("Expectation value of Z on qubit 0: {}", exp_val);
-///
-/// // 4. Apply a gate directly to the state
-/// state.apply_x(0).unwrap();
-///
-/// // Get the stabilizer rank χ
-/// println!("Stabilizer rank: {}", state.stabilizer_rank());
 /// ```
 pub struct QuantumState {
     internal_state: InternalState,

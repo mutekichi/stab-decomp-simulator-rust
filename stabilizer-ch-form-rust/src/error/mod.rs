@@ -42,6 +42,10 @@ pub enum Error {
     #[error("The length of the permutation ({0}) must match the number of qubits ({1}).")]
     InvalidPermutationLength(usize, usize),
 
+    /// Error for invalid permutation (not a valid rearrangement).
+    #[error("The provided permutation {0:?} is not a valid permutation of qubit indices.")]
+    InvalidPermutation(Vec<usize>),
+
     /// Error for QASM parsing issues.
     #[error("QASM parsing error: {0}")]
     QasmParsingError(String),

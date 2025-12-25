@@ -5,11 +5,16 @@ use crate::{
 use ndarray::Array1;
 
 impl StabilizerCHForm {
-    pub fn _left_multiply_h(&mut self, qarg: usize) -> Result<()> {
+    /// Left-multiplies the state by a Hadamard gate on qubit `qarg`.    
+    ///
+    /// Time complexity: O(n^2)
+    ///
+    /// See around Proposition 4. of arXiv:1808.00128 for details.
+    pub(crate) fn left_multiply_h(&mut self, qarg: usize) -> Result<()> {
         if qarg >= self.n {
             return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
-        let (vec_t, vec_u, alpha, beta) = self._prepare_h_superposition_args(qarg);
+        let (vec_t, vec_u, alpha, beta) = self.prepare_h_superposition_args(qarg);
         let delta = if alpha ^ beta {
             self.gamma[qarg].flipped()
         } else {
@@ -24,7 +29,7 @@ impl StabilizerCHForm {
     }
 
     /// Prepares vec_t, vec_u, alpha, beta for applying H to qubit `qarg`.
-    pub fn _prepare_h_superposition_args(
+    pub(crate) fn prepare_h_superposition_args(
         &self,
         qarg: usize,
     ) -> (Array1<bool>, Array1<bool>, bool, bool) {

@@ -4,7 +4,7 @@ use crate::{
 };
 
 impl StabilizerCHForm {
-    pub(crate) fn _left_multiply_swap(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
+    pub(crate) fn left_multiply_swap(&mut self, qarg1: usize, qarg2: usize) -> Result<()> {
         if qarg1 >= self.n {
             return Err(Error::QubitIndexOutOfBounds(qarg1, self.n));
         }
@@ -16,9 +16,9 @@ impl StabilizerCHForm {
             return Err(Error::DuplicateQubitIndices(qarg1));
         }
 
-        self._left_multiply_cx(qarg1, qarg2)?;
-        self._left_multiply_cx(qarg2, qarg1)?;
-        self._left_multiply_cx(qarg1, qarg2)?;
+        self.left_multiply_cx(qarg1, qarg2)?;
+        self.left_multiply_cx(qarg2, qarg1)?;
+        self.left_multiply_cx(qarg1, qarg2)?;
 
         Ok(())
     }

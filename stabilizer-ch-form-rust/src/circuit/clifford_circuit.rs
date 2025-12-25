@@ -127,7 +127,7 @@ impl CliffordCircuit {
     /// ## Returns
     /// A `Result` containing the parsed `CliffordCircuit` or a `String` error message.
     pub fn from_qasm_file(path: &str) -> Result<Self> {
-        parser::_from_qasm_file(path)
+        parser::from_qasm_file(path)
     }
 
     /// Parses an OpenQASM 2.0 string into a `CliffordCircuit`.
@@ -138,7 +138,7 @@ impl CliffordCircuit {
     /// ## Returns
     /// A `Result` containing the parsed `CliffordCircuit` or a `String` error message.
     pub fn from_qasm_str(qasm_str: &str) -> Result<Self> {
-        parser::_from_qasm_str(qasm_str)
+        parser::from_qasm_str(qasm_str)
     }
 
     /// Converts the circuit to an OpenQASM 2.0 string.
@@ -146,7 +146,7 @@ impl CliffordCircuit {
     /// ## Arguments
     /// * `reg_name` - The name of the quantum register (e.g., "q").
     pub fn to_qasm_str(&self, reg_name: &str) -> String {
-        parser::_to_qasm_str(self, reg_name)
+        parser::to_qasm_str(self, reg_name)
     }
 
     /// Writes the circuit to an OpenQASM 2.0 file.
@@ -155,7 +155,7 @@ impl CliffordCircuit {
     /// * `path` - The path to the output file.
     /// * `reg_name` - The name of the quantum register (e.g., "q").
     pub fn to_qasm_file(&self, path: &str, reg_name: &str) -> Result<()> {
-        parser::_to_qasm_file(self, path, reg_name)
+        parser::to_qasm_file(self, path, reg_name)
     }
 
     /// Generates a uniformly random n-qubit Clifford circuit.

@@ -5,7 +5,12 @@ use crate::{
 };
 
 impl StabilizerCHForm {
-    pub(crate) fn _left_multiply_s(&mut self, qarg: usize) -> Result<()> {
+    /// Left-multiplies the state by an S gate on qubit `qarg`.
+    ///
+    /// Time complexity: O(n)
+    ///  
+    /// See around the end of Proposition 4 of arXiv:1808.00128 for details.
+    pub(crate) fn left_multiply_s(&mut self, qarg: usize) -> Result<()> {
         if qarg >= self.n {
             return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
@@ -16,7 +21,7 @@ impl StabilizerCHForm {
         Ok(())
     }
 
-    pub(crate) fn _left_multiply_sdg(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn left_multiply_sdg(&mut self, qarg: usize) -> Result<()> {
         if qarg >= self.n {
             return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }

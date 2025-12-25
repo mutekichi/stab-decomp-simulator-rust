@@ -1,5 +1,5 @@
 #[derive(Debug, PartialEq, Eq)]
-pub enum QubitState {
+pub(crate) enum QubitState {
     Determined(bool),
     Superposition,
 }

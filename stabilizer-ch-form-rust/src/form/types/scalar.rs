@@ -3,17 +3,16 @@ use num_complex::Complex64;
 use std::ops::{Mul, MulAssign};
 
 /// Represents a scalar value in the form `phase * 2^(-r/2)` or zero.
-/// This is used for representing amplitudes and inner products exactly, avoiding floating-point errors.
-/// NOTE: Should be changed to pub(crate)
+/// This is used for representing amplitudes and inner products exactly, avoiding floating-point errors.#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Scalar {
+pub(crate) enum Scalar {
     Zero,
     NonZero { phase: PhaseFactor, r: usize },
 }
 
 impl Scalar {
     /// Converts the scalar to its `Complex64` representation.
-    pub fn to_complex(self) -> Complex64 {
+    pub(crate) fn to_complex(self) -> Complex64 {
         match self {
             Scalar::Zero => Complex64::new(0.0, 0.0),
             Scalar::NonZero { phase, r } => {

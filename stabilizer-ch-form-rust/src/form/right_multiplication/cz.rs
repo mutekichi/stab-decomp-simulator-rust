@@ -5,7 +5,7 @@ use crate::{
 };
 
 impl StabilizerCHForm {
-    pub(crate) fn _right_multiply_cz(&mut self, q1: usize, q2: usize) -> Result<()> {
+    pub(crate) fn right_multiply_cz(&mut self, q1: usize, q2: usize) -> Result<()> {
         if q1 >= self.n {
             return Err(Error::QubitIndexOutOfBounds(q1, self.n));
         }

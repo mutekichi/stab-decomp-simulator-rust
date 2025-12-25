@@ -9,7 +9,7 @@ impl StabilizerCHForm {
     // Time complexity: O(n)
     //
     // See around eq.(48) of arXiv:1808.00128 for details.
-    pub(crate) fn _left_multiply_x(&mut self, qarg: usize) -> Result<()> {
+    pub(crate) fn left_multiply_x(&mut self, qarg: usize) -> Result<()> {
         if qarg >= self.n {
             return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }

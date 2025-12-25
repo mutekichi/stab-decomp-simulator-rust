@@ -6,7 +6,7 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
+pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
     lazy_static::lazy_static! {
         static ref QREG_RE: Regex = Regex::new(
             r"qreg\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\[\s*(\d+)\s*\]\s*;"
@@ -114,7 +114,7 @@ pub(crate) fn _from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
     }
 }
 
-pub(crate) fn _from_qasm_file<P: AsRef<Path>>(path: P) -> Result<CliffordCircuit> {
+pub(crate) fn from_qasm_file<P: AsRef<Path>>(path: P) -> Result<CliffordCircuit> {
     let qasm_content = fs::read_to_string(path.as_ref()).map_err(|e| {
         Error::QasmParsingError(format!(
             "Failed to read file '{}': {}",
@@ -123,10 +123,10 @@ pub(crate) fn _from_qasm_file<P: AsRef<Path>>(path: P) -> Result<CliffordCircuit
         ))
     })?;
 
-    _from_qasm_str(&qasm_content)
+    from_qasm_str(&qasm_content)
 }
 
-pub(crate) fn _to_qasm_str(circuit: &CliffordCircuit, reg_name: &str) -> String {
+pub(crate) fn to_qasm_str(circuit: &CliffordCircuit, reg_name: &str) -> String {
     let mut lines = Vec::new();
     lines.push("OPENQASM 2.0;".to_string());
     lines.push("include \"qelib1.inc\";".to_string());
@@ -139,12 +139,12 @@ pub(crate) fn _to_qasm_str(circuit: &CliffordCircuit, reg_name: &str) -> String 
     lines.join("\n")
 }
 
-pub(crate) fn _to_qasm_file<P: AsRef<std::path::Path>>(
+pub(crate) fn to_qasm_file<P: AsRef<std::path::Path>>(
     circuit: &CliffordCircuit,
     path: P,
     reg_name: &str,
 ) -> Result<()> {
-    let qasm_str = _to_qasm_str(circuit, reg_name);
+    let qasm_str = to_qasm_str(circuit, reg_name);
     let mut file = std::fs::File::create(path)?;
     file.write_all(qasm_str.as_bytes())?;
     Ok(())

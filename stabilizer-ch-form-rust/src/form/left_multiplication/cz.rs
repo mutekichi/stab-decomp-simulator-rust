@@ -4,7 +4,12 @@ use crate::{
 };
 
 impl StabilizerCHForm {
-    pub(crate) fn _left_multiply_cz(&mut self, q1: usize, q2: usize) -> Result<()> {
+    /// Left-multiplies the state by a CZ gate between qubits `q1` and `q2`.
+    ///
+    /// Time complexity: O(n)
+    ///
+    /// See around eq.(50) of arXiv:1808.00128 for details.
+    pub(crate) fn left_multiply_cz(&mut self, q1: usize, q2: usize) -> Result<()> {
         if q1 >= self.n {
             return Err(Error::QubitIndexOutOfBounds(q1, self.n));
         }
