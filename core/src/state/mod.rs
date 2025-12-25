@@ -18,25 +18,29 @@ use crate::{
     types::shot_count::ShotCount,
 };
 
-/// Represents a simulated quantum state, providing the primary interface for quantum computation simulation.
+/// Represents a simulated quantum state, providing the primary interface for quantum computation
+/// simulation.
 ///
-/// `QuantumState` is the central struct for manipulating the results of a quantum circuit simulation.
-/// It encapsulates the internal state representation (based on the stabilizer decomposition method)
-/// and provides a high-level API for performing various quantum operations and analyses.
+/// `QuantumState` is the central struct for manipulating the results of a quantum circuit
+/// simulation. It encapsulates the internal state representation (based on the stabilizer
+/// decomposition method) and provides a high-level API for performing various quantum operations
+/// and analyses.
 ///
 /// ## Features
 ///
 /// This simulator utilizes the stabilizer decomposition method, which offers high performance,
 /// especially for circuits dominated by Clifford gates.
 /// Non-Clifford gates, such as the T-gate, are handled using gate teleportation.
-/// The computational cost is measured by the number of stabilizer states: χ (`stabilizer_rank`) held internally.
+/// The computational cost is measured by the number of stabilizer states: χ (`stabilizer_rank`)
+/// held internally.
 ///
 /// ## Typical Workflow
 ///
 /// 1. Construct a quantum circuit using [`QuantumCircuit`].
 /// 2. Compile the circuit into a [`QuantumState`] using [`QuantumState::from_circuit`].
-/// 3. Perform operations such as [`measure`](Self::measure), [`sample`](Self::sample), or [`exp_value`](Self::exp_value) (expectation value calculation).
-/// 4. If needed, additional clifford gates can be applied directly to the state using methods like
+/// 3. Perform operations such as [`measure`](Self::measure), [`sample`](Self::sample), or
+///    [`exp_value`](Self::exp_value) (expectation value calculation).
+/// 4. If needed, additional Clifford gates can be applied directly to the state using methods like
 ///    [`apply_x`](Self::apply_x), [`apply_h`](Self::apply_h), etc.
 ///
 /// # Examples

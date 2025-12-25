@@ -6,7 +6,8 @@ use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     /// Converts the stabilizer decomposed state to a statevector representation.
-    /// Note that the state is represented as a dense vector, which may be inefficient for large number of qubits.
+    /// Note that the state is represented as a dense vector, which may be inefficient for large
+    /// number of qubits.
     /// The indexing of the statevector is in little-endian order like in Qiskit.
     pub(crate) fn to_statevector(&self) -> Result<Array1<Complex64>> {
         const MAX_QUBITS_FOR_STATEVECTOR: usize = 28;
