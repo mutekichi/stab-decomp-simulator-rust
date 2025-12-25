@@ -15,7 +15,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
                 result += (coeff1.conj() * *coeff2).into() * ip;
             }
         }
-        Ok(result)
+        Ok(result * self.global_factor.conj() * other.global_factor)
     }
 }
 
