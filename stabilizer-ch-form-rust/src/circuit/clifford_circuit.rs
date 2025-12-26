@@ -2,10 +2,29 @@ use crate::circuit::CliffordGate;
 use crate::circuit::parser;
 use crate::circuit::random_clifford;
 use crate::error::Result;
+use std::fmt;
 
 /// A struct representing a Clifford circuit composed of Clifford gates.
 /// `CliffordCircuit` only stores the sequence of gates and does not calculate
 /// the resulting stabilizer state.
+///
+/// ## Example usage:
+///
+/// ```rust
+/// use stabilizer_ch_form_rust::circuit::CliffordCircuit;
+/// use stabilizer_ch_form_rust::circuit::CliffordGate::{ H, CX };
+///
+/// let mut circuit = CliffordCircuit::new(2);
+/// circuit.apply_h(0);
+/// circuit.apply_cx(0, 1);
+///
+/// assert_eq!(circuit.gates[0], H(0));
+/// assert_eq!(circuit.gates[1], CX(0, 1));
+///
+/// // `CliffordCircuit` is intended to be converted to `StabilizerCHForm` for simulation
+/// use stabilizer_ch_form_rust::StabilizerCHForm;
+/// let ch_form = StabilizerCHForm::from_clifford_circuit(&circuit).unwrap();
+/// ```
 #[derive(Debug, Clone)]
 pub struct CliffordCircuit {
     pub n_qubits: usize,
@@ -177,5 +196,34 @@ impl CliffordCircuit {
     ///   group," arXiv:2003.09412v2 (2021).
     pub fn random_clifford(n_qubits: usize, seed: Option<u64>) -> Self {
         random_clifford::random_clifford(n_qubits, seed)
+    }
+}
+
+impl fmt::Display for CliffordCircuit {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "CliffordCircuit(n_qubits={}) [", self.n_qubits)?;
+
+        for (i, gate) in self.gates.iter().enumerate() {
+            if i > 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{}", gate)?;
+        }
+
+        write!(f, "]")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_clifford_circuit_display() {
+        let mut circuit = CliffordCircuit::new(2);
+        circuit.apply_h(0);
+        circuit.apply_cx(0, 1);
+        let display_str = format!("{}", circuit);
+        assert_eq!(display_str, "CliffordCircuit(n_qubits=2) [H(0), CX(0, 1)]");
     }
 }

@@ -2,6 +2,8 @@ use crate::StabilizerCHForm;
 use ndarray::{Zip, s};
 
 impl StabilizerCHForm {
+    /// Performs a bitwise XOR operation on two rows of a boolean matrix.
+    /// i.e., matrix[target, :] ^= matrix[source, :].
     pub(crate) fn xor_rows(matrix: &mut ndarray::Array2<bool>, target: usize, source: usize) {
         // Split view to allow simultaneous mutable borrows
         let (mut row_target, row_source) = matrix.multi_slice_mut((s![target, ..], s![source, ..]));
@@ -13,6 +15,8 @@ impl StabilizerCHForm {
             });
     }
 
+    /// Performs a bitwise XOR operation on two columns of a boolean matrix.
+    /// i.e., matrix[:, target] ^= matrix[:, source].
     pub(crate) fn xor_columns(matrix: &mut ndarray::Array2<bool>, target: usize, source: usize) {
         // Split view to allow simultaneous mutable borrows
         let (mut col_target, col_source) = matrix.multi_slice_mut((s![.., target], s![.., source]));

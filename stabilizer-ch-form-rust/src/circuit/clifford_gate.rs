@@ -39,6 +39,39 @@ impl CliffordGate {
 
 impl fmt::Display for CliffordGate {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.to_qasm_str("q"))
+        match self {
+            CliffordGate::H(q) => write!(f, "H({})", q),
+            CliffordGate::X(q) => write!(f, "X({})", q),
+            CliffordGate::Y(q) => write!(f, "Y({})", q),
+            CliffordGate::Z(q) => write!(f, "Z({})", q),
+            CliffordGate::S(q) => write!(f, "S({})", q),
+            CliffordGate::Sdg(q) => write!(f, "Sdg({})", q),
+            CliffordGate::SqrtX(q) => write!(f, "SqrtX({})", q),
+            CliffordGate::SqrtXdg(q) => write!(f, "SqrtXdg({})", q),
+            CliffordGate::CX(c, t) => write!(f, "CX({}, {})", c, t),
+            CliffordGate::CZ(q1, q2) => write!(f, "CZ({}, {})", q1, q2),
+            CliffordGate::Swap(q1, q2) => write!(f, "Swap({}, {})", q1, q2),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_clifford_gate_display() {
+        let h_gate = CliffordGate::H(0);
+        assert_eq!(format!("{}", h_gate), "H(0)");
+        let cx_gate = CliffordGate::CX(1, 2);
+        assert_eq!(format!("{}", cx_gate), "CX(1, 2)");
+    }
+
+    #[test]
+    fn test_clifford_gate_to_qasm_str() {
+        let h_gate = CliffordGate::H(0);
+        assert_eq!(h_gate.to_qasm_str("q"), "h q[0];");
+        let cx_gate = CliffordGate::CX(1, 2);
+        assert_eq!(cx_gate.to_qasm_str("q"), "cx q[1], q[2];");
     }
 }
