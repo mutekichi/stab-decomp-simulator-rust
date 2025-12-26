@@ -3,7 +3,8 @@ use num_complex::Complex64;
 use std::ops::{Mul, MulAssign};
 
 /// Represents a scalar value in the form `phase * 2^(-r/2)` or zero.
-/// This is used for representing amplitudes and inner products exactly, avoiding floating-point errors.#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// This is used for representing amplitudes and inner products exactly, avoiding floating-point
+/// errors.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Scalar {
     Zero,

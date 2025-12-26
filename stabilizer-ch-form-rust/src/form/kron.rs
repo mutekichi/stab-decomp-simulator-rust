@@ -8,7 +8,7 @@ impl StabilizerCHForm {
     /// * `other` - The other StabilizerCHForm to tensor with.
     ///
     /// ## Returns
-    /// A `Result` containing the new `StabilizerCHForm` representing the tensor product state.
+    /// A [`Result`] containing the new `StabilizerCHForm` representing the tensor product state.
     pub fn kron(&self, other: &StabilizerCHForm) -> Result<StabilizerCHForm> {
         let n_total = self.n + other.n;
         let mut new_state = StabilizerCHForm::new(n_total)?;
@@ -56,5 +56,32 @@ impl StabilizerCHForm {
         new_state.phase_factor = self.phase_factor * other.phase_factor;
 
         Ok(new_state)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::circuit::CliffordCircuit;
+    use crate::test_utils::{assert_eq_complex_array1, tensor_statevectors};
+
+    #[test]
+    fn test_kron() {
+        let num_qubits_1 = 3;
+        let num_qubits_2 = 3;
+        let trials = 10;
+        for i in 0..trials {
+            let circuit_1 = CliffordCircuit::random_clifford(num_qubits_1, Some(i + 56));
+            let circuit_2 = CliffordCircuit::random_clifford(num_qubits_2, Some(i + 78));
+            let state_1 = StabilizerCHForm::from_clifford_circuit(&circuit_1).unwrap();
+            let state_2 = StabilizerCHForm::from_clifford_circuit(&circuit_2).unwrap();
+            let kron_state = state_1.kron(&state_2).unwrap();
+            let expected_statevector = tensor_statevectors(
+                &state_1.to_statevector().unwrap(),
+                &state_2.to_statevector().unwrap(),
+            );
+            let kron_statevector = kron_state.to_statevector().unwrap();
+            assert_eq_complex_array1(&kron_statevector, &expected_statevector);
+        }
     }
 }

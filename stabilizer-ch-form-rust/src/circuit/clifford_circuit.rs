@@ -42,6 +42,39 @@ impl CliffordCircuit {
         }
     }
 
+    /// creates a new Clifford circuit by taking the tensor product of this circuit
+    /// and another.
+    /// Gates from `self` are applied to the first `self.n_qubits` qubits,
+    /// and gates from `other` are applied to the next `other.n_qubits` qubits.
+    ///
+    /// ## Arguments
+    /// * `other` - The other Clifford circuit to tensor with.
+    ///
+    /// ## Returns
+    /// A new `CliffordCircuit` representing the tensor product.
+    pub fn tensor(&self, other: &CliffordCircuit) -> Self {
+        let mut new_circuit = CliffordCircuit::new(self.n_qubits + other.n_qubits);
+        // Add gates from the first circuit
+        for gate in &self.gates {
+            new_circuit.gates.push(gate.clone());
+        }
+        // Add gates from the second circuit, shifting qubit indices
+        for gate in &other.gates {
+            new_circuit.gates.push(gate.shifted(self.n_qubits));
+        }
+        new_circuit
+    }
+
+    /// Appends the gates from another `CliffordCircuit` to this one.
+    ///
+    /// ## Arguments
+    /// * `other` - The other Clifford circuit whose gates are to be appended.
+    pub fn append(&mut self, other: &CliffordCircuit) {
+        for gate in &other.gates {
+            self.gates.push(gate.clone());
+        }
+    }
+
     /// Adds a Clifford gate to the circuit.
     /// ## Arguments
     /// * `gate` - The Clifford gate to add.
@@ -217,6 +250,35 @@ impl fmt::Display for CliffordCircuit {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_append_circuit() {
+        let mut circuit1 = CliffordCircuit::new(2);
+        circuit1.apply_h(0);
+        let mut circuit2 = CliffordCircuit::new(2);
+        circuit2.apply_cx(0, 1);
+
+        circuit1.append(&circuit2);
+
+        assert_eq!(circuit1.gates.len(), 2);
+        assert_eq!(circuit1.gates[0], CliffordGate::H(0));
+        assert_eq!(circuit1.gates[1], CliffordGate::CX(0, 1));
+    }
+
+    #[test]
+    fn test_tensor_circuit() {
+        let mut circuit1 = CliffordCircuit::new(2);
+        circuit1.apply_h(0);
+        let mut circuit2 = CliffordCircuit::new(3);
+        circuit2.apply_cx(0, 1);
+
+        let tensor_circuit = circuit1.tensor(&circuit2);
+
+        assert_eq!(tensor_circuit.n_qubits, 5);
+        assert_eq!(tensor_circuit.gates.len(), 2);
+        assert_eq!(tensor_circuit.gates[0], CliffordGate::H(0));
+        assert_eq!(tensor_circuit.gates[1], CliffordGate::CX(2, 3));
+    }
 
     #[test]
     fn test_clifford_circuit_display() {

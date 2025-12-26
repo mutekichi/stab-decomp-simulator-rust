@@ -7,7 +7,7 @@ impl StabilizerCHForm {
     ///
     /// NOTE: The amplitude includes the phase factor, but not ω.
     /// See around eq.(55) of arXiv:1808.00128 for details.
-    pub(crate) fn _amplitude_at_zero(&self) -> Result<Scalar> {
+    pub(crate) fn amplitude_at_zero(&self) -> Result<Scalar> {
         for j in 0..self.n {
             if !self.vec_v[j] && self.vec_s[j] {
                 return Ok(Scalar::Zero);
@@ -25,12 +25,12 @@ impl StabilizerCHForm {
     ///
     /// NOTE: The amplitude includes the phase factor, but not the global phase ω.
     /// NOTE: This implementation might be inefficient.
-    pub(crate) fn _amplitude_at_computational_basis(
+    pub(crate) fn amplitude_at_computational_basis(
         &self,
         s: &ndarray::Array1<bool>,
     ) -> Result<Scalar> {
         if s.len() != self.n_qubits() {
-            return Err(Error::QubitIndexOutOfBounds(s.len(), self.n_qubits()));
+            return Err(Error::InvalidQubitStateLength(s.len(), self.n_qubits()));
         }
 
         let mut ch_form_clone = self.clone();
@@ -40,6 +40,6 @@ impl StabilizerCHForm {
             }
         }
 
-        ch_form_clone._amplitude_at_zero()
+        ch_form_clone.amplitude_at_zero()
     }
 }

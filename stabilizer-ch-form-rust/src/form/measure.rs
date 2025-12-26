@@ -11,7 +11,7 @@ impl StabilizerCHForm {
     /// * `qarg` - The index of the qubit to measure.
     ///
     /// ## Returns
-    /// A `Result` containing the measurement outcome: `false` for `|0>`, `true` for `|1>`.
+    /// A [`Result`] containing the measurement outcome: `false` for `|0>`, `true` for `|1>`.
     pub fn measure(&mut self, qarg: usize) -> Result<bool> {
         if qarg >= self.n {
             return Err(Error::QubitIndexOutOfBounds(qarg, self.n));

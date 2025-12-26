@@ -35,6 +35,28 @@ impl CliffordGate {
             }
         }
     }
+
+    /// Returns a new `CliffordGate` with qubit indices shifted by the specified offset.
+    pub(crate) fn shifted(&self, offset: usize) -> Self {
+        let mut new_gate = self.clone();
+        match &mut new_gate {
+            CliffordGate::H(q)
+            | CliffordGate::X(q)
+            | CliffordGate::Y(q)
+            | CliffordGate::Z(q)
+            | CliffordGate::S(q)
+            | CliffordGate::Sdg(q)
+            | CliffordGate::SqrtX(q)
+            | CliffordGate::SqrtXdg(q) => {
+                *q += offset;
+            }
+            CliffordGate::CX(c, t) | CliffordGate::CZ(c, t) | CliffordGate::Swap(c, t) => {
+                *c += offset;
+                *t += offset;
+            }
+        }
+        new_gate
+    }
 }
 
 impl fmt::Display for CliffordGate {

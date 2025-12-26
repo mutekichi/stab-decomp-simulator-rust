@@ -16,3 +16,6 @@ pub mod prelude {
     pub use crate::error::{Error, Result};
     pub use crate::form::StabilizerCHForm;
 }
+
+#[cfg(test)]
+mod test_utils;

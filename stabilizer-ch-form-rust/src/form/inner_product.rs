@@ -10,7 +10,7 @@ impl StabilizerCHForm {
     /// * `other` - The other StabilizerCHForm to compute the inner product with.
     ///
     /// ## Returns
-    /// A `Result` containing the complex inner product value.
+    /// A [`Result`] containing the complex inner product value.
     pub fn inner_product(&self, other: &StabilizerCHForm) -> Result<Complex64> {
         // TODO: Implement batch inner product calculation since the result of
         // `_self._get_normalize_to_zero_ops()` can be reused.
@@ -24,15 +24,15 @@ impl StabilizerCHForm {
 
         // Get operations to transform `self` to |0...0>
         // i.e. U_{ops} |self> = global_phase * phase * |0...0>
-        let (ops, phase) = self._get_normalize_to_zero_ops()?;
+        let (ops, phase) = self.get_normalize_to_zero_ops()?;
 
         // Apply the same operations to `other`
         // i.e. U_{ops} |other> = |transformed_other>
-        let transformed_other = other._get_ops_applied_state(&ops)?;
+        let transformed_other = other.get_ops_applied_state(&ops)?;
 
         // Get the amplitude of |0...0> in `transformed_other`
         // i.e. res = <0...0| U_{ops} |other>
-        let res = transformed_other._amplitude_at_zero()?;
+        let res = transformed_other.amplitude_at_zero()?;
 
         // Combine the results
         // The inner product is <self|other> = <self|U_dag U|other>
@@ -49,7 +49,7 @@ impl StabilizerCHForm {
 
     /// Returns the sequence of operations needed to transform the current state to |0...0>
     /// along with the phase factor of the resulting state.
-    fn _get_normalize_to_zero_ops(&self) -> Result<(Vec<InternalGate>, PhaseFactor)> {
+    fn get_normalize_to_zero_ops(&self) -> Result<(Vec<InternalGate>, PhaseFactor)> {
         let mut ops = Vec::new();
         let mut self_clone = self.clone();
         let n = self_clone.n;
@@ -122,7 +122,7 @@ impl StabilizerCHForm {
         Ok((ops, self_clone.phase_factor))
     }
 
-    fn _get_ops_applied_state(&self, ops: &[InternalGate]) -> Result<StabilizerCHForm> {
+    fn get_ops_applied_state(&self, ops: &[InternalGate]) -> Result<StabilizerCHForm> {
         let mut new_state = self.clone();
         for op in ops {
             match op {
@@ -135,5 +135,39 @@ impl StabilizerCHForm {
             }
         }
         Ok(new_state)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::circuit::CliffordCircuit;
+
+    use super::*;
+
+    #[test]
+    fn test_random_state_inner_product() {
+        let n_qubits = 4;
+        for i in 0..10 {
+            let state1 = StabilizerCHForm::from_clifford_circuit(
+                &CliffordCircuit::random_clifford(n_qubits, Some(i + 1234)),
+            )
+            .unwrap();
+            let state2 = StabilizerCHForm::from_clifford_circuit(
+                &CliffordCircuit::random_clifford(n_qubits, Some(i + 5678)),
+            )
+            .unwrap();
+
+            let inner_product = state1.inner_product(&state2).unwrap();
+
+            let statevector1 = state1.to_statevector().unwrap();
+            let statevector2 = state2.to_statevector().unwrap();
+            let expected_inner_product = statevector1
+                .iter()
+                .zip(statevector2.iter())
+                .map(|(a, b)| a.conj() * b)
+                .sum::<Complex64>();
+
+            assert!((inner_product - expected_inner_product).norm() < 1e-8);
+        }
     }
 }

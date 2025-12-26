@@ -8,13 +8,15 @@ impl StabilizerCHForm {
     /// Discards the specified qubit from the state.
     ///
     /// NOTE: This function assumes that the qubit `qarg` has already been
-    /// projected onto the |0> state.
+    /// projected onto the |0> state. You need to project the qubit onto |0> before
+    /// calling this function. If this is not the case, the behavior is undefined.
+    ///
     ///
     /// # Arguments
     /// * `qarg` - The index of the qubit to discard.
     ///
     /// ## Errors
-    /// Returns an `ChFormError` if the qubit index is out of bounds. Note that
+    /// Returns an [`Error`] if the qubit index is out of bounds. Note that
     /// this function does not check if the qubit is properly projected onto |0>.
     pub fn discard(&mut self, qarg: usize) -> Result<()> {
         if qarg >= self.n {
@@ -44,13 +46,14 @@ impl StabilizerCHForm {
     /// Returns a new StabilizerCHForm with the specified qubit discarded.
     ///
     /// NOTE: This function assumes that the qubit `qarg` has already been
-    /// projected onto the |0> state.
+    /// projected onto the |0> state. You need to project the qubit onto |0> before
+    /// calling this function. If this is not the case, the behavior is undefined.
     ///
     /// ## Arguments
     /// * `qarg` - The index of the qubit to discard.
     ///
     /// ## Returns
-    /// A `Result` containing the new `StabilizerCHForm` with the specified qubit discarded.
+    /// A [`Result`] containing the new `StabilizerCHForm` with the specified qubit discarded.
     pub fn discarded(&self, qarg: usize) -> Result<StabilizerCHForm> {
         let mut self_clone = self.clone();
         self_clone.discard(qarg)?;
@@ -92,57 +95,38 @@ impl StabilizerCHForm {
         new_vector
     }
 
-    /// Sets s[qarg] and v[qarg] to false without changing the state.
     fn set_s_v_to_false(&mut self, qarg: usize) -> Result<()> {
         if !self.vec_v[qarg] && !self.vec_s[qarg] {
             return Ok(());
         }
 
-        let mut ok_index = None;
-        for i in 0..self.n {
-            if i != qarg && !self.vec_v[i] && !self.vec_s[i] {
-                ok_index = Some(i);
-                break;
+        // Find a 'clean' qubit that satisfies v[i] = s[i] = 0
+        let mut clean_index = (0..self.n).find(|&i| i != qarg && !self.vec_v[i] && !self.vec_s[i]);
+        if clean_index.is_none() {
+            // Find two qubits to create a clean one. qarg can be one of them.
+            let mut candidates = (0..self.n).filter(|&i| !self.vec_v[i] && self.vec_s[i]);
+            if let (Some(f), Some(s)) = (candidates.next(), candidates.next()) {
+                self.right_multiply_cx(f, s)?;
+                self.vec_s[s] = false;
+                clean_index = Some(s);
             }
         }
 
-        let final_ok_index = match ok_index {
-            Some(i) => i,
-            None => {
-                let mut first = None;
-                let mut second = None;
-                for i in 0..self.n {
-                    if !self.vec_v[i] && self.vec_s[i] {
-                        if first.is_none() {
-                            first = Some(i);
-                        } else {
-                            second = Some(i);
-                            break;
-                        }
-                    }
-                }
+        // If the qubit state is valid (i.e. can be discarded), there must be a clean qubit.
+        let target = clean_index.ok_or(Error::CannotDiscardQubit(qarg))?;
 
-                if let (Some(f), Some(s)) = (first, second) {
-                    self.right_multiply_cx(f, s)?;
-                    self.vec_s[s] = false;
-                    if s == qarg {
-                        return Ok(());
-                    }
-                    s
-                } else {
-                    // Unreachable if the state is valid.
-                    unreachable!("Could not find suitable qubits to zero out s[i].");
-                }
-            }
-        };
+        // If qarg itself became clean during the process, no SWAP is needed.
+        if target == qarg {
+            return Ok(());
+        }
 
-        // SWAP qarg and final_ok_index
-        self.right_multiply_cx(final_ok_index, qarg)?;
-        self.right_multiply_cx(qarg, final_ok_index)?;
-        self.right_multiply_cx(final_ok_index, qarg)?;
+        // Move the clean qubit to qarg position
+        self.right_multiply_cx(target, qarg)?;
+        self.right_multiply_cx(qarg, target)?;
+        self.right_multiply_cx(target, qarg)?;
 
-        self.vec_v.swap(qarg, final_ok_index);
-        self.vec_s.swap(qarg, final_ok_index);
+        self.vec_v.swap(qarg, target);
+        self.vec_s.swap(qarg, target);
 
         Ok(())
     }
@@ -153,18 +137,18 @@ impl StabilizerCHForm {
             if let Some(pivot) = (0..self.n).find(|&i| i != qarg && self.mat_g[[qarg, i]]) {
                 self.right_multiply_cx(qarg, pivot)?;
             } else {
-                // This case should not happen if the state is valid.
+                unreachable!("Cannot zero G row due to G matrix state.");
             }
         }
 
-        // Make G[i, qarg] = false for i != qarg (left-multiplication)
+        // Make G[i, qarg] = false for i != qarg.
         for i in 0..self.n {
             if i != qarg && self.mat_g[[i, qarg]] {
                 self.left_multiply_cx(qarg, i)?;
             }
         }
 
-        // Make G[qarg, i] = false for i != qarg (right-multiplication)
+        // Make G[qarg, i] = false for i != qarg.
         for i in 0..self.n {
             if i != qarg && self.mat_g[[qarg, i]] {
                 if self.vec_v[i] {
@@ -178,7 +162,6 @@ impl StabilizerCHForm {
 
     /// Transforms M so that M[qarg, :] and M[:, qarg] are zero.
     fn transform_m(&mut self, qarg: usize) -> Result<()> {
-        // Left-multiplication gates
         for i in 0..self.n {
             if i != qarg && self.mat_m[[i, qarg]] {
                 self.left_multiply_cx(qarg, i)?;
@@ -188,7 +171,6 @@ impl StabilizerCHForm {
             self.left_multiply_sdg(qarg)?;
         }
 
-        // Right-multiplication gates
         for i in 0..self.n {
             if i != qarg && self.mat_m[[qarg, i]] {
                 self.right_multiply_cz(qarg, i)?;
@@ -196,5 +178,50 @@ impl StabilizerCHForm {
         }
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use num_complex::Complex64;
+
+    use crate::circuit::CliffordCircuit;
+    use crate::test_utils::{assert_eq_complex_array1, tensor_statevectors};
+
+    use super::*;
+
+    #[test]
+    fn test_discard() {
+        let mut trials = 0;
+        let mut successes = 0;
+        let n_qubits = 5;
+        while successes < 10 && trials < 1000 {
+            trials += 1;
+            let random_circuit = CliffordCircuit::random_clifford(n_qubits, Some(230 + trials));
+            let mut ch_form = StabilizerCHForm::from_clifford_circuit(&random_circuit).unwrap();
+
+            let qubit_to_discard = n_qubits - 1;
+            // Project the qubit onto |0>]
+            if ch_form.project(qubit_to_discard, false).is_err() {
+                continue; // Cannot discard this qubit, try again
+            }
+            let expected_original_sv = ch_form.to_statevector().unwrap();
+            // |0>
+            let zero_state = ndarray::array![Complex64::new(1.0, 0.0), Complex64::new(0.0, 0.0)];
+
+            match ch_form.discard(qubit_to_discard) {
+                Ok(()) => {
+                    let sv_after_discard = ch_form.to_statevector().unwrap();
+                    let expected_after_discard =
+                        tensor_statevectors(&sv_after_discard, &zero_state);
+                    assert_eq_complex_array1(&expected_original_sv, &expected_after_discard);
+                    successes += 1;
+                }
+                Err(_) => {
+                    // Discard is always expected to succeed after projection
+                    panic!("Discard failed after successful projection");
+                }
+            }
+        }
     }
 }

@@ -46,6 +46,14 @@ pub enum Error {
     #[error("The provided permutation {0:?} is not a valid permutation of qubit indices.")]
     InvalidPermutation(Vec<usize>),
 
+    /// Error for invalid qubit state length.
+    #[error("The length of the qubit state ({0}) does not match the number of qubits ({1}).")]
+    InvalidQubitStateLength(usize, usize),
+
+    /// Error for attempting to discard a qubit that cannot be discarded.
+    #[error("Cannot discard qubit {0} because it is not in a proper state")]
+    CannotDiscardQubit(usize),
+
     /// Error for QASM parsing issues.
     #[error("QASM parsing error: {0}")]
     QasmParsingError(String),

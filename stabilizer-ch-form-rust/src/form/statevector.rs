@@ -17,7 +17,7 @@ impl StabilizerCHForm {
             let bitstring: ndarray::Array1<bool> =
                 (0..self.n_qubits()).map(|j| (i & (1 << j)) != 0).collect();
             statevector[i] = self
-                ._amplitude_at_computational_basis(&bitstring)?
+                .amplitude_at_computational_basis(&bitstring)?
                 .to_complex()
                 * self.global_phase();
         }
