@@ -190,7 +190,7 @@ cx q[0], q[1];"#;
     fn test_qasm_parser_roundtrip_str() {
         let n_qubits = 4;
         // Generate a random Clifford circuit
-        let circuit1 = CliffordCircuit::random_clifford(n_qubits, Some(42));
+        let circuit1 = CliffordCircuit::random_clifford(n_qubits, Some([42; 32]));
         assert!(
             circuit1.gates.len() > 0,
             "Random circuit should not be empty"
@@ -223,7 +223,7 @@ cx q[0], q[1];"#;
 
         // Generate a random circuit and write to QASM file
         let n_qubits = 3;
-        let circuit1 = CliffordCircuit::random_clifford(n_qubits, Some(123));
+        let circuit1 = CliffordCircuit::random_clifford(n_qubits, Some([123; 32]));
         circuit1
             .to_qasm_file(temp_path_str, "qr")
             .expect("Failed to write QASM to file");

@@ -186,12 +186,12 @@ fn apply_permutation_layer(qc: &mut CliffordCircuit, s_perm: &Array1<usize>) {
 /// ## References
 /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
 ///   group," arXiv:2003.09412v2 (2021).
-pub(crate) fn random_clifford(n: usize, seed: Option<u64>) -> CliffordCircuit {
+pub(crate) fn random_clifford(n: usize, seed: Option<[u8; 32]>) -> CliffordCircuit {
     if n == 0 {
         return CliffordCircuit::new(0);
     }
     let mut rng = match seed {
-        Some(s) => rand::rngs::StdRng::seed_from_u64(s),
+        Some(s) => rand::rngs::StdRng::from_seed(s),
         None => rand::rngs::StdRng::from_entropy(),
     };
     let params = generate_clifford_params(n, &mut rng);
@@ -224,7 +224,7 @@ mod tests {
     #[test]
     fn test_random_clifford_generation() {
         let n_qubits = 3;
-        let circuit = random_clifford(n_qubits, Some(12345));
+        let circuit = random_clifford(n_qubits, Some([42; 32]));
         assert_eq!(circuit.n_qubits, n_qubits);
         assert!(circuit.gates.len() > 0);
     }
@@ -232,7 +232,7 @@ mod tests {
     #[test]
     fn test_random_clifford_determinism() {
         let n_qubits = 4;
-        let seed = 67890;
+        let seed = [123; 32];
         let circuit1 = random_clifford(n_qubits, Some(seed));
         let circuit2 = random_clifford(n_qubits, Some(seed));
         assert_eq!(circuit1.gates, circuit2.gates);
@@ -241,7 +241,7 @@ mod tests {
     #[test]
     fn test_random_clifford_validity() {
         let n_qubits = 4;
-        let circuit = random_clifford(n_qubits, Some(42));
+        let circuit = random_clifford(n_qubits, Some([56; 32]));
         for gate in circuit.gates {
             match gate {
                 CliffordGate::H(q)

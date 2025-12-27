@@ -219,7 +219,8 @@ impl CliffordCircuit {
     ///
     /// ## Arguments
     /// * `n` - The number of qubits. Must be greater than 0.
-    /// * `seed` - An optional seed for the random number generator for reproducibility.
+    /// * `seed` - An optional seed for the random number generator to ensure reproducibility.
+    ///   If `None`, a seed will be generated from system entropy.
     ///
     /// ## Returns
     /// A [`CliffordCircuit`] object representing the random Clifford operator.
@@ -227,7 +228,7 @@ impl CliffordCircuit {
     /// ## References
     /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
     ///   group," arXiv:2003.09412v2 (2021).
-    pub fn random_clifford(n_qubits: usize, seed: Option<u64>) -> Self {
+    pub fn random_clifford(n_qubits: usize, seed: Option<[u8; 32]>) -> Self {
         random_clifford::random_clifford(n_qubits, seed)
     }
 }

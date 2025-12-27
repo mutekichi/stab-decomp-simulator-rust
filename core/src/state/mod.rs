@@ -139,9 +139,11 @@ impl QuantumState {
     /// ## Arguments
     /// * `qargs` - A slice of qubit indices to measure.
     /// * `seed` - An optional seed for the random number generator to ensure reproducibility.
+    ///   If `None` is provided, a seed will be generated from system entropy.
     ///
     /// ## Returns
-    /// A [`Result`] containing a vector of boolean measurement results or an [`Error`](crate::error::Error).
+    /// A [`Result`] containing a vector of boolean measurement results or an
+    /// [`Error`](crate::error::Error).
     pub fn measure(&mut self, qargs: &[usize], seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
         match &mut self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => state.measure(qargs, seed),
@@ -153,6 +155,7 @@ impl QuantumState {
     ///
     /// ## Arguments
     /// * `seed` - An optional seed for the random number generator to ensure reproducibility.
+    ///   If `None` is provided, a seed will be generated from system entropy.
     ///
     /// ### Returns
     /// A [`Result`] containing a vector of boolean measurement results or an [`Error`](crate::error::Error).
@@ -176,7 +179,8 @@ impl QuantumState {
     ///
     /// * `qargs` - A slice of qubit indices to sample.
     /// * `shots` - The number of measurement samples to generate.
-    /// * `seed` - An optional seed for the random number generator to ensure reproducible results. If `None`, the generator is seeded from system entropy.
+    /// * `seed` - An optional seed for the random number generator to ensure reproducible results.
+    ///   If `None` is provided, a seed will be generated from system entropy.
     ///
     /// ## Returns
     ///
@@ -251,12 +255,14 @@ impl QuantumState {
     /// ## Arguments
     ///
     /// * `qubit` - The index of the qubit to project.
-    /// * `outcome` - The desired computational basis state to project onto: `false` for `|0>` and `true` for `|1>`.
+    /// * `outcome` - The desired computational basis state to project onto: `false` for `|0>` and
+    ///   `true` for `|1>`.
     ///
     /// ## Returns
     ///
-    /// A [`Result`] which is `Ok(())` on success. Unlike [`project_normalized`](Self::project_normalized),
-    /// this function will not return an error even if the projection results in a zero-norm state.
+    /// A [`Result`] which is `Ok(())` on success. Unlike
+    /// [`project_normalized`](Self::project_normalized), this function will not return an error
+    /// even if the projection results in a zero-norm state.
     pub fn project_unnormalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
         match &mut self.internal_state {
             InternalState::StabilizerDecomposedStateScalar(state) => {

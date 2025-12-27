@@ -197,7 +197,10 @@ mod tests {
         let n_qubits = 5;
         while successes < 10 && trials < 1000 {
             trials += 1;
-            let random_circuit = CliffordCircuit::random_clifford(n_qubits, Some(230 + trials));
+            let mut seed = [0u8; 32];
+            let trial_bytes = (trials as u64).to_le_bytes();
+            seed[0..8].copy_from_slice(&trial_bytes);
+            let random_circuit = CliffordCircuit::random_clifford(n_qubits, Some(seed));
             let mut ch_form = StabilizerCHForm::from_clifford_circuit(&random_circuit).unwrap();
 
             let qubit_to_discard = n_qubits - 1;

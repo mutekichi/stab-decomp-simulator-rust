@@ -2,7 +2,8 @@ use crate::StabilizerCHForm;
 use crate::error::{Error, Result};
 
 use crate::form::types::QubitState;
-use rand::random;
+use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
 
 impl StabilizerCHForm {
     /// Measures the specified qubit in the computational basis.
@@ -12,7 +13,7 @@ impl StabilizerCHForm {
     ///
     /// ## Returns
     /// A [`Result`] containing the measurement outcome: `false` for `|0>`, `true` for `|1>`.
-    pub fn measure(&mut self, qarg: usize) -> Result<bool> {
+    pub fn measure(&mut self, qarg: usize, seed: Option<[u8; 32]>) -> Result<bool> {
         if qarg >= self.n {
             return Err(Error::QubitIndexOutOfBounds(qarg, self.n));
         }
@@ -22,7 +23,11 @@ impl StabilizerCHForm {
             QubitState::Determined(state) => Ok(state),
             QubitState::Superposition => {
                 // Randomly collapse the qubit to |0> or |1>
-                let outcome = random::<bool>();
+                let mut rng = match seed {
+                    Some(s) => StdRng::from_seed(s),
+                    None => StdRng::from_entropy(),
+                };
+                let outcome = rng.r#gen::<bool>();
                 self.project(qarg, outcome)?;
                 Ok(outcome)
             }

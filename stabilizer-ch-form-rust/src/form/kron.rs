@@ -71,8 +71,8 @@ mod tests {
         let num_qubits_2 = 3;
         let trials = 10;
         for i in 0..trials {
-            let circuit_1 = CliffordCircuit::random_clifford(num_qubits_1, Some(i + 56));
-            let circuit_2 = CliffordCircuit::random_clifford(num_qubits_2, Some(i + 78));
+            let circuit_1 = CliffordCircuit::random_clifford(num_qubits_1, Some([i + 56; 32]));
+            let circuit_2 = CliffordCircuit::random_clifford(num_qubits_2, Some([i + 78; 32]));
             let state_1 = StabilizerCHForm::from_clifford_circuit(&circuit_1).unwrap();
             let state_2 = StabilizerCHForm::from_clifford_circuit(&circuit_2).unwrap();
             let kron_state = state_1.kron(&state_2).unwrap();

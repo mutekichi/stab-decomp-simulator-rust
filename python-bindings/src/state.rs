@@ -7,17 +7,7 @@ use stab_decomp_simulator_rust::prelude::{QuantumGate, QuantumState as RustQuant
 
 use crate::gate::PyQuantumGate;
 use crate::pauli_string::PyPauliString;
-
-// Helper function to convert Python seed (Option<u64>) to Rust seed (Option<[u8; 32]>)
-fn convert_py_seed(py_seed: Option<u64>) -> Option<[u8; 32]> {
-    py_seed.map(|s| {
-        let mut seed_array = [0u8; 32];
-        // Use the lower 8 bytes (64 bits) of the u64 for the seed
-        let bytes = s.to_le_bytes(); // Little-endian representation
-        seed_array[..8].copy_from_slice(&bytes);
-        seed_array
-    })
-}
+use crate::utils::parse_py_seed;
 
 #[pyclass(name = "QuantumState")]
 pub struct PyQuantumState {
@@ -49,8 +39,12 @@ impl PyQuantumState {
         Ok(ip)
     }
 
-    fn measure(&mut self, qargs: Vec<usize>, seed: Option<u64>) -> PyResult<Vec<bool>> {
-        let rust_seed = convert_py_seed(seed);
+    fn measure(
+        &mut self,
+        qargs: Vec<usize>,
+        seed: Option<Bound<'_, PyAny>>,
+    ) -> PyResult<Vec<bool>> {
+        let rust_seed = parse_py_seed(seed)?;
         let results = self
             .inner
             .measure(&qargs, rust_seed)
@@ -58,8 +52,8 @@ impl PyQuantumState {
         Ok(results)
     }
 
-    fn measure_all(&mut self, seed: Option<u64>) -> PyResult<Vec<bool>> {
-        let rust_seed = convert_py_seed(seed);
+    fn measure_all(&mut self, seed: Option<Bound<'_, PyAny>>) -> PyResult<Vec<bool>> {
+        let rust_seed = parse_py_seed(seed)?;
         let results = self
             .inner
             .measure_all(rust_seed)
@@ -71,9 +65,9 @@ impl PyQuantumState {
         &self,
         qargs: Vec<usize>,
         shots: usize,
-        seed: Option<u64>,
+        seed: Option<Bound<'_, PyAny>>,
     ) -> PyResult<HashMap<String, usize>> {
-        let rust_seed = convert_py_seed(seed);
+        let rust_seed = parse_py_seed(seed)?;
 
         let shot_count = self
             .inner

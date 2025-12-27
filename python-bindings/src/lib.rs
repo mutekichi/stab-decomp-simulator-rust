@@ -4,6 +4,7 @@ mod circuit;
 mod gate;
 mod pauli_string;
 mod state;
+mod utils;
 
 use circuit::PyQuantumCircuit;
 use gate::PyQuantumGate;

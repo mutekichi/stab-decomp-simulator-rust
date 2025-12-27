@@ -149,11 +149,11 @@ mod tests {
         let n_qubits = 4;
         for i in 0..10 {
             let state1 = StabilizerCHForm::from_clifford_circuit(
-                &CliffordCircuit::random_clifford(n_qubits, Some(i + 1234)),
+                &CliffordCircuit::random_clifford(n_qubits, Some([i + 12; 32])),
             )
             .unwrap();
             let state2 = StabilizerCHForm::from_clifford_circuit(
-                &CliffordCircuit::random_clifford(n_qubits, Some(i + 5678)),
+                &CliffordCircuit::random_clifford(n_qubits, Some([i + 34; 32])),
             )
             .unwrap();
 
