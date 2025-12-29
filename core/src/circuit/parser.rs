@@ -309,8 +309,9 @@ rx(pi/2) q[0];"#;
 
         // The parser should reject malformed QASM syntax (e.g., missing semicolon)
         let qasm_bad_syntax = r#"OPENQASM 2.0;
-qreg q[1];
-h q[0];"#;
+include "qelib1.inc";
+qreg q[1]
+h q[0]"#;
         assert!(
             from_qasm_str(qasm_bad_syntax).is_err(),
             "Parser should fail on syntax error"
