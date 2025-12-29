@@ -225,9 +225,9 @@ impl CliffordCircuit {
     /// ## Returns
     /// A [`CliffordCircuit`] object representing the random Clifford operator.
     ///
-    /// ## References
+    /// ## Reference
     /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
-    ///   group," arXiv:2003.09412v2 (2021).
+    ///   group," IEEE Trans. Inf. Theory 67, 5800 (2021). https://doi.org/10.1109/TIT.2021.3081415
     pub fn random_clifford(n_qubits: usize, seed: Option<[u8; 32]>) -> Self {
         random_clifford::random_clifford(n_qubits, seed)
     }

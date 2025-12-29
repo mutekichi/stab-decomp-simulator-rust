@@ -5,6 +5,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Error, Debug)]
 pub enum Error {
+    /// Error for unsupported gates.
     #[error("Gate {0} is not supported.")]
     GateNotSupported(String),
 

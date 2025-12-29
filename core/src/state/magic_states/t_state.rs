@@ -14,6 +14,18 @@ fn apply_xs(state: &mut StabilizerCHForm, target: usize) -> Result<()> {
     Ok(())
 }
 
+/// Create a T-tensor state: $|T\rangle^{\otimes n}$ as a stabilizer decomposed state.
+/// The decomposition is based on the work by Qassim et al. (2021).
+///
+/// ## Arguments
+/// * `num_qubits` - The number of T states ($n$) to include in the tensor product.
+///
+/// ## Returns
+/// A [`Result`] containing the resulting [`StabilizerDecomposedState`].
+///
+/// ## Reference
+/// - H. Qassim, et al., "Improved upper bounds on the stabilizer rank of magic states," Quantum 5,
+///   604 (2021). https://doi.org/10.22331/q-2021-12-20-606
 pub(crate) fn construct_t_tensor_state(
     num_qubits: usize,
 ) -> Result<StabilizerDecomposedState<Scalar>> {

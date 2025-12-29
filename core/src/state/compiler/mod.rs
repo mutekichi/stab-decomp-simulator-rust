@@ -14,16 +14,16 @@ use stabilizer_ch_form_rust::{
     circuit::{CliffordCircuit, CliffordGate},
 };
 
-/// A trait for compilers that transform a `QuantumCircuit` blueprint into a
-/// computable `InternalState`.
+/// A trait for compilers that transform a [`QuantumCircuit`] blueprint into a
+/// computable [`InternalState`].
 pub(crate) trait CircuitCompiler {
     fn compile(&self, circuit: &QuantumCircuit) -> Result<InternalState, CompileError>;
 }
 
 /// A compiler that implements the stabilizer decomposition simulation method.
 ///
-/// This compiler transforms a `QuantumCircuit` into a `InternalState` which
-/// internally uses a `StabilizerDecomposedState`. It processes non-Clifford
+/// This compiler transforms a [`QuantumCircuit`] into a [`InternalState`] which
+/// internally uses a [`StabilizerDecomposedState`]. It processes non-Clifford
 /// gates (like T and Toffoli) in a batch by preparing the necessary magic
 /// states and then applying gate teleportation.
 pub(crate) struct StabDecompCompiler;
@@ -35,8 +35,12 @@ impl StabDecompCompiler {
 }
 
 impl CircuitCompiler for StabDecompCompiler {
+    /// Compiles a [`QuantumCircuit`] into an [`InternalState`] using stabilizer decomposition.
+    /// NOTE: Currently only supports Clifford + T circuits.
+    /// TODO: Generalize by abstracting magic state preparation and gate teleportation
+    /// to support arbitrary non-Clifford gates for better extensibility.
     fn compile(&self, circuit: &QuantumCircuit) -> CompileResult<InternalState> {
-        let num_qubits_original = circuit.num_qubits;
+        let num_qubits_original = circuit.n_qubits;
         let mut num_t_type_gates = 0;
         let mut clifford_ops: Vec<CliffordGate> = Vec::new();
 
@@ -80,7 +84,7 @@ impl CircuitCompiler for StabDecompCompiler {
         let mut final_coefficients: Vec<Scalar> = Vec::new();
 
         // Process each stabilizer component of the |T^n> state.
-        // NOTE: This process can be improved by "right-applying" the t-tensor
+        // NOTE: This process may be improved by "right-applying" the t-tensor
         // preparation to the whole circuit, instead of "left-applying" the
         // clifford operations to each stabilizer component.
         for (stab, coeff) in t_tensor_state

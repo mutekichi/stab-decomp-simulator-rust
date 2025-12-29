@@ -14,15 +14,15 @@ pub enum Error {
     #[error("Number of qubits must be greater than zero, got {0}.")]
     InvalidNumQubits(usize),
 
+    /// Error for attempting to convert a non-Clifford gate to a Clifford gate.
     #[error("Attempted to convert a non-Clifford gate to a Clifford gate: {0}")]
     GateNotClifford(String),
 
+    /// Error for statevector calculations that exceed feasible limits.
     #[error("Calculating the statevector for a state with {0} qubits is not feasible.")]
     StatevectorTooLarge(usize),
 
-    #[error("Not implemented: {0}")]
-    NotImplemented(String),
-
+    /// Error for direct application of non-Clifford gates.
     #[error("Direct application of non-Clifford gate {0} is not supported.")]
     NonCliffordGateApplication(String),
 
@@ -39,12 +39,15 @@ pub enum Error {
         right: usize,
     },
 
+    /// Error for measurements exceeding supported qubit limits.
     #[error("Measurements of more than 128 qubits are not supoprted.")]
     MeasurementTooManyQubits,
 
+    /// Error for sampling more than supported qubit limits.
     #[error("Sampling more than 128 qubits is not supported.")]
     SamplingTooManyQubits,
 
+    /// Error for impossible projections.
     #[error(
         "Impossible projection on qubit {qubit_index}: cannot project determined state |{}> onto |{}>.",
         if *desired { 0 } else { 1 },
@@ -52,11 +55,20 @@ pub enum Error {
     )]
     ImpossibleProjection { qubit_index: usize, desired: bool },
 
+    /// Error for duplicate qubit indices in a argument list.
     #[error("Duplicate qubit index found: {0}.")]
     DuplicateQubitIndex(usize),
 
+    /// Error for empty qubit index list.
     #[error("Qubit index list is empty.")]
     EmptyQubitIndices,
+
+    /// Error for QASM parsing issues.
+    #[error("QASM parsing error: {0}")]
+    QasmParsingError(String),
+
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
 
     #[error(transparent)]
     Compile(#[from] CompileError),
@@ -67,9 +79,7 @@ pub enum Error {
     #[error(transparent)]
     ChForm(#[from] ChFormError),
 
-    #[error("QASM parsing error: {0}")]
-    QasmParsingError(String),
-
-    #[error("IO error: {0}")]
-    Io(#[from] std::io::Error),
+    /// Error for unimplemented features.
+    #[error("Not implemented: {0}")]
+    NotImplemented(String),
 }

@@ -244,11 +244,10 @@ cx q[0], q[1];"#;
     fn test_qasm_parser_errors() {
         // The parser should reject non-Clifford gates like T
         let qasm_t_gate = r#"
-            OPENQASM 2.0;
-            include "qelib1.inc";
-            qreg q[1];
-            t q[0];
-        "#;
+OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[1];
+t q[0];"#;
 
         let result = CliffordCircuit::from_qasm_str(qasm_t_gate);
         assert!(
@@ -262,10 +261,9 @@ cx q[0], q[1];"#;
 
         // The parser should reject malformed QASM syntax (e.g., missing semicolon)
         let qasm_bad_syntax = r#"
-            OPENQASM 2.0;
-            qreg q[1]
-            h q[0];
-        "#;
+OPENQASM 2.0;
+qreg q[1]
+h q[0];"#;
         assert!(
             CliffordCircuit::from_qasm_str(qasm_bad_syntax).is_err(),
             "Parser should fail on syntax error"

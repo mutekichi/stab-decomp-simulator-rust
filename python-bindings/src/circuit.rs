@@ -24,7 +24,7 @@ impl PyQuantumCircuit {
 
     #[getter]
     fn num_qubits(&self) -> usize {
-        self.inner.num_qubits
+        self.inner.n_qubits
     }
 
     #[getter]
@@ -234,7 +234,7 @@ impl PyQuantumCircuit {
     fn __str__(&self) -> String {
         format!(
             "QuantumCircuit(num_qubits={}, num_gates={})",
-            self.inner.num_qubits,
+            self.inner.n_qubits,
             self.num_gates()
         )
     }

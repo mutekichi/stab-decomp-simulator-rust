@@ -5,7 +5,7 @@ mod random_clifford;
 pub use gates::QuantumGate;
 
 use crate::error::Result;
-use std::path::Path;
+use std::{fmt, path::Path};
 
 /// Represents a quantum circuit as a sequence of quantum gates.
 ///
@@ -52,7 +52,7 @@ use std::path::Path;
 /// println!("Stabilizer rank: {}", state.stabilizer_rank());
 /// ```
 pub struct QuantumCircuit {
-    pub num_qubits: usize,
+    pub n_qubits: usize,
     pub gates: Vec<QuantumGate>,
 }
 
@@ -60,7 +60,7 @@ impl QuantumCircuit {
     /// Creates a new quantum circuit
     pub fn new(num_qubits: usize) -> Self {
         Self {
-            num_qubits,
+            n_qubits: num_qubits,
             gates: Vec::new(),
         }
     }
@@ -243,7 +243,7 @@ impl QuantumCircuit {
     /// let tensor_circuit = circuit1.tensor(&circuit2);
     /// ```
     pub fn tensor(&self, other: &QuantumCircuit) -> QuantumCircuit {
-        let mut new_circuit = QuantumCircuit::new(self.num_qubits + other.num_qubits);
+        let mut new_circuit = QuantumCircuit::new(self.n_qubits + other.n_qubits);
 
         // Add gates from the first circuit
         for gate in &self.gates {
@@ -251,7 +251,7 @@ impl QuantumCircuit {
         }
 
         // Add gates from the second circuit, adjusting qubit indices
-        let offset = self.num_qubits;
+        let offset = self.n_qubits;
         for gate in &other.gates {
             new_circuit.gates.push(gate.clone().shifted(offset));
         }
@@ -259,23 +259,24 @@ impl QuantumCircuit {
         new_circuit
     }
 
-    /// Generates a random n-qubit Clifford circuit using the Bravyi-Maslov canonical form.
+    /// Generates a uniformly random n-qubit Clifford circuit.
     ///
     /// This function implements the O(n^2) algorithm described in the paper to sample a Clifford
     /// operator uniformly at random from the n-qubit Clifford group.
     /// The resulting circuit is structured according to the canonical form U = F1 * H * S * F2.
     /// See the reference for details.
     ///
-    /// # Arguments
+    /// ## Arguments
     /// * `n` - The number of qubits. Must be greater than 0.
     /// * `seed` - An optional seed for the random number generator for reproducibility.
     ///   If `None` is provided, a seed will be generated from system entropy.
     ///
-    /// # Returns
+    /// ## Returns
     /// A [`QuantumCircuit`] object representing the random Clifford operator.
     ///
-    /// # References
-    /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford group," arXiv:2003.09412v2 (2021).
+    /// ## Reference
+    /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
+    ///   group," IEEE Trans. Inf. Theory 67, 5800 (2021). https://doi.org/10.1109/TIT.2021.3081415
     pub fn random_clifford(n: usize, seed: Option<[u8; 32]>) -> QuantumCircuit {
         random_clifford::random_clifford(n, seed)
     }
@@ -311,5 +312,71 @@ impl QuantumCircuit {
     /// * `reg_name` - The name of the quantum register (e.g., "q").
     pub fn to_qasm_file<P: AsRef<Path>>(&self, path: P, reg_name: &str) -> Result<()> {
         parser::to_qasm_file(self, path, reg_name)
+    }
+}
+
+impl fmt::Display for QuantumCircuit {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "QuantumCircuit(n_qubits={}) [", self.n_qubits)?;
+
+        for (i, gate) in self.gates.iter().enumerate() {
+            if i > 0 {
+                write!(f, ", ")?;
+            }
+            write!(f, "{}", gate)?;
+        }
+
+        write!(f, "]")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_append_circuit() {
+        let mut circuit1 = QuantumCircuit::new(2);
+        circuit1.apply_h(0);
+        let mut circuit2 = QuantumCircuit::new(2);
+        circuit2.apply_cx(0, 1);
+        circuit2.apply_t(0);
+
+        circuit1.append(&circuit2);
+
+        assert_eq!(circuit1.n_qubits, 2);
+        assert_eq!(circuit1.gates.len(), 3);
+        assert_eq!(circuit1.gates[0], QuantumGate::H(0));
+        assert_eq!(circuit1.gates[1], QuantumGate::CX(0, 1));
+        assert_eq!(circuit1.gates[2], QuantumGate::T(0));
+    }
+
+    #[test]
+    fn test_tensor_circuit() {
+        let mut circuit1 = QuantumCircuit::new(2);
+        circuit1.apply_h(0);
+        let mut circuit2 = QuantumCircuit::new(3);
+        circuit2.apply_cx(0, 1);
+        circuit2.apply_t(2);
+
+        let tensor_circuit = circuit1.tensor(&circuit2);
+
+        assert_eq!(tensor_circuit.n_qubits, 5);
+        assert_eq!(tensor_circuit.gates.len(), 3);
+        assert_eq!(tensor_circuit.gates[0], QuantumGate::H(0));
+        assert_eq!(tensor_circuit.gates[1], QuantumGate::CX(2, 3));
+        assert_eq!(tensor_circuit.gates[2], QuantumGate::T(4));
+    }
+
+    #[test]
+    fn test_quantum_circuit_display() {
+        let mut circuit = QuantumCircuit::new(2);
+        circuit.apply_x(0);
+        circuit.apply_cz(0, 1);
+        circuit.apply_tdg(1);
+
+        let display_str = format!("{}", circuit);
+        let expected_str = "QuantumCircuit(n_qubits=2) [X(0), CZ(0, 1), Tdg(1)]";
+        assert_eq!(display_str, expected_str);
     }
 }

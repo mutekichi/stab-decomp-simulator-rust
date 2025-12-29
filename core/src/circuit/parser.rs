@@ -9,10 +9,10 @@ use std::path::Path;
 
 /// Parses an OpenQASM 2.0 string into a `QuantumCircuit`.
 ///
-/// ### Arguments
+/// ## Arguments
 /// * `qasm_str` - A string slice containing the OpenQASM 2.0 circuit description.
 ///
-/// ### Returns
+/// ## Returns
 /// A `Result` containing the parsed `QuantumCircuit` or a `String` error message.
 pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
     type Gate1Fn = fn(usize) -> QuantumGate;
@@ -163,10 +163,7 @@ pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
     }
 
     if let Some(n) = num_qubits {
-        Ok(QuantumCircuit {
-            num_qubits: n,
-            gates,
-        })
+        Ok(QuantumCircuit { n_qubits: n, gates })
     } else {
         Err(Error::QasmParsingError(
             "qreg declaration not found in QASM string.".to_string(),
@@ -196,7 +193,7 @@ pub(crate) fn to_qasm_str(circuit: &QuantumCircuit, reg_name: &str) -> String {
     let mut lines = Vec::new();
     lines.push("OPENQASM 2.0;".to_string());
     lines.push("include \"qelib1.inc\";".to_string());
-    lines.push(format!("qreg {}[{}];", reg_name, circuit.num_qubits));
+    lines.push(format!("qreg {}[{}];", reg_name, circuit.n_qubits));
 
     for gate in &circuit.gates {
         lines.push(gate.to_qasm_str(reg_name));
@@ -219,4 +216,104 @@ pub(crate) fn to_qasm_file<P: AsRef<Path>>(
     let mut file = std::fs::File::create(path)?;
     file.write_all(qasm_str.as_bytes())?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_to_qasm_str() {
+        let mut circuit = QuantumCircuit::new(2);
+        circuit.apply_z(0);
+        circuit.apply_cx(0, 1);
+        circuit.apply_t(0);
+
+        let qasm_str = to_qasm_str(&circuit, "q");
+        let expected_qasm = r#"OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[2];
+z q[0];
+cx q[0], q[1];
+t q[0];"#;
+        assert_eq!(qasm_str, expected_qasm);
+    }
+
+    #[test]
+    fn test_from_qasm_str() {
+        let qasm_str = r#"OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[2];
+z q[0];
+cx q[0], q[1];
+t q[0];"#;
+
+        let circuit = from_qasm_str(qasm_str).expect("QASM parsing failed");
+
+        let mut expected_circuit = QuantumCircuit::new(2);
+        expected_circuit.apply_z(0);
+        expected_circuit.apply_cx(0, 1);
+        expected_circuit.apply_t(0);
+
+        assert_eq!(circuit.n_qubits, expected_circuit.n_qubits);
+        assert_eq!(circuit.gates, expected_circuit.gates);
+    }
+
+    #[test]
+    fn test_qasm_parser_roundtrip_str() {
+        let mut original_circuit = QuantumCircuit::new(3);
+        original_circuit.apply_h(0);
+        original_circuit.apply_cx(0, 1);
+        original_circuit.apply_t(2);
+        original_circuit.apply_sdg(1);
+
+        let qasm_str = to_qasm_str(&original_circuit, "q");
+        let parsed_circuit = from_qasm_str(&qasm_str).expect("QASM parsing failed");
+
+        assert_eq!(original_circuit.n_qubits, parsed_circuit.n_qubits);
+        assert_eq!(original_circuit.gates, parsed_circuit.gates);
+    }
+
+    #[test]
+    fn test_qasm_parser_roundtrip_file() {
+        let mut original_circuit = QuantumCircuit::new(3);
+        original_circuit.apply_h(0);
+        original_circuit.apply_cx(0, 1);
+        original_circuit.apply_t(2);
+        original_circuit.apply_sdg(1);
+
+        let temp_path = "temp_test_qasm.qasm";
+        to_qasm_file(&original_circuit, temp_path, "q").expect("Failed to write QASM file");
+
+        let parsed_circuit = from_qasm_file(temp_path).expect("QASM parsing from file failed");
+
+        assert_eq!(original_circuit.n_qubits, parsed_circuit.n_qubits);
+        assert_eq!(original_circuit.gates, parsed_circuit.gates);
+
+        std::fs::remove_file(temp_path).expect("Failed to delete temporary QASM file");
+    }
+
+    #[test]
+    fn test_qasm_parser_errors() {
+        // The parser should reject parametrized gates like RX
+        let qasm_rx_gate = r#"OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[1];
+rx(pi/2) q[0];"#;
+
+        let result = from_qasm_str(qasm_rx_gate);
+        assert!(
+            result.is_err(),
+            "Parser should fail on unsupported parametrized gate"
+        );
+
+        // The parser should reject malformed QASM syntax (e.g., missing semicolon)
+        let qasm_bad_syntax = r#"OPENQASM 2.0;
+qreg q[1];
+h q[0];"#;
+        assert!(
+            from_qasm_str(qasm_bad_syntax).is_err(),
+            "Parser should fail on syntax error"
+        );
+    }
 }

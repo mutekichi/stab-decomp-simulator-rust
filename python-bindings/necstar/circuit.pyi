@@ -98,9 +98,10 @@ class QuantumCircuit:
         Clifford circuits, H is a layer of Hadamard gates, and S is a permutation
         of qubits.
 
-        ### References:
+        ### Reference:
             [1] S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure\
-                of the Clifford   group," arXiv:2003.09412v2 (2021).
+                of the Clifford group," IEEE Trans. Inf. Theory 67, 5800 (2021).\
+                https://doi.org/10.1109/TIT.2021.3081415
 
         Args:
             n (int): The number of qubits. Must be greater than 0.
