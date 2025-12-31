@@ -15,7 +15,7 @@ T_TYPE_GATES = ["t", "tdg"]
 
 
 def generate_random_circuit_qasm(
-    n_qubits: int,
+    num_qubits: int,
     num_single_clifford_each: int,
     num_two_clifford_each: int,
     num_t_each: int,
@@ -25,7 +25,7 @@ def generate_random_circuit_qasm(
     Generates a random quantum circuit in OpenQASM format.
 
     Args:
-        n_qubits (int): Number of qubits in the circuit.
+        num_qubits (int): Number of qubits in the circuit.
         num_single_clifford_each (int): Number of each single-qubit Clifford gate to
                                         include.
         num_two_clifford_each (int): Number of each two-qubit Clifford gate to include.
@@ -43,20 +43,20 @@ def generate_random_circuit_qasm(
     # Append specified number of single-qubit Clifford gates
     for gate_name in SINGLE_QUBIT_CLIFFORDS:
         for _ in range(num_single_clifford_each):
-            target = random.randrange(n_qubits)
+            target = random.randrange(num_qubits)
             gates_to_apply_info.append((gate_name, [target]))
 
     # Append specified number of two-qubit Clifford gates
-    if n_qubits >= 2:
+    if num_qubits >= 2:
         for gate_name in TWO_QUBIT_CLIFFORDS:
             for _ in range(num_two_clifford_each):
-                q1, q2 = random.sample(range(n_qubits), 2)
+                q1, q2 = random.sample(range(num_qubits), 2)
                 gates_to_apply_info.append((gate_name, [q1, q2]))
 
     # Append specified number of T-type gates
     for gate_name in T_TYPE_GATES:
         for _ in range(num_t_each):
-            target = random.randrange(n_qubits)
+            target = random.randrange(num_qubits)
             gates_to_apply_info.append((gate_name, [target]))
 
     # Shuffle the gates to randomize their order
@@ -65,7 +65,7 @@ def generate_random_circuit_qasm(
     qasm_lines = []
     qasm_lines.append("OPENQASM 2.0;")
     qasm_lines.append('include "qelib1.inc";')
-    qasm_lines.append(f"qreg q[{n_qubits}];")
+    qasm_lines.append(f"qreg q[{num_qubits}];")
 
     for gate_name, qubits in gates_to_apply_info:
         qubit_args = ", ".join([f"q[{i}]" for i in qubits])
@@ -94,11 +94,11 @@ def generate_pauli_strings(n: int) -> list[str]:
 
 
 def validate_exp_value(
-    n_qubits: int,
+    num_qubits: int,
     necstar_state: NcQuantumState,
     qiskit_state: Statevector,
 ) -> None:
-    pauli_strings = generate_pauli_strings(n_qubits)
+    pauli_strings = generate_pauli_strings(num_qubits)
     for pauli_str in pauli_strings:
         necstar_pauli = NcPauliString.from_str(pauli_str)
         qiskit_pauli = QiskitPauli(pauli_str)
@@ -114,7 +114,7 @@ def validate_exp_value(
 
 
 def validate_statevector(
-    n_qubits: int,
+    num_qubits: int,
     necstar_state: NcQuantumState,
     qiskit_state: Statevector,
 ) -> None:
@@ -135,14 +135,14 @@ def validate_statevector(
 
 
 def run_validation(
-    n_qubits: int,
+    num_qubits: int,
     num_single_clifford_each: int,
     num_two_clifford_each: int,
     num_t_each: int,
     seed: Optional[int] = None,
 ) -> None:
     qasm = generate_random_circuit_qasm(
-        n_qubits, num_single_clifford_each, num_two_clifford_each, num_t_each, seed
+        num_qubits, num_single_clifford_each, num_two_clifford_each, num_t_each, seed
     )
 
     necstar_circuit = NcQuantumCircuit.from_qasm_str(qasm)
@@ -161,7 +161,7 @@ def run_validation(
     necstar_state.project_normalized(1, outcome_1 == "1")
 
     qasm_after_measure = generate_random_circuit_qasm(
-        n_qubits, num_single_clifford_each, num_two_clifford_each, 0, seed
+        num_qubits, num_single_clifford_each, num_two_clifford_each, 0, seed
     )
 
     necstar_circuit_after = NcQuantumCircuit.from_qasm_str(qasm_after_measure)
@@ -172,15 +172,15 @@ def run_validation(
     necstar_state.apply_gates(necstar_circuit_after.gates)
     qiskit_state = qiskit_state.evolve(qiskit_circuit_after)
 
-    # validate_exp_value(n_qubits, necstar_state, qiskit_state)
-    validate_statevector(n_qubits, necstar_state, qiskit_state)
+    # validate_exp_value(num_qubits, necstar_state, qiskit_state)
+    validate_statevector(num_qubits, necstar_state, qiskit_state)
 
     print("🎉validation passed successfully!")
 
 
 if __name__ == "__main__":
     run_validation(
-        n_qubits=4,
+        num_qubits=4,
         num_single_clifford_each=10,
         num_two_clifford_each=20,
         num_t_each=4,

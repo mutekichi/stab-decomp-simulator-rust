@@ -34,7 +34,7 @@ def make_toffoli_state():
     return state
 
 
-def test_state_sampling():
+def test_state_sample():
     toffoli_state = make_toffoli_state()
     shots = 10000
     counts = toffoli_state.sample([i for i in range(3)], shots, seed=42)
@@ -64,7 +64,22 @@ def test_state_sampling():
         toffoli_state.sample([], shots)  # Empty qubit list
 
 
-def test_state_measurement():
+def test_state_sample_determinism():
+    toffoli_state = make_toffoli_state()
+    shots = 1000
+    counts1 = toffoli_state.sample([0, 1, 2], shots, seed=123)
+    counts2 = toffoli_state.sample([0, 1, 2], shots, seed=123)
+    assert (
+        counts1 == counts2
+    ), "Sampling with the same seed did not produce the same results."
+
+    counts3 = toffoli_state.sample([0, 1, 2], shots, seed=456)
+    assert (
+        counts1 != counts3
+    ), "Sampling with different seeds produced the same results."
+
+
+def test_state_measure():
     trials = 20
     for i in range(trials):
         toffoli_state = make_toffoli_state()
@@ -95,3 +110,80 @@ def test_state_measurement():
     with pytest.raises(ValueError):
         toffoli_state = make_toffoli_state()
         toffoli_state.measure([0, 1, 10])  # Out of range
+
+
+def test_state_measure_all():
+    trials = 20
+    for i in range(trials):
+        toffoli_state = make_toffoli_state()
+        measured_bits = toffoli_state.measure_all(seed=i)
+        outcome_str = "".join(map(str, map(int, measured_bits)))
+        expected_outcomes = {"000", "100", "010", "111"}
+        assert (
+            outcome_str in expected_outcomes
+        ), f"Unexpected measurement result: {outcome_str}"
+
+        statevector = toffoli_state.to_statevector()
+        non_zero_indices = np.where(np.abs(statevector) > 1e-10)[0]
+        assert (
+            len(non_zero_indices) == 1
+        ), "Statevector is not one-hot after measurement."
+        assert np.isclose(
+            np.abs(statevector[non_zero_indices[0]]), 1.0
+        ), "Amplitude is not 1.0."
+
+        remeasured_outcome = toffoli_state.measure_all()
+        assert list(measured_bits) == list(
+            remeasured_outcome
+        ), "Re-measurement of collapsed state failed."
+
+
+def test_state_measure_determinism():
+    toffoli_state = make_toffoli_state()
+    measured_bits1 = toffoli_state.measure([0, 1, 2], seed=123)
+    toffoli_state = make_toffoli_state()
+    measured_bits2 = toffoli_state.measure([0, 1, 2], seed=123)
+    assert list(measured_bits1) == list(
+        measured_bits2
+    ), "Measurement with the same seed did not produce the same results."
+
+    toffoli_state = make_toffoli_state()
+    measured_bits3 = toffoli_state.measure([0, 1, 2], seed=456)
+    assert list(measured_bits1) != list(
+        measured_bits3
+    ), "Measurement with different seeds produced the same results."
+
+
+def test_state_project_normalized():
+    toffoli_state = make_toffoli_state()
+    # Project qubit 0 onto |1>
+    toffoli_state.project_normalized(0, True)
+    assert np.isclose(
+        toffoli_state.norm(), 1.0
+    ), "State is not normalized after projection."
+    assert toffoli_state.num_qubits == 3
+    assert not toffoli_state.measure([0])[0], "Qubit 0 not projected to |1>."
+
+    with pytest.raises(ValueError):
+        # Project qubit |0> onto |1> should fail
+        toffoli_state.project_normalized(0, False)
+
+    toffoli_state = make_toffoli_state()
+    # Invalid qubit index
+    with pytest.raises(ValueError):
+        toffoli_state.project_normalized(3, True)
+
+
+def test_state_project_unnormalized():
+    toffoli_state = make_toffoli_state()
+    toffoli_state.project_unnormalized(0, True)
+    assert toffoli_state.num_qubits == 3
+    assert toffoli_state.measure([0])[0], "Qubit 0 not projected to |1>."
+    with pytest.raises(ValueError):
+        # Project qubit |0> onto |1> should fail
+        toffoli_state.project_unnormalized(0, False)
+
+    toffoli_state = make_toffoli_state()
+    # Invalid qubit index
+    with pytest.raises(ValueError):
+        toffoli_state.project_unnormalized(3, True)
