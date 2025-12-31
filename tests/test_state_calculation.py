@@ -40,9 +40,12 @@ def test_state_expectation_value():
     exp_value = toffoli_state.exp_value(observable)
     assert np.isclose(exp_value, 0.5), f"Unexpected expectation value: {exp_value}"
 
-    observable_large = PauliString.from_str("ZZIIII")
+    observable_large_dense = PauliString.from_str("ZZIIII")
     with pytest.raises(ValueError):
-        toffoli_state.exp_value(observable_large)
+        toffoli_state.exp_value(observable_large_dense)
+    observable_large_sparse = PauliString.from_str("Z0 Y2 X4")
+    with pytest.raises(ValueError):
+        toffoli_state.exp_value(observable_large_sparse)
     observable_small = PauliString.from_str("ZI")
     with pytest.raises(ValueError):
         toffoli_state.exp_value(observable_small)

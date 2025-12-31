@@ -61,6 +61,10 @@ pub enum Error {
     #[error("Duplicate qubit index found: {0}.")]
     DuplicateQubitIndex(usize),
 
+    /// Error for invalid Pauli string length.
+    #[error("Invalid Pauli string length: expected {expected}, found {found}.")]
+    InvalidPauliStringLength { expected: usize, found: usize },
+
     /// Error for empty qubit index list.
     #[error("Qubit index list is empty.")]
     EmptyQubitIndices,

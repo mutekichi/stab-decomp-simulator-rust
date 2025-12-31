@@ -28,6 +28,10 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         // Filter out stabilizers that cannot be projected to the desired outcome
         // NOTE: We may optimize this by avoiding the allocation of a new vector
         //       and instead using `retain` if performance becomes an issue.
+        if qubit >= self.num_qubits {
+            return Err(Error::QubitIndexOutOfBounds(qubit, self.num_qubits));
+        }
+
         let (stabs, coeffs): (Vec<_>, Vec<_>) = self
             .stabilizers
             .drain(..)
@@ -287,6 +291,36 @@ mod tests {
         assert!(result.is_ok());
         let norm = state.norm().unwrap();
         assert_eq!(norm, 0.0);
+    }
+
+    #[test]
+    fn test_project_invalid_qubit_index() {
+        {
+            let mut circuit = QuantumCircuit::new(2);
+            circuit.apply_h(0);
+            let mut state = QuantumState::from_circuit(&circuit).unwrap();
+            let result = state.project_normalized(2, true);
+            match result {
+                Err(Error::QubitIndexOutOfBounds(index, num_qubits)) => {
+                    assert_eq!(index, 2);
+                    assert_eq!(num_qubits, 2);
+                }
+                _ => panic!("Expected QubitIndexOutOfBounds error."),
+            }
+        }
+        {
+            let mut circuit = QuantumCircuit::new(3);
+            circuit.apply_h(1);
+            let mut state = QuantumState::from_circuit(&circuit).unwrap();
+            let result = state.project_unnormalized(3, false);
+            match result {
+                Err(Error::QubitIndexOutOfBounds(index, num_qubits)) => {
+                    assert_eq!(index, 3);
+                    assert_eq!(num_qubits, 3);
+                }
+                _ => panic!("Expected QubitIndexOutOfBounds error."),
+            }
+        }
     }
 }
 // DONE

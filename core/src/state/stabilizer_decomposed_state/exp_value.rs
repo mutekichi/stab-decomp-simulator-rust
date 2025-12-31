@@ -5,6 +5,27 @@ use crate::error::Result;
 use crate::state::{Coefficient, StabilizerDecomposedState};
 impl<T: Coefficient> StabilizerDecomposedState<T> {
     pub(crate) fn exp_value(&self, pauli_string: &PauliString) -> Result<f64> {
+        // Validate Pauli string length
+        match pauli_string {
+            PauliString::Dense(ops) => {
+                if ops.len() != self.num_qubits {
+                    return Err(crate::error::Error::InvalidPauliStringLength {
+                        expected: self.num_qubits,
+                        found: ops.len(),
+                    });
+                }
+            }
+            PauliString::Sparse(terms) => {
+                let max_qubit = terms.iter().map(|term| term.qubit).max().unwrap_or(0);
+                if max_qubit >= self.num_qubits {
+                    return Err(crate::error::Error::InvalidPauliStringLength {
+                        expected: self.num_qubits,
+                        found: max_qubit + 1,
+                    });
+                }
+            }
+        }
+
         let mut exp_val = Complex64::new(0.0, 0.0);
 
         // To avoid repeated zipping, create a vector of pairs (stabilizer, coefficient).

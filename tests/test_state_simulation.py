@@ -162,7 +162,7 @@ def test_state_project_normalized():
         toffoli_state.norm(), 1.0
     ), "State is not normalized after projection."
     assert toffoli_state.num_qubits == 3
-    assert not toffoli_state.measure([0])[0], "Qubit 0 not projected to |1>."
+    assert toffoli_state.measure([0])[0], "Qubit 0 not projected to |1>."
 
     with pytest.raises(ValueError):
         # Project qubit |0> onto |1> should fail
@@ -179,9 +179,9 @@ def test_state_project_unnormalized():
     toffoli_state.project_unnormalized(0, True)
     assert toffoli_state.num_qubits == 3
     assert toffoli_state.measure([0])[0], "Qubit 0 not projected to |1>."
-    with pytest.raises(ValueError):
-        # Project qubit |0> onto |1> should fail
-        toffoli_state.project_unnormalized(0, False)
+
+    # Impossible projection should not raise error in unnormalized case
+    toffoli_state.project_unnormalized(0, False)
 
     toffoli_state = make_toffoli_state()
     # Invalid qubit index
