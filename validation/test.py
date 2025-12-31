@@ -19,22 +19,26 @@ def generate_random_circuit_qasm(
     num_single_clifford_each: int,
     num_two_clifford_each: int,
     num_t_each: int,
-    seed: Optional[int] = None
+    seed: Optional[int] = None,
 ) -> str:
     """
     Generates a random quantum circuit in OpenQASM format.
 
     Args:
         n_qubits (int): Number of qubits in the circuit.
-        num_single_clifford_each (int): Number of each single-qubit Clifford gate to include.
+        num_single_clifford_each (int): Number of each single-qubit Clifford gate to
+                                        include.
         num_two_clifford_each (int): Number of each two-qubit Clifford gate to include.
         num_t_each (int): Number of each T-type gate (T and T†) to include.
         seed (Optional[int]): Seed for random number generator for reproducibility.
     """
     if seed is not None:
+
         random.seed(seed)
 
-    gates_to_apply_info = []  # List of tuples (gate_name: str, target_qubits: List[int])
+    gates_to_apply_info = (
+        []
+    )  # List of tuples (gate_name: str, target_qubits: List[int])
 
     # Append specified number of single-qubit Clifford gates
     for gate_name in SINGLE_QUBIT_CLIFFORDS:
@@ -77,7 +81,7 @@ def generate_pauli_strings(n: int) -> list[str]:
     if n < 1:
         return []
 
-    paulis = ['I', 'X', 'Y', 'Z']
+    paulis = ["I", "X", "Y", "Z"]
 
     # Calculate the Cartesian product
     # This yields tuples like ('I', 'I'), ('I', 'X'), ...
@@ -117,9 +121,10 @@ def validate_statevector(
     necstar_sv = necstar_state.to_statevector()
     qiskit_sv = qiskit_state.data
 
-    assert len(necstar_sv) == len(qiskit_sv), (
-        f"Statevector length mismatch: necstar={len(necstar_sv)}, qiskit={len(qiskit_sv)}"
-    )
+    assert len(necstar_sv) == len(
+        qiskit_sv
+    ), f"Statevector length mismatch: necstar={len(necstar_sv)}, qiskit=\
+        {len(qiskit_sv)}"
 
     for i in range(len(necstar_sv)):
         assert abs(necstar_sv[i] - qiskit_sv[i]) < 1e-6, (
@@ -134,19 +139,17 @@ def run_validation(
     num_single_clifford_each: int,
     num_two_clifford_each: int,
     num_t_each: int,
-    seed: Optional[int] = None
+    seed: Optional[int] = None,
 ) -> None:
     qasm = generate_random_circuit_qasm(
-        n_qubits,
-        num_single_clifford_each,
-        num_two_clifford_each,
-        num_t_each,
-        seed
+        n_qubits, num_single_clifford_each, num_two_clifford_each, num_t_each, seed
     )
 
     necstar_circuit = NcQuantumCircuit.from_qasm_str(qasm)
     # Custom instructions are needed to properly handle SWAP gates in Qiskit
-    qiskit_circuit = qasm2.loads(qasm, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
+    qiskit_circuit = qasm2.loads(
+        qasm, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS
+    )
 
     necstar_state = NcQuantumState.from_circuit(necstar_circuit)
     qiskit_state = Statevector(qiskit_circuit)
@@ -154,19 +157,17 @@ def run_validation(
     outcome_0, qiskit_state = qiskit_state.measure([0])
     outcome_1, qiskit_state = qiskit_state.measure([1])
 
-    necstar_state.project_normalized(0, outcome_0 == '1')
-    necstar_state.project_normalized(1, outcome_1 == '1')
+    necstar_state.project_normalized(0, outcome_0 == "1")
+    necstar_state.project_normalized(1, outcome_1 == "1")
 
     qasm_after_measure = generate_random_circuit_qasm(
-        n_qubits,
-        num_single_clifford_each,
-        num_two_clifford_each,
-        0,
-        seed
+        n_qubits, num_single_clifford_each, num_two_clifford_each, 0, seed
     )
 
     necstar_circuit_after = NcQuantumCircuit.from_qasm_str(qasm_after_measure)
-    qiskit_circuit_after = qasm2.loads(qasm_after_measure, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS)
+    qiskit_circuit_after = qasm2.loads(
+        qasm_after_measure, custom_instructions=qasm2.LEGACY_CUSTOM_INSTRUCTIONS
+    )
 
     necstar_state.apply_gates(necstar_circuit_after.gates)
     qiskit_state = qiskit_state.evolve(qiskit_circuit_after)
@@ -183,5 +184,5 @@ if __name__ == "__main__":
         num_single_clifford_each=10,
         num_two_clifford_each=20,
         num_t_each=4,
-        seed=42
+        seed=42,
     )

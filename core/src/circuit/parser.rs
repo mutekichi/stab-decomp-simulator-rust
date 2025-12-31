@@ -7,13 +7,13 @@ use std::fs;
 use std::io::Write;
 use std::path::Path;
 
-/// Parses an OpenQASM 2.0 string into a `QuantumCircuit`.
+/// Parses an OpenQASM 2.0 string into a [`QuantumCircuit`].
 ///
 /// ## Arguments
 /// * `qasm_str` - A string slice containing the OpenQASM 2.0 circuit description.
 ///
 /// ## Returns
-/// A `Result` containing the parsed `QuantumCircuit` or a `String` error message.
+/// A [`Result`] containing the parsed [`QuantumCircuit`] or a [`String`] error message.
 pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
     type Gate1Fn = fn(usize) -> QuantumGate;
     type Gate2Fn = fn(usize, usize) -> QuantumGate;
@@ -171,12 +171,12 @@ pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
     }
 }
 
-/// Parses an OpenQASM 2.0 file into a `QuantumCircuit`.
+/// Parses an OpenQASM 2.0 file into a [`QuantumCircuit`].
 ///
-/// ### Arguments
+/// ## Arguments
 /// * `path` - A reference to a path of the OpenQASM 2.0 file.
-/// ### Returns
-/// A `Result` containing the parsed `QuantumCircuit` or a `String` error message.
+/// ## Returns
+/// A [`Result`] containing the parsed [`QuantumCircuit`] or a [`String`] error message.
 pub(crate) fn from_qasm_file<P: AsRef<Path>>(path: P) -> Result<QuantumCircuit> {
     let qasm_content = fs::read_to_string(path.as_ref()).map_err(|e| {
         Error::QasmParsingError(format!(
@@ -204,7 +204,7 @@ pub(crate) fn to_qasm_str(circuit: &QuantumCircuit, reg_name: &str) -> String {
 
 /// Writes the circuit to an OpenQASM 2.0 file.
 ///
-/// # Arguments
+/// ## Arguments
 /// * `path` - The path to the output file.
 /// * `reg_name` - The name of the quantum register (e.g., "q").
 pub(crate) fn to_qasm_file<P: AsRef<Path>>(
@@ -318,3 +318,4 @@ h q[0]"#;
         );
     }
 }
+// DONE

@@ -11,9 +11,12 @@ pub use pauli_string::Pauli;
 pub use pauli_term::PauliTerm;
 
 /// Represents a multi-qubit Pauli operator.
-/// You can represent it in either dense or sparse format.
-/// - Dense: `"IXYZ"` ( Q0=X, Q1=Y, Q2=Z, Q3=I )
+/// You can represent it in either dense or sparse format:
+/// - Dense: `"IXYZ"` ( Q0=Z, Q1=Y, Q2=X, Q3=I ) 
 /// - Sparse: `"X1 Y3"` ( Q1=X, Q3=Y, others=I )
+/// 
+/// Note that the dense format follows the little-endian convention (Qiskit-style), where the 
+/// rightmost character corresponds to the 0-th qubit.
 ///
 /// ## Examples
 /// ```rust
@@ -29,6 +32,12 @@ pub use pauli_term::PauliTerm;
 ///     PauliTerm { op: Pauli::X, qubit: 1 },
 ///     PauliTerm { op: Pauli::Y, qubit: 3 },
 /// ]));
+/// 
+/// // Identity Pauli string
+/// let identity_sparse: PauliString = "".parse().unwrap();
+/// let identity_dense: PauliString = "IIII".parse().unwrap();
+/// assert!(identity_sparse.is_identity());
+/// assert!(identity_dense.is_identity());
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PauliString {
@@ -37,7 +46,7 @@ pub enum PauliString {
 }
 
 /// Parses a dense Pauli string like "IXYZ".
-/// The string is assumed to be in big-endian format (Q0 is rightmost),
+/// The string is assumed to be in little-endian format (Q0 is rightmost),
 /// matching Qiskit's Pauli string convention.
 fn parse_dense(s: &str) -> Result<PauliString> {
     let mut ops = Vec::with_capacity(s.len());
@@ -155,7 +164,7 @@ impl fmt::Display for PauliString {
                 // ops is little-endian (Q0 at index 0)
                 let s: String = ops
                     .iter()
-                    .rev() // Reverse to big-endian string (Q0 at rightmost)
+                    .rev() // Reverse to little-endian string (Q0 at rightmost)
                     .map(|op| match op {
                         Pauli::I => 'I',
                         Pauli::X => 'X',
@@ -179,7 +188,7 @@ impl fmt::Display for PauliString {
                     .iter()
                     .map(|term| {
                         let op_char = match term.op {
-                            Pauli::I => 'I', // Should not happen in sparse, but safe
+                            Pauli::I => 'I', // Should not happen in sparse
                             Pauli::X => 'X',
                             Pauli::Y => 'Y',
                             Pauli::Z => 'Z',

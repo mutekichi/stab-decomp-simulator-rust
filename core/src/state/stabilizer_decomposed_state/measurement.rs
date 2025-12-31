@@ -5,6 +5,8 @@ use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
+    /// Measures the specified qubits and returns the measurement outcomes as a vector of booleans.
+    /// `true` represents outcome `1`, and `false` represents outcome `0`.
     pub(crate) fn measure(&mut self, qargs: &[usize], seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
         self.validate_qargs(qargs)?;
         let mut rng = match seed {
@@ -21,6 +23,8 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         Ok(outcomes)
     }
 
+    /// Measures all qubits in the state and returns the measurement outcomes as a vector of
+    /// booleans.
     pub(crate) fn measure_all(&mut self, seed: Option<[u8; 32]>) -> Result<Vec<bool>> {
         let num_qubits = self.num_qubits;
         let qargs: Vec<usize> = (0..num_qubits).collect();
@@ -163,3 +167,5 @@ mod tests {
         }
     }
 }
+
+// WIP: Refine tests

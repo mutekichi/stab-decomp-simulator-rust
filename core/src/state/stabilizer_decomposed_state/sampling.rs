@@ -8,6 +8,8 @@ use rand::rngs::StdRng;
 use rand_distr::{Binomial, Distribution};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
+    /// Samples measurement outcomes for the specified qubits over a number of shots.
+    /// Returns a [`ShotCount`] mapping each unique outcome to its occurrence count.
     pub(crate) fn sample(
         &self,
         qargs: &[usize],
@@ -107,7 +109,8 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         // --- Case 1: Projection to |0> is impossible (Probability ~ 0%) ---
         if proj_zero_result.is_err() {
             // All shots must result in |1>.
-            // Process: Project to |1> (implicitly done or checked) -> Apply X to reset to |0> -> Discard -> Recurse.
+            // Process: Project to |1> (implicitly done or checked) -> Apply X to reset to |0>
+            // -> Discard -> Recurse.
             if proj_one_result.is_err() {
                 // Ideally unreachable unless the state norm is zero.
                 unreachable!("Both projections failed in sampling.");
@@ -252,7 +255,7 @@ mod test {
 
     #[test]
     fn test_sampling_errors() {
-        let state = crate::test_utils::create_sample_stab_decomp_state(); // 3 qubits
+        let state = crate::test_utils::create_sample_stab_decomp_state();
 
         // Empty qargs
         let result_empty = state.sample(&[], 100, None);

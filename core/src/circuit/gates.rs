@@ -3,6 +3,7 @@ use stabilizer_ch_form_rust::circuit::CliffordGate;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
+/// Represents a quantum gate in a quantum circuit.
 pub enum QuantumGate {
     // Clifford gates
     // - Single-qubit Cliffords
@@ -48,9 +49,9 @@ impl QuantumGate {
     /// ```rust
     /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// let gate = QuantumGate::H(0);
-    /// println!("{}", gate.is_single_qubit_gate()); // true
+    /// assert!(gate.is_single_qubit_gate());
     /// let gate = QuantumGate::CX(0, 1);
-    /// println!("{}", gate.is_single_qubit_gate()); // false
+    /// assert!(!gate.is_single_qubit_gate());
     /// ```
     pub fn is_single_qubit_gate(&self) -> bool {
         matches!(
@@ -75,9 +76,9 @@ impl QuantumGate {
     /// ```rust
     /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// let gate = QuantumGate::H(0);
-    /// println!("{}", gate.is_clifford()); // true
+    /// assert!(gate.is_clifford());
     /// let gate = QuantumGate::T(0);
-    /// println!("{}", gate.is_clifford()); // false
+    /// assert!(!gate.is_clifford());
     /// ```
     pub fn is_clifford(&self) -> bool {
         matches!(
@@ -100,6 +101,16 @@ impl QuantumGate {
     /// Note that this checks for both T and T-dagger gates.
     /// ## Returns
     /// * `bool` - `true` if the gate is a T-type gate, otherwise `false`.
+    /// ## Examples
+    /// ```rust
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// let gate = QuantumGate::T(0);
+    /// assert!(gate.is_t_type_gate());
+    /// let gate = QuantumGate::Tdg(0);
+    /// assert!(gate.is_t_type_gate());
+    /// let gate = QuantumGate::H(0);
+    /// assert!(!gate.is_t_type_gate());
+    /// ```
     pub fn is_t_type_gate(&self) -> bool {
         matches!(self, QuantumGate::T(_) | QuantumGate::Tdg(_))
     }
@@ -108,6 +119,16 @@ impl QuantumGate {
     /// Note that this only checks for the T gate, not T-dagger.
     /// ## Returns
     /// * `bool` - `true` if the gate is a T gate, otherwise `false`.
+    /// ## Examples
+    /// ```rust
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// let gate = QuantumGate::T(0);
+    /// assert!(gate.is_t_gate());
+    /// let gate = QuantumGate::Tdg(0);
+    /// assert!(!gate.is_t_gate());
+    /// let gate = QuantumGate::CX(0, 1);
+    /// assert!(!gate.is_t_gate());
+    /// ```
     pub fn is_t_gate(&self) -> bool {
         matches!(self, QuantumGate::T(_))
     }
@@ -116,6 +137,16 @@ impl QuantumGate {
     ///
     /// ## Returns
     /// * `bool` - `true` if the gate is a T-dagger gate, otherwise `false`.
+    /// ## Examples
+    /// ```rust
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// let gate = QuantumGate::Tdg(0);
+    /// assert!(gate.is_tdg_gate());
+    /// let gate = QuantumGate::T(0);
+    /// assert!(!gate.is_tdg_gate());
+    /// let gate = QuantumGate::H(0);
+    /// assert!(!gate.is_tdg_gate());
+    /// ```
     pub fn is_tdg_gate(&self) -> bool {
         matches!(self, QuantumGate::Tdg(_))
     }
@@ -137,6 +168,7 @@ impl QuantumGate {
     ///
     /// let cx_gate = QuantumGate::CX(1, 3);
     /// assert_eq!(cx_gate.qubits(), vec![1, 3]);
+    /// assert_ne!(cx_gate.qubits(), vec![3, 1]);
     ///
     /// let ccx_gate = QuantumGate::CCX(0, 1, 2);
     /// assert_eq!(ccx_gate.qubits(), vec![0, 1, 2]);
@@ -166,6 +198,14 @@ impl QuantumGate {
     /// Display the gate name.
     /// ## Returns
     /// * `&'static str` - The name of the gate as a string slice.
+    /// ## Examples
+    /// ```rust
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// let gate = QuantumGate::H(0);
+    /// assert_eq!(gate.name(), "H");
+    /// let gate = QuantumGate::CX(0, 1);
+    /// assert_eq!(gate.name(), "CX");
+    /// ```
     pub fn name(&self) -> &'static str {
         match self {
             QuantumGate::H(_) => "H",
@@ -191,7 +231,7 @@ impl QuantumGate {
     /// * `reg_name` - The name of the quantum register to use in the QASM output.
     ///
     /// ## Returns
-    /// * `String` - The QASM 2.0 string representation of the gate
+    /// * [`String`] - The QASM 2.0 string representation of the gate.
     pub(crate) fn to_qasm_str(&self, reg_name: &str) -> String {
         match self {
             QuantumGate::H(q) => format!("h {}[{}];", reg_name, q),
@@ -216,7 +256,6 @@ impl QuantumGate {
         }
     }
 
-    // --- Crate internal use only ---
     pub(crate) fn shift_indices(&mut self, offset: usize) {
         match self {
             // Single-qubit gates

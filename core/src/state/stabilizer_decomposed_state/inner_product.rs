@@ -4,7 +4,7 @@ use crate::error::Result;
 use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    /// Computes the inner product between two `StabilizerDecomposedState` instances.
+    /// Computes the inner product between two [`StabilizerDecomposedState`] instances.
     /// i.e. ⟨self|other⟩
     pub(crate) fn inner_product(&self, other: &Self) -> Result<Complex64> {
         let mut result = Complex64::new(0.0, 0.0);
@@ -47,3 +47,4 @@ mod tests {
         }
     }
 }
+// WIP: Add simple case tests

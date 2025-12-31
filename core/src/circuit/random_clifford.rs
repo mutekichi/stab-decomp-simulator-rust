@@ -3,15 +3,13 @@ use stabilizer_ch_form_rust::circuit::CliffordCircuit;
 
 /// Generates a uniformly random n-qubit Clifford.
 ///
-/// This function implements the O(n^2) algorithm described in the paper to sample a Clifford
-/// operator uniformly at random from the n-qubit Clifford group.
 /// The resulting circuit is structured according to the canonical form U = F1 * H * S * F2.
 /// See the reference for details.
 ///
 /// ## Arguments
 /// * `n` - The number of qubits. Must be greater than 0.
 /// * `seed` - An optional seed for the random number generator for reproducibility.
-///   If `None` is provided, a seed will be generated from system entropy.
+///   If [`None`] is provided, a seed will be generated from system entropy.
 ///
 /// ## Returns
 /// A [`QuantumCircuit`] object representing the random Clifford operator.
@@ -28,3 +26,4 @@ pub(crate) fn random_clifford(n: usize, seed: Option<[u8; 32]>) -> QuantumCircui
 
     qc
 }
+// DONE

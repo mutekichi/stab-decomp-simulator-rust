@@ -4,6 +4,7 @@ use crate::error::Result;
 use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
+    /// Applies a Pauli string.
     pub(crate) fn _apply_pauli_string(&mut self, pauli_string: &PauliString) -> Result<()> {
         match pauli_string {
             PauliString::Dense(ops) => {
@@ -30,3 +31,5 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         Ok(())
     }
 }
+
+// WIP: Add tests

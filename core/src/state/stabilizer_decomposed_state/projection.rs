@@ -5,6 +5,8 @@ use crate::{
 };
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
+    /// Projects the state onto the subspace where the qubit at `qubit` is in the state `outcome`.
+    /// The resulting state is normalized.
     pub(crate) fn project_normalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
         self.project_unnormalized(qubit, outcome)?;
         let norm = self.norm()?;
@@ -18,13 +20,14 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         Ok(())
     }
 
-    // NOTE: This function always successes even if the projection is impossible for the state.
-    //       When the projection is impossible, the norm of the state becomes zero.
+    /// Projects the state onto the subspace where the qubit at `qubit` is in the state `outcome`.
+    /// The resulting state is unnormalized.
+    /// NOTE: This function always successes even if the projection is impossible for the state.
+    ///       When the projection is impossible, the norm of the state becomes zero.
     pub(crate) fn project_unnormalized(&mut self, qubit: usize, outcome: bool) -> Result<()> {
         // Filter out stabilizers that cannot be projected to the desired outcome
-        // NOTE: We can optimize this by avoiding the allocation of a new vector
+        // NOTE: We may optimize this by avoiding the allocation of a new vector
         //       and instead using `retain` if performance becomes an issue.
-
         let (stabs, coeffs): (Vec<_>, Vec<_>) = self
             .stabilizers
             .drain(..)
@@ -61,7 +64,7 @@ mod tests {
     /// at `qubit_index` is in the state `|value>` (0 or 1) and returns the projected statevector
     /// for reference.
     /// If `normalize` is true, the resulting statevector is normalized.
-    pub fn project_statevector(
+    fn project_statevector(
         statevector: &Array1<Complex64>,
         qubit_index: usize,
         value: u8,
@@ -286,3 +289,4 @@ mod tests {
         assert_eq!(norm, 0.0);
     }
 }
+// DONE

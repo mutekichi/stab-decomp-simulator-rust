@@ -9,8 +9,7 @@ use std::{fmt, path::Path};
 
 /// Represents a quantum circuit as a sequence of quantum gates.
 ///
-/// A [`QuantumCircuit`] acts as a blueprint for a quantum computation. It holds the number of qubits
-/// and an ordered list of [`QuantumGate`] operations to be applied.
+/// A [`QuantumCircuit`] acts as a blueprint for a quantum computation.
 ///
 /// This struct is the primary entry point for defining a computation. Once built, it is typically
 /// compiled into a [`QuantumState`](crate::state::QuantumState) via [`QuantumState::from_circuit`](crate::state::QuantumState::from_circuit) to be simulated.
@@ -69,15 +68,17 @@ impl QuantumCircuit {
 
     /// Apply a quantum gate to the circuit.
     ///
-    /// ### Arguments
+    /// ## Arguments
     /// * `gate` - The quantum gate to apply.
-    /// ### Example
+    /// ## Example
     /// ```rust
     /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_gate(QuantumGate::H(0));
     /// circuit.apply_gate(QuantumGate::CX(0, 1));
+    /// assert_eq!(circuit.gates[0], QuantumGate::H(0));
+    /// assert_eq!(circuit.gates[1], QuantumGate::CX(0, 1));
     /// ```
     pub fn apply_gate(&mut self, gate: QuantumGate) {
         self.gates.push(gate);
@@ -85,82 +86,80 @@ impl QuantumCircuit {
 
     /// Apply a sequence of quantum gates to the circuit.
     ///
-    /// ### Arguments
+    /// ## Arguments
     /// * `gates` - A slice of quantum gates to apply.
-    /// ### Example
+    /// ## Example
     /// ```rust
     /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
     /// let mut circuit = QuantumCircuit::new(2);
     /// let gates = vec![QuantumGate::H(0), QuantumGate::CX(0, 1)];
     /// circuit.apply_gates(&gates);
+    /// assert_eq!(circuit.gates[0], QuantumGate::H(0));
+    /// assert_eq!(circuit.gates[1], QuantumGate::CX(0, 1));
     /// ```
     pub fn apply_gates(&mut self, gates: &[QuantumGate]) {
         self.gates.extend_from_slice(gates);
     }
 
-    // *** Single-Qubit Clifford Gates ***
-
     /// Apply a Hadamard gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_h(&mut self, target: usize) {
         self.apply_gate(QuantumGate::H(target));
     }
 
     /// Apply a Pauli-X gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_x(&mut self, target: usize) {
         self.apply_gate(QuantumGate::X(target));
     }
 
     /// Apply a Pauli-Y gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_y(&mut self, target: usize) {
         self.apply_gate(QuantumGate::Y(target));
     }
 
     /// Apply a Pauli-Z gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_z(&mut self, target: usize) {
         self.apply_gate(QuantumGate::Z(target));
     }
 
     /// Apply an S gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_s(&mut self, target: usize) {
         self.apply_gate(QuantumGate::S(target));
     }
 
     /// Apply an S-dagger gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_sdg(&mut self, target: usize) {
         self.apply_gate(QuantumGate::Sdg(target));
     }
 
     /// Apply a square root of X gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_sqrt_x(&mut self, target: usize) {
         self.apply_gate(QuantumGate::SqrtX(target));
     }
 
     /// Apply a square root of X-dagger gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_sqrt_xdg(&mut self, target: usize) {
         self.apply_gate(QuantumGate::SqrtXdg(target));
     }
 
-    // *** Two-Qubit Clifford Gates ***
-
     /// Apply a CNOT gate with the specified control and target qubits.
-    /// ### Arguments
+    /// ## Arguments
     /// * `control` - The control qubit index.
     /// * `target` - The target qubit index.
     pub fn apply_cx(&mut self, control: usize, target: usize) {
@@ -168,7 +167,7 @@ impl QuantumCircuit {
     }
 
     /// Apply a CZ gate with the specified qubits.
-    /// ### Arguments
+    /// ## Arguments
     /// * `qarg1` - The first qubit index.
     /// * `qarg2` - The second qubit index.
     pub fn apply_cz(&mut self, qarg1: usize, qarg2: usize) {
@@ -176,7 +175,7 @@ impl QuantumCircuit {
     }
 
     /// Apply a SWAP gate with the specified qubits.
-    /// ### Arguments
+    /// ## Arguments
     /// * `qarg1` - The first qubit index.
     /// * `qarg2` - The second qubit index.
     pub fn apply_swap(&mut self, qarg1: usize, qarg2: usize) {
@@ -186,22 +185,21 @@ impl QuantumCircuit {
     // *** Single-Qubit Non-Clifford Gates ***
 
     /// Apply a T gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_t(&mut self, target: usize) {
         self.apply_gate(QuantumGate::T(target));
     }
 
     /// Apply a T-dagger gate to the target qubit.
-    /// ### Arguments
+    /// ## Arguments
     /// * `target` - The target qubit index.
     pub fn apply_tdg(&mut self, target: usize) {
         self.apply_gate(QuantumGate::Tdg(target));
     }
 
-    // *** Multi-Qubit Non-Clifford Gates ***
     /// Apply a Toffoli (CCX) gate with the specified control and target qubits.
-    /// ### Arguments
+    /// ## Arguments
     /// * `control1` - The first control qubit index.
     /// * `control2` - The second control qubit index.
     /// * `target` - The target qubit index.
@@ -209,18 +207,23 @@ impl QuantumCircuit {
         self.apply_gate(QuantumGate::CCX(control1, control2, target));
     }
 
-    /// Appends the gates from another `QuantumCircuit` to this one.
+    /// Appends the gates from another [`QuantumCircuit`] to this one.
     ///
-    /// # Arguments
-    /// - `other`: A reference to another `QuantumCircuit` whose gates will be appended.
-    /// # Example
+    /// ## Arguments
+    /// - `other`: A reference to another [`QuantumCircuit`] whose gates will be appended.
+    /// ## Example
     /// ```rust
     /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// let mut circuit1 = QuantumCircuit::new(2);
     /// circuit1.apply_h(0);
     /// let mut circuit2 = QuantumCircuit::new(2);
     /// circuit2.apply_cx(0, 1);
     /// circuit1.append(&circuit2);
+    /// assert_eq!(circuit1.n_qubits, 2);
+    /// assert_eq!(circuit1.gates.len(), 2);
+    /// assert_eq!(circuit1.gates[0], QuantumGate::H(0));
+    /// assert_eq!(circuit1.gates[1], QuantumGate::CX(0, 1));
     /// ```
     pub fn append(&mut self, other: &QuantumCircuit) {
         self.gates.extend_from_slice(&other.gates);
@@ -231,16 +234,21 @@ impl QuantumCircuit {
     /// The new circuit will have `self.num_qubits() + other.num_qubits()` qubits.
     /// Gates from `self` are applied to the first qubits, and gates from `other`
     /// are applied to the subsequent qubits.
-    /// # Arguments
-    /// - `other`: A reference to another `QuantumCircuit` to tensor with.  
-    /// # Example
+    /// ## Arguments
+    /// - `other`: A reference to another [`QuantumCircuit`] to tensor with.  
+    /// ## Example
     /// ```rust
     /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
+    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
     /// let mut circuit1 = QuantumCircuit::new(1);
     /// circuit1.apply_h(0);
-    /// let mut circuit2 = QuantumCircuit::new(1);
-    /// circuit2.apply_x(0);
+    /// let mut circuit2 = QuantumCircuit::new(2);
+    /// circuit2.apply_cx(0, 1);
     /// let tensor_circuit = circuit1.tensor(&circuit2);
+    /// assert_eq!(tensor_circuit.n_qubits, 3);
+    /// assert_eq!(tensor_circuit.gates.len(), 2);
+    /// assert_eq!(tensor_circuit.gates[0], QuantumGate::H(0));
+    /// assert_eq!(tensor_circuit.gates[1], QuantumGate::CX(1, 2));
     /// ```
     pub fn tensor(&self, other: &QuantumCircuit) -> QuantumCircuit {
         let mut new_circuit = QuantumCircuit::new(self.n_qubits + other.n_qubits);
@@ -276,22 +284,23 @@ impl QuantumCircuit {
     ///
     /// ## Reference
     /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
-    ///   group," IEEE Trans. Inf. Theory 67, 5800 (2021). https://doi.org/10.1109/TIT.2021.3081415
+    ///   group," IEEE Trans. Inf. Theory 67, 5800 (2021).
+    ///   <https://doi.org/10.1109/TIT.2021.3081415>
     pub fn random_clifford(n: usize, seed: Option<[u8; 32]>) -> QuantumCircuit {
         random_clifford::random_clifford(n, seed)
     }
 
-    /// Parses an OpenQASM 2.0 string into a `QuantumCircuit`.
+    /// Parses an OpenQASM 2.0 string into a [`QuantumCircuit`].
     ///
-    /// # Arguments
+    /// ## Arguments
     /// * `qasm_str` - A string slice containing the OpenQASM 2.0 circuit description.
     pub fn from_qasm_str(qasm_str: &str) -> Result<Self> {
         parser::from_qasm_str(qasm_str)
     }
 
-    /// Parses an OpenQASM 2.0 file into a `QuantumCircuit`.
+    /// Parses an OpenQASM 2.0 file into a [`QuantumCircuit`]
     ///
-    /// # Arguments
+    /// ## Arguments
     /// * `path` - A path to the QASM file.
     pub fn from_qasm_file<P: AsRef<Path>>(path: P) -> Result<Self> {
         parser::from_qasm_file(path)
@@ -299,7 +308,7 @@ impl QuantumCircuit {
 
     /// Converts the circuit to an OpenQASM 2.0 string.
     ///
-    /// # Arguments
+    /// ## Arguments
     /// * `reg_name` - The name of the quantum register (e.g., "q").
     pub fn to_qasm_str(&self, reg_name: &str) -> String {
         parser::to_qasm_str(self, reg_name)
@@ -307,7 +316,7 @@ impl QuantumCircuit {
 
     /// Writes the circuit to an OpenQASM 2.0 file.
     ///
-    /// # Arguments
+    /// ## Arguments
     /// * `path` - The path to the output file.
     /// * `reg_name` - The name of the quantum register (e.g., "q").
     pub fn to_qasm_file<P: AsRef<Path>>(&self, path: P, reg_name: &str) -> Result<()> {

@@ -25,13 +25,14 @@ pub(crate) struct StabilizerDecomposedState<T: Coefficient> {
 }
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    /// Creates a new StabilizerDecomposedState representing the all-zero state |0...0>.
+    /// Creates a new [`StabilizerDecomposedState`] representing the all-zero state |0...0>.
     pub(crate) fn new(
         num_qubits: usize,
         stabilizers: Vec<StabilizerCHForm>,
         coefficients: Vec<T>,
     ) -> Self {
-        // We do not check if the input stabilizers and coefficients are valid here for performance reasons.
+        // We do not check if the input stabilizers and coefficients are valid here for performance
+        // reasons.
         StabilizerDecomposedState {
             num_qubits,
             stabilizers,
@@ -40,6 +41,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         }
     }
 
+    /// Validates the provided qubit indices for measurement or projection operations.
     pub(crate) fn validate_qargs(&self, qargs: &[usize]) -> Result<()> {
         let num_qubits = self.num_qubits;
         // Check for Empty qargs
@@ -65,6 +67,7 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         Ok(())
     }
 
+    /// Amplifies the global factor by the given complex number.
     pub(crate) fn amplify_global_factor(&mut self, factor: Complex64) {
         self.global_factor *= factor;
     }

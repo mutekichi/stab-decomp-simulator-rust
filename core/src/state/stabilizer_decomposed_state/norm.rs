@@ -4,7 +4,7 @@ use crate::error::Result;
 use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    /// calculates the norm of the state
+    /// Calculates the squared norm of the state.
     pub(crate) fn norm_squared(&self) -> Result<f64> {
         let mut sum = Complex64::new(0.0, 0.0);
         let terms: Vec<_> = self
@@ -29,8 +29,9 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         Ok(sum.re * self.global_factor.norm_sqr())
     }
 
-    /// calculates the norm of the state
+    /// Calculates the norm of the state.
     pub(crate) fn norm(&self) -> Result<f64> {
         Ok(self.norm_squared()?.sqrt())
     }
 }
+// WIP: Add tests

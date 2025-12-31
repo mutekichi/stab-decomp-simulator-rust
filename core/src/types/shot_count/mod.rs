@@ -1,5 +1,9 @@
 use std::fmt::Debug;
 
+/// Represents the result of sampling shots from a quantum state.
+/// Each entry in the vector contains a tuple of:
+/// 1. `Vec<bool>`: The measurement outcome for each qubit (false for `|0>`, true for `|1>`).
+/// 2. `usize`: The frequency (count) of this specific outcome.
 pub type ShotCount = Vec<(Vec<bool>, usize)>;
 
 /// Trait for representing measurement outcomes (e.g. [false, false, true])

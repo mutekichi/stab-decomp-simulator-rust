@@ -5,7 +5,7 @@ use crate::error::Result;
 use std::fmt;
 
 /// A struct representing a Clifford circuit composed of Clifford gates.
-/// `CliffordCircuit` only stores the sequence of gates and does not calculate
+/// [`CliffordCircuit`] only stores the sequence of gates and does not calculate
 /// the resulting stabilizer state.
 ///
 /// ## Example usage:
@@ -65,7 +65,7 @@ impl CliffordCircuit {
         new_circuit
     }
 
-    /// Appends the gates from another `CliffordCircuit` to this one.
+    /// Appends the gates from another [`CliffordCircuit`] to this one.
     ///
     /// ## Arguments
     /// * `other` - The other Clifford circuit whose gates are to be appended.
@@ -171,24 +171,24 @@ impl CliffordCircuit {
         self.add_gate(CliffordGate::Swap(qarg1, qarg2));
     }
 
-    /// Parses an OpenQASM 2.0 file into a `CliffordCircuit`.
+    /// Parses an OpenQASM 2.0 file into a [`CliffordCircuit`].
     ///
     /// ## Arguments
     /// * `path` - A path to the QASM file.
     ///
     /// ## Returns
-    /// A `Result` containing the parsed `CliffordCircuit` or a `String` error message.
+    /// A [`Result`] containing the parsed [`CliffordCircuit`] or an [`Error`](crate::error::Error).
     pub fn from_qasm_file(path: &str) -> Result<Self> {
         parser::from_qasm_file(path)
     }
 
-    /// Parses an OpenQASM 2.0 string into a `CliffordCircuit`.
+    /// Parses an OpenQASM 2.0 string into a [`CliffordCircuit`].
     ///
     /// ## Arguments
     /// * `qasm_str` - A string slice containing the OpenQASM 2.0 circuit description.
     ///
     /// ## Returns
-    /// A `Result` containing the parsed `CliffordCircuit` or a `String` error message.
+    /// A [`Result`] containing the parsed [`CliffordCircuit`] or an [`Error`](crate::error::Error).
     pub fn from_qasm_str(qasm_str: &str) -> Result<Self> {
         parser::from_qasm_str(qasm_str)
     }
@@ -197,15 +197,21 @@ impl CliffordCircuit {
     ///
     /// ## Arguments
     /// * `reg_name` - The name of the quantum register (e.g., "q").
+    /// 
+    /// ## Returns
+    /// A [`String`] containing the OpenQASM 2.0 representation of the circuit.
     pub fn to_qasm_str(&self, reg_name: &str) -> String {
         parser::to_qasm_str(self, reg_name)
     }
 
     /// Writes the circuit to an OpenQASM 2.0 file.
     ///
-    /// # Arguments
+    /// ## Arguments
     /// * `path` - The path to the output file.
     /// * `reg_name` - The name of the quantum register (e.g., "q").
+    /// 
+    /// ## Returns 
+    /// A [`Result`] indicating success or failure.
     pub fn to_qasm_file(&self, path: &str, reg_name: &str) -> Result<()> {
         parser::to_qasm_file(self, path, reg_name)
     }
@@ -227,7 +233,8 @@ impl CliffordCircuit {
     ///
     /// ## Reference
     /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
-    ///   group," IEEE Trans. Inf. Theory 67, 5800 (2021). https://doi.org/10.1109/TIT.2021.3081415
+    ///   group," IEEE Trans. Inf. Theory 67, 5800 (2021). 
+    ///   <https://doi.org/10.1109/TIT.2021.3081415>
     pub fn random_clifford(n_qubits: usize, seed: Option<[u8; 32]>) -> Self {
         random_clifford::random_clifford(n_qubits, seed)
     }
@@ -290,3 +297,4 @@ mod tests {
         assert_eq!(display_str, "CliffordCircuit(n_qubits=2) [H(0), CX(0, 1)]");
     }
 }
+// DONE

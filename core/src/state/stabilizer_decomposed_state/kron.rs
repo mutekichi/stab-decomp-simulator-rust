@@ -2,8 +2,9 @@ use crate::error::Result;
 use crate::state::{Coefficient, StabilizerDecomposedState};
 
 impl<T: Coefficient> StabilizerDecomposedState<T> {
-    /// Returns a new StabilizerDecomposedState representing the tensor product of self and other.
-    pub fn kron(&self, other: &Self) -> Result<Self> {
+    /// Returns a new [`StabilizerDecomposedState`] representing the tensor product of `self` and
+    /// `other`.
+    pub(crate) fn kron(&self, other: &Self) -> Result<Self> {
         let mut new_stabilizers = Vec::new();
         let mut new_coefficients = Vec::new();
 
@@ -20,3 +21,4 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         ))
     }
 }
+// WIP: Add tests

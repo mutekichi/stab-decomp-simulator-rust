@@ -36,7 +36,9 @@ impl StabDecompCompiler {
 
 impl CircuitCompiler for StabDecompCompiler {
     /// Compiles a [`QuantumCircuit`] into an [`InternalState`] using stabilizer decomposition.
+    ///
     /// NOTE: Currently only supports Clifford + T circuits.
+    ///
     /// TODO: Generalize by abstracting magic state preparation and gate teleportation
     /// to support arbitrary non-Clifford gates for better extensibility.
     fn compile(&self, circuit: &QuantumCircuit) -> CompileResult<InternalState> {

@@ -6,7 +6,7 @@ use stabilizer_ch_form_rust::prelude::*;
 /// Constructs the Toffoli state |Toffoli>:
 /// |Toffoli> = (|000> + |100> + |010> + |111>) / 2
 ///           = (|0+0> + |1,Bell>) / sqrt(2)
-/// as a StabilizerDecomposedState<Scalar>
+/// as a `StabilizerDecomposedState<Scalar>`
 ///
 /// Note: Toffoli state injection is not implemented yet.
 pub(crate) fn construct_toffoli_state() -> Result<StabilizerDecomposedState<Scalar>> {

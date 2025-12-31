@@ -25,7 +25,7 @@ fn apply_xs(state: &mut StabilizerCHForm, target: usize) -> Result<()> {
 ///
 /// ## Reference
 /// - H. Qassim, et al., "Improved upper bounds on the stabilizer rank of magic states," Quantum 5,
-///   604 (2021). https://doi.org/10.22331/q-2021-12-20-606
+///   604 (2021). <https://doi.org/10.22331/q-2021-12-20-606>
 pub(crate) fn construct_t_tensor_state(
     num_qubits: usize,
 ) -> Result<StabilizerDecomposedState<Scalar>> {

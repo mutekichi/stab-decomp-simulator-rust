@@ -260,4 +260,8 @@ mod tests {
             }
         }
     }
+
+    // The uniformity of the distribution is tested in `tests` directory.
 }
+
+// DONE

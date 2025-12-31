@@ -1,3 +1,8 @@
+//! Module for constructing "cat states" as [`StabilizerDecomposedState`]s.
+//! These implementations are based on the construction described in reference:
+//! - H. Qassim, et al., "Improved upper bounds on the stabilizer rank of magic states,"
+//!   Quantum 5, 604 (2021). <https://doi.org/10.22331/q-2021-12-20-606>
+
 use stabilizer_ch_form_rust::prelude::*;
 
 use crate::state::{
@@ -88,7 +93,7 @@ fn construct_cat_4_state() -> Result<StabilizerDecomposedState<Scalar>> {
     ))
 }
 
-/// Construct |cat_6> state as a superposition of 3 StabilizerCHForm states
+/// Construct |cat_6> state as a superposition of 3 StabilizeCHForm states
 fn construct_cat_6_state() -> Result<StabilizerDecomposedState<Scalar>> {
     let stab1 = zero_minus_i_one_state(6)?;
     let stab2 = even_parity_state(6)?;
@@ -153,6 +158,7 @@ fn reduce_cat_state(state: &mut StabilizerDecomposedState<Scalar>) -> Result<()>
     Ok(())
 }
 
+/// Constructs the "cat state" |cat_n> as a [`StabilizerDecomposedState`]
 pub(crate) fn construct_cat_state(num_qubits: usize) -> Result<StabilizerDecomposedState<Scalar>> {
     match num_qubits {
         0 => Err(Error::InvalidNumQubits(num_qubits)),

@@ -2,9 +2,11 @@ use crate::state::compiler::error::Error as CompileError;
 use stabilizer_ch_form_rust::error::Error as ChFormError;
 use thiserror::Error;
 
+/// A specialized `Result` type for NECSTAR operations.
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Error, Debug)]
+/// Errors that can occur in NECSTAR operations.
 pub enum Error {
     /// Error for invalid qubit index.
     #[error("Qubit index {0} is out of bounds for {1} qubits.")]
@@ -83,3 +85,4 @@ pub enum Error {
     #[error("Not implemented: {0}")]
     NotImplemented(String),
 }
+// DONE
