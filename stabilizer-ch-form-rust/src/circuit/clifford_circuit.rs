@@ -197,7 +197,7 @@ impl CliffordCircuit {
     ///
     /// ## Arguments
     /// * `reg_name` - The name of the quantum register (e.g., "q").
-    /// 
+    ///
     /// ## Returns
     /// A [`String`] containing the OpenQASM 2.0 representation of the circuit.
     pub fn to_qasm_str(&self, reg_name: &str) -> String {
@@ -209,8 +209,8 @@ impl CliffordCircuit {
     /// ## Arguments
     /// * `path` - The path to the output file.
     /// * `reg_name` - The name of the quantum register (e.g., "q").
-    /// 
-    /// ## Returns 
+    ///
+    /// ## Returns
     /// A [`Result`] indicating success or failure.
     pub fn to_qasm_file(&self, path: &str, reg_name: &str) -> Result<()> {
         parser::to_qasm_file(self, path, reg_name)
@@ -233,7 +233,7 @@ impl CliffordCircuit {
     ///
     /// ## Reference
     /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
-    ///   group," IEEE Trans. Inf. Theory 67, 5800 (2021). 
+    ///   group," IEEE Trans. Inf. Theory 67, 5800 (2021).
     ///   <https://doi.org/10.1109/TIT.2021.3081415>
     pub fn random_clifford(n_qubits: usize, seed: Option<[u8; 32]>) -> Self {
         random_clifford::random_clifford(n_qubits, seed)

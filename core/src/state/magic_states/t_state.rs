@@ -112,12 +112,11 @@ mod tests {
 
     #[test]
     fn test_construct_t_tensor_state() {
-        for num_qubits in 1..=9 {
+        for num_qubits in 1..=11 {
             let state = construct_t_tensor_state(num_qubits).unwrap();
             let expected_vector = construct_t_tensor_vector(num_qubits);
             let state_vector = state.to_statevector().unwrap();
-            assert_eq_complex_array1(&expected_vector, &state_vector);
-            println!("Test passed for {} qubits.", num_qubits);
+            assert_eq_complex_array1(&state_vector, &expected_vector);
         }
     }
 }

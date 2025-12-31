@@ -17,9 +17,10 @@ class PauliString:
     def from_str(s: str) -> PauliString:
         """Creates a :class:`~necstar.PauliString` object from a string representation.
         Supports:
+
         1. Dense format: e.g., "IXYZ" (case-sensitive).
-        2. Sparse format: e.g., "X1 Y3 Z0" (case-insensitive for Pauli chars,
-                space-separated).
+        2. Sparse format: e.g., "X1 Y3 Z0" (case-insensitive for Pauli chars,\
+        space-separated).
         3. Identity: "" or "I" (case-insensitive).
 
         Args:

@@ -42,7 +42,7 @@ class QuantumCircuit:
 
         Returns:
             QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the
-                parsed circuit.
+            parsed circuit.
 
         Raises:
             FileNotFoundError: If the specified file cannot be read.
@@ -59,7 +59,7 @@ class QuantumCircuit:
 
         Returns:
             QuantumCircuit: A :class:`~necstar.QuantumCircuit` object representing the
-                parsed circuit.
+            parsed circuit.
 
         Raises:
             ValueError: If the QASM string is invalid or unsupported.
@@ -88,20 +88,17 @@ class QuantumCircuit:
 
     @staticmethod
     def random_clifford(n: int, seed: Optional[int] = None) -> QuantumCircuit:
-        """Generates a random n-qubit Clifford circuit using the canonical form
-        decomposition presented in Ref. [1].
+        """Generates a uniformly random `n`-qubit Clifford circuit.
 
         This function implements the O(n^2) algorithm described in the paper
         to sample a Clifford operator uniformly at random from the n-qubit
         Clifford group. The resulting circuit is structured according to the
-        canonical form U = F1 * H * S * F2, where F1 and F2 are Hadamard-free
-        Clifford circuits, H is a layer of Hadamard gates, and S is a permutation
-        of qubits.
+        canonical form U = F1 * H * S * F2. See the reference for details.
 
-        ### Reference:
-            [1] S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure\
-                of the Clifford group," IEEE Trans. Inf. Theory 67, 5800 (2021).\
-                https://doi.org/10.1109/TIT.2021.3081415
+        Reference:
+            - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure\
+            of the Clifford group," IEEE Trans. Inf. Theory 67, 5800 (2021).\
+            https://doi.org/10.1109/TIT.2021.3081415
 
         Args:
             n (int): The number of qubits. Must be greater than 0.

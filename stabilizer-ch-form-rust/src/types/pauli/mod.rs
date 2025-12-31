@@ -12,10 +12,10 @@ pub use pauli_term::PauliTerm;
 
 /// Represents a multi-qubit Pauli operator.
 /// You can represent it in either dense or sparse format:
-/// - Dense: `"IXYZ"` ( Q0=Z, Q1=Y, Q2=X, Q3=I ) 
+/// - Dense: `"IXYZ"` ( Q0=Z, Q1=Y, Q2=X, Q3=I )
 /// - Sparse: `"X1 Y3"` ( Q1=X, Q3=Y, others=I )
-/// 
-/// Note that the dense format follows the little-endian convention (Qiskit-style), where the 
+///
+/// Note that the dense format follows the little-endian convention (Qiskit-style), where the
 /// rightmost character corresponds to the 0-th qubit.
 ///
 /// ## Examples
@@ -32,7 +32,7 @@ pub use pauli_term::PauliTerm;
 ///     PauliTerm { op: Pauli::X, qubit: 1 },
 ///     PauliTerm { op: Pauli::Y, qubit: 3 },
 /// ]));
-/// 
+///
 /// // Identity Pauli string
 /// let identity_sparse: PauliString = "".parse().unwrap();
 /// let identity_dense: PauliString = "IIII".parse().unwrap();

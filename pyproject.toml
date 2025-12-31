@@ -13,7 +13,7 @@ description = "A high-performance near-Clifford quantum circuit simulator."
 authors = [
   { name = "Yuki Watanabe", email = "sample@sample.com" },
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
@@ -28,10 +28,16 @@ authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.11"
 
 [tool.poetry.group.dev.dependencies]
 qiskit = "2.2.1"
 maturin = "^1.0"
 pytest = "^8.0.0"
 numpy = "^1.24.0"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^9.0.4"
+sphinx-autoapi = "^3.6.1"
+sphinx-autodoc-typehints = "^3.6.0"
+sphinx-rtd-theme = "^3.0.2"
