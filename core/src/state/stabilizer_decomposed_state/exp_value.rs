@@ -55,7 +55,6 @@ mod test {
             stabilizer_ch_form_rust::types::pauli::PauliString::from_str("ZII").unwrap();
         let expected_result = 0.5;
         let result = sample_state.exp_value(&pauli_string).unwrap();
-        dbg!(result);
         assert!((result - expected_result).abs() < 1e-10);
     }
 }

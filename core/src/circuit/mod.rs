@@ -51,7 +51,7 @@ use std::{fmt, path::Path};
 /// println!("Stabilizer rank: {}", state.stabilizer_rank());
 /// ```
 pub struct QuantumCircuit {
-    pub n_qubits: usize,
+    pub num_qubits: usize,
     pub gates: Vec<QuantumGate>,
 }
 
@@ -59,7 +59,7 @@ impl QuantumCircuit {
     /// Creates a new quantum circuit
     pub fn new(num_qubits: usize) -> Self {
         Self {
-            n_qubits: num_qubits,
+            num_qubits,
             gates: Vec::new(),
         }
     }
@@ -220,7 +220,7 @@ impl QuantumCircuit {
     /// let mut circuit2 = QuantumCircuit::new(2);
     /// circuit2.apply_cx(0, 1);
     /// circuit1.append(&circuit2);
-    /// assert_eq!(circuit1.n_qubits, 2);
+    /// assert_eq!(circuit1.num_qubits, 2);
     /// assert_eq!(circuit1.gates.len(), 2);
     /// assert_eq!(circuit1.gates[0], QuantumGate::H(0));
     /// assert_eq!(circuit1.gates[1], QuantumGate::CX(0, 1));
@@ -245,13 +245,13 @@ impl QuantumCircuit {
     /// let mut circuit2 = QuantumCircuit::new(2);
     /// circuit2.apply_cx(0, 1);
     /// let tensor_circuit = circuit1.tensor(&circuit2);
-    /// assert_eq!(tensor_circuit.n_qubits, 3);
+    /// assert_eq!(tensor_circuit.num_qubits, 3);
     /// assert_eq!(tensor_circuit.gates.len(), 2);
     /// assert_eq!(tensor_circuit.gates[0], QuantumGate::H(0));
     /// assert_eq!(tensor_circuit.gates[1], QuantumGate::CX(1, 2));
     /// ```
     pub fn tensor(&self, other: &QuantumCircuit) -> QuantumCircuit {
-        let mut new_circuit = QuantumCircuit::new(self.n_qubits + other.n_qubits);
+        let mut new_circuit = QuantumCircuit::new(self.num_qubits + other.num_qubits);
 
         // Add gates from the first circuit
         for gate in &self.gates {
@@ -259,7 +259,7 @@ impl QuantumCircuit {
         }
 
         // Add gates from the second circuit, adjusting qubit indices
-        let offset = self.n_qubits;
+        let offset = self.num_qubits;
         for gate in &other.gates {
             new_circuit.gates.push(gate.clone().shifted(offset));
         }
@@ -326,7 +326,7 @@ impl QuantumCircuit {
 
 impl fmt::Display for QuantumCircuit {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "QuantumCircuit(n_qubits={}) [", self.n_qubits)?;
+        write!(f, "QuantumCircuit(num_qubits={}) [", self.num_qubits)?;
 
         for (i, gate) in self.gates.iter().enumerate() {
             if i > 0 {
@@ -353,7 +353,7 @@ mod tests {
 
         circuit1.append(&circuit2);
 
-        assert_eq!(circuit1.n_qubits, 2);
+        assert_eq!(circuit1.num_qubits, 2);
         assert_eq!(circuit1.gates.len(), 3);
         assert_eq!(circuit1.gates[0], QuantumGate::H(0));
         assert_eq!(circuit1.gates[1], QuantumGate::CX(0, 1));
@@ -370,7 +370,7 @@ mod tests {
 
         let tensor_circuit = circuit1.tensor(&circuit2);
 
-        assert_eq!(tensor_circuit.n_qubits, 5);
+        assert_eq!(tensor_circuit.num_qubits, 5);
         assert_eq!(tensor_circuit.gates.len(), 3);
         assert_eq!(tensor_circuit.gates[0], QuantumGate::H(0));
         assert_eq!(tensor_circuit.gates[1], QuantumGate::CX(2, 3));
@@ -385,7 +385,7 @@ mod tests {
         circuit.apply_tdg(1);
 
         let display_str = format!("{}", circuit);
-        let expected_str = "QuantumCircuit(n_qubits=2) [X(0), CZ(0, 1), Tdg(1)]";
+        let expected_str = "QuantumCircuit(num_qubits=2) [X(0), CZ(0, 1), Tdg(1)]";
         assert_eq!(display_str, expected_str);
     }
 }

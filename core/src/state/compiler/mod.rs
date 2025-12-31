@@ -42,7 +42,7 @@ impl CircuitCompiler for StabDecompCompiler {
     /// TODO: Generalize by abstracting magic state preparation and gate teleportation
     /// to support arbitrary non-Clifford gates for better extensibility.
     fn compile(&self, circuit: &QuantumCircuit) -> CompileResult<InternalState> {
-        let num_qubits_original = circuit.n_qubits;
+        let num_qubits_original = circuit.num_qubits;
         let mut num_t_type_gates = 0;
         let mut clifford_ops: Vec<CliffordGate> = Vec::new();
 

@@ -27,25 +27,25 @@ use std::fmt;
 /// ```
 #[derive(Debug, Clone)]
 pub struct CliffordCircuit {
-    pub n_qubits: usize,
+    pub num_qubits: usize,
     pub gates: Vec<CliffordGate>,
 }
 
 impl CliffordCircuit {
     /// Creates a new Clifford circuit with the specified number of qubits.
     /// ## Arguments
-    /// * `n_qubits` - The number of qubits in the circuit.
-    pub fn new(n_qubits: usize) -> Self {
+    /// * `num_qubits` - The number of qubits in the circuit.
+    pub fn new(num_qubits: usize) -> Self {
         CliffordCircuit {
-            n_qubits,
+            num_qubits,
             gates: Vec::new(),
         }
     }
 
     /// creates a new Clifford circuit by taking the tensor product of this circuit
     /// and another.
-    /// Gates from `self` are applied to the first `self.n_qubits` qubits,
-    /// and gates from `other` are applied to the next `other.n_qubits` qubits.
+    /// Gates from `self` are applied to the first `self.num_qubits` qubits,
+    /// and gates from `other` are applied to the next `other.num_qubits` qubits.
     ///
     /// ## Arguments
     /// * `other` - The other Clifford circuit to tensor with.
@@ -53,14 +53,14 @@ impl CliffordCircuit {
     /// ## Returns
     /// A new `CliffordCircuit` representing the tensor product.
     pub fn tensor(&self, other: &CliffordCircuit) -> Self {
-        let mut new_circuit = CliffordCircuit::new(self.n_qubits + other.n_qubits);
+        let mut new_circuit = CliffordCircuit::new(self.num_qubits + other.num_qubits);
         // Add gates from the first circuit
         for gate in &self.gates {
             new_circuit.gates.push(gate.clone());
         }
         // Add gates from the second circuit, shifting qubit indices
         for gate in &other.gates {
-            new_circuit.gates.push(gate.shifted(self.n_qubits));
+            new_circuit.gates.push(gate.shifted(self.num_qubits));
         }
         new_circuit
     }
@@ -235,14 +235,14 @@ impl CliffordCircuit {
     /// - S. Bravyi and D. Maslov, "Hadamard-free circuits expose the structure of the Clifford
     ///   group," IEEE Trans. Inf. Theory 67, 5800 (2021).
     ///   <https://doi.org/10.1109/TIT.2021.3081415>
-    pub fn random_clifford(n_qubits: usize, seed: Option<[u8; 32]>) -> Self {
-        random_clifford::random_clifford(n_qubits, seed)
+    pub fn random_clifford(num_qubits: usize, seed: Option<[u8; 32]>) -> Self {
+        random_clifford::random_clifford(num_qubits, seed)
     }
 }
 
 impl fmt::Display for CliffordCircuit {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "CliffordCircuit(n_qubits={}) [", self.n_qubits)?;
+        write!(f, "CliffordCircuit(num_qubits={}) [", self.num_qubits)?;
 
         for (i, gate) in self.gates.iter().enumerate() {
             if i > 0 {
@@ -282,7 +282,7 @@ mod tests {
 
         let tensor_circuit = circuit1.tensor(&circuit2);
 
-        assert_eq!(tensor_circuit.n_qubits, 5);
+        assert_eq!(tensor_circuit.num_qubits, 5);
         assert_eq!(tensor_circuit.gates.len(), 2);
         assert_eq!(tensor_circuit.gates[0], CliffordGate::H(0));
         assert_eq!(tensor_circuit.gates[1], CliffordGate::CX(2, 3));
@@ -294,7 +294,10 @@ mod tests {
         circuit.apply_h(0);
         circuit.apply_cx(0, 1);
         let display_str = format!("{}", circuit);
-        assert_eq!(display_str, "CliffordCircuit(n_qubits=2) [H(0), CX(0, 1)]");
+        assert_eq!(
+            display_str,
+            "CliffordCircuit(num_qubits=2) [H(0), CX(0, 1)]"
+        );
     }
 }
 // DONE

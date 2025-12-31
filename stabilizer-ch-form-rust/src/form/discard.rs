@@ -194,16 +194,16 @@ mod tests {
     fn test_discard() {
         let mut trials = 0;
         let mut successes = 0;
-        let n_qubits = 5;
+        let num_qubits = 5;
         while successes < 10 && trials < 1000 {
             trials += 1;
             let mut seed = [0u8; 32];
             let trial_bytes = (trials as u64).to_le_bytes();
             seed[0..8].copy_from_slice(&trial_bytes);
-            let random_circuit = CliffordCircuit::random_clifford(n_qubits, Some(seed));
+            let random_circuit = CliffordCircuit::random_clifford(num_qubits, Some(seed));
             let mut ch_form = StabilizerCHForm::from_clifford_circuit(&random_circuit).unwrap();
 
-            let qubit_to_discard = n_qubits - 1;
+            let qubit_to_discard = num_qubits - 1;
             // Project the qubit onto |0>]
             if ch_form.project(qubit_to_discard, false).is_err() {
                 continue; // Cannot discard this qubit, try again

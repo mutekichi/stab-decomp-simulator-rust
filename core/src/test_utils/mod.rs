@@ -102,12 +102,12 @@ pub(crate) fn pretty_print_complex_vec(name: &str, vec: &Array1<Complex64>) {
 /// Generates a random quantum circuit with the specified number of qubits and gates.
 #[allow(dead_code)]
 pub(crate) fn random_circuit_with_t_gate(
-    n_qubits: usize,
+    num_qubits: usize,
     clifford_gate_count: usize,
     t_type_gate_count: usize,
     seed: Option<u64>,
 ) -> QuantumCircuit {
-    let mut circuit = QuantumCircuit::new(n_qubits);
+    let mut circuit = QuantumCircuit::new(num_qubits);
     let mut rng = match seed {
         Some(s) => StdRng::seed_from_u64(s),
         None => StdRng::from_entropy(),
@@ -137,7 +137,7 @@ pub(crate) fn random_circuit_with_t_gate(
                 const NUM_2Q_CLIFFORDS: u32 = 3; // CX, CZ, Swap
 
                 // Determine the range of possible gates based on the number of qubits.
-                let max_gate_idx = if n_qubits < 2 {
+                let max_gate_idx = if num_qubits < 2 {
                     NUM_1Q_CLIFFORDS
                 } else {
                     NUM_1Q_CLIFFORDS + NUM_2Q_CLIFFORDS
@@ -147,7 +147,7 @@ pub(crate) fn random_circuit_with_t_gate(
 
                 if gate_idx < NUM_1Q_CLIFFORDS {
                     // Generate a 1-qubit Clifford gate.
-                    let q = rng.gen_range(0..n_qubits);
+                    let q = rng.gen_range(0..num_qubits);
                     match gate_idx {
                         0 => QuantumGate::H(q),
                         1 => QuantumGate::X(q),
@@ -161,10 +161,10 @@ pub(crate) fn random_circuit_with_t_gate(
                     }
                 } else {
                     // Generate a 2-qubit Clifford gate.
-                    let q1 = rng.gen_range(0..n_qubits);
-                    let mut q2 = rng.gen_range(0..n_qubits);
+                    let q1 = rng.gen_range(0..num_qubits);
+                    let mut q2 = rng.gen_range(0..num_qubits);
                     while q1 == q2 {
-                        q2 = rng.gen_range(0..n_qubits);
+                        q2 = rng.gen_range(0..num_qubits);
                     }
                     match gate_idx - NUM_1Q_CLIFFORDS {
                         0 => QuantumGate::CX(q1, q2),
@@ -176,7 +176,7 @@ pub(crate) fn random_circuit_with_t_gate(
             }
             GateCategory::TType => {
                 // Generate a T or Tdg gate.
-                let q = rng.gen_range(0..n_qubits);
+                let q = rng.gen_range(0..num_qubits);
                 if rng.gen_bool(0.5) {
                     QuantumGate::T(q)
                 } else {

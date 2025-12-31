@@ -146,14 +146,14 @@ mod tests {
 
     #[test]
     fn test_random_state_inner_product() {
-        let n_qubits = 4;
+        let num_qubits = 4;
         for i in 0..10 {
             let state1 = StabilizerCHForm::from_clifford_circuit(
-                &CliffordCircuit::random_clifford(n_qubits, Some([i + 12; 32])),
+                &CliffordCircuit::random_clifford(num_qubits, Some([i + 12; 32])),
             )
             .unwrap();
             let state2 = StabilizerCHForm::from_clifford_circuit(
-                &CliffordCircuit::random_clifford(n_qubits, Some([i + 34; 32])),
+                &CliffordCircuit::random_clifford(num_qubits, Some([i + 34; 32])),
             )
             .unwrap();
 

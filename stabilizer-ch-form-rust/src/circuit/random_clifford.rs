@@ -223,25 +223,25 @@ mod tests {
 
     #[test]
     fn test_random_clifford_generation() {
-        let n_qubits = 3;
-        let circuit = random_clifford(n_qubits, Some([42; 32]));
-        assert_eq!(circuit.n_qubits, n_qubits);
+        let num_qubits = 3;
+        let circuit = random_clifford(num_qubits, Some([42; 32]));
+        assert_eq!(circuit.num_qubits, num_qubits);
         assert!(circuit.gates.len() > 0);
     }
 
     #[test]
     fn test_random_clifford_determinism() {
-        let n_qubits = 4;
+        let num_qubits = 4;
         let seed = [123; 32];
-        let circuit1 = random_clifford(n_qubits, Some(seed));
-        let circuit2 = random_clifford(n_qubits, Some(seed));
+        let circuit1 = random_clifford(num_qubits, Some(seed));
+        let circuit2 = random_clifford(num_qubits, Some(seed));
         assert_eq!(circuit1.gates, circuit2.gates);
     }
 
     #[test]
     fn test_random_clifford_validity() {
-        let n_qubits = 4;
-        let circuit = random_clifford(n_qubits, Some([56; 32]));
+        let num_qubits = 4;
+        let circuit = random_clifford(num_qubits, Some([56; 32]));
         for gate in circuit.gates {
             match gate {
                 CliffordGate::H(q)
@@ -252,10 +252,10 @@ mod tests {
                 | CliffordGate::Sdg(q)
                 | CliffordGate::SqrtX(q)
                 | CliffordGate::SqrtXdg(q) => {
-                    assert!(q < n_qubits);
+                    assert!(q < num_qubits);
                 }
                 CliffordGate::CX(c, t) | CliffordGate::CZ(c, t) | CliffordGate::Swap(c, t) => {
-                    assert!(c < n_qubits && t < n_qubits && c != t);
+                    assert!(c < num_qubits && t < num_qubits && c != t);
                 }
             }
         }

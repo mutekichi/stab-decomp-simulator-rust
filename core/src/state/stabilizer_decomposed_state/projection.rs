@@ -109,17 +109,17 @@ mod tests {
     #[test]
     fn test_project_unnormalized_random() {
         let trials = 50;
-        let n_qubits = 5;
+        let num_qubits = 5;
         let clifford_count = 100;
         let t_count = 10;
 
         for i in 0..trials {
             let seed = i as u64;
-            let target_qubit = i % n_qubits;
+            let target_qubit = i % num_qubits;
             let outcome = (i % 2) == 1;
 
             let random_circuit =
-                random_circuit_with_t_gate(n_qubits, clifford_count, t_count, Some(seed));
+                random_circuit_with_t_gate(num_qubits, clifford_count, t_count, Some(seed));
 
             let mut state = QuantumState::from_circuit(&random_circuit).unwrap();
             let statevector = state.to_statevector().unwrap();
@@ -137,17 +137,17 @@ mod tests {
     #[test]
     fn test_project_normalized_random() {
         let trials = 50;
-        let n_qubits = 5;
+        let num_qubits = 5;
         let clifford_count = 100;
         let t_count = 10;
 
         for i in 0..trials {
             let seed = (i + 123) as u64;
-            let target_qubit = (i + 1) % n_qubits;
+            let target_qubit = (i + 1) % num_qubits;
             let outcome = (i % 2) == 0;
 
             let random_circuit =
-                random_circuit_with_t_gate(n_qubits, clifford_count, t_count, Some(seed));
+                random_circuit_with_t_gate(num_qubits, clifford_count, t_count, Some(seed));
 
             let mut state = QuantumState::from_circuit(&random_circuit).unwrap();
             let statevector = state.to_statevector().unwrap();
@@ -180,7 +180,7 @@ mod tests {
     #[test]
     fn test_inner_product_between_projected_states() {
         let n_trials = 20;
-        let n_qubits = 4;
+        let num_qubits = 4;
         let clifford_count = 200;
         let t_count = 5;
 
@@ -190,8 +190,8 @@ mod tests {
         while success_count < n_trials {
             let seed_1 = (attempt + 200) as u64;
             let seed_2 = (attempt + 300) as u64;
-            let target_qubit_1 = (attempt + 2) % n_qubits;
-            let target_qubit_2 = (2 * attempt + n_qubits - 1) % n_qubits;
+            let target_qubit_1 = (attempt + 2) % num_qubits;
+            let target_qubit_2 = (2 * attempt + num_qubits - 1) % num_qubits;
             let outcome_1 = (attempt % 2) == 0;
             let outcome_2 = (attempt % 3) == 1;
 
@@ -199,9 +199,9 @@ mod tests {
             attempt += 1;
 
             let random_circuit_1 =
-                random_circuit_with_t_gate(n_qubits, clifford_count, t_count, Some(seed_1));
+                random_circuit_with_t_gate(num_qubits, clifford_count, t_count, Some(seed_1));
             let random_circuit_2 =
-                random_circuit_with_t_gate(n_qubits, clifford_count, t_count, Some(seed_2));
+                random_circuit_with_t_gate(num_qubits, clifford_count, t_count, Some(seed_2));
 
             let mut state_1 = QuantumState::from_circuit(&random_circuit_1).unwrap();
             let mut state_2 = QuantumState::from_circuit(&random_circuit_2).unwrap();

@@ -29,8 +29,8 @@ impl StabilizerCHForm {
         &self,
         s: &ndarray::Array1<bool>,
     ) -> Result<Scalar> {
-        if s.len() != self.n_qubits() {
-            return Err(Error::InvalidQubitStateLength(s.len(), self.n_qubits()));
+        if s.len() != self.num_qubits() {
+            return Err(Error::InvalidQubitStateLength(s.len(), self.num_qubits()));
         }
 
         let mut ch_form_clone = self.clone();

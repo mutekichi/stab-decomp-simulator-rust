@@ -99,11 +99,11 @@ pub(crate) fn pretty_print_complex_vec(name: &str, vec: &Array1<Complex64>) {
 /// Generates a random quantum circuit with the specified number of qubits and gates.
 #[allow(dead_code)]
 pub(crate) fn random_circuit(
-    n_qubits: usize,
+    num_qubits: usize,
     gate_count: usize,
     seed: Option<u64>,
 ) -> CliffordCircuit {
-    let mut circuit = CliffordCircuit::new(n_qubits);
+    let mut circuit = CliffordCircuit::new(num_qubits);
     let mut rng = match seed {
         Some(s) => StdRng::seed_from_u64(s),
         None => StdRng::from_entropy(),
@@ -114,7 +114,7 @@ pub(crate) fn random_circuit(
         match gate_type {
             // 1-qubit gates
             0..=5 => {
-                let q = rng.gen_range(0..n_qubits);
+                let q = rng.gen_range(0..num_qubits);
                 let gate = match gate_type {
                     0 => CliffordGate::H(q),
                     1 => CliffordGate::S(q),
@@ -128,13 +128,13 @@ pub(crate) fn random_circuit(
             }
             // 2-qubit gates
             6..=7 => {
-                if n_qubits < 2 {
+                if num_qubits < 2 {
                     continue;
                 }
-                let q1 = rng.gen_range(0..n_qubits);
-                let mut q2 = rng.gen_range(0..n_qubits);
+                let q1 = rng.gen_range(0..num_qubits);
+                let mut q2 = rng.gen_range(0..num_qubits);
                 while q1 == q2 {
-                    q2 = rng.gen_range(0..n_qubits);
+                    q2 = rng.gen_range(0..num_qubits);
                 }
                 let gate = match gate_type {
                     4 => CliffordGate::CX(q1, q2),

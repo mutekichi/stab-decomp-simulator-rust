@@ -106,8 +106,8 @@ const SQRT_XDG_MATRIX: Matrix2x2 = [
 /// Apply a single-qubit gate represented by a 2x2 matrix to the target qubit
 /// in the given statevector.
 fn apply_single_qubit_gate(sv: &mut Array1<Complex64>, target_qubit: usize, matrix: &Matrix2x2) {
-    let n_qubits = (sv.len() as f64).log2() as usize;
-    let dim = 1 << n_qubits;
+    let num_qubits = (sv.len() as f64).log2() as usize;
+    let dim = 1 << num_qubits;
     let mut sv_copy = sv.clone();
 
     let m00 = matrix[0][0];
@@ -131,8 +131,8 @@ fn apply_single_qubit_gate(sv: &mut Array1<Complex64>, target_qubit: usize, matr
 
 #[allow(dead_code)]
 fn apply_cx(sv: &mut Array1<Complex64>, control: usize, target: usize) {
-    let n_qubits = (sv.len() as f64).log2() as usize;
-    let dim = 1 << n_qubits;
+    let num_qubits = (sv.len() as f64).log2() as usize;
+    let dim = 1 << num_qubits;
 
     for i in 0..dim {
         if ((i >> control) & 1 == 1) && ((i >> target) & 1 == 0) {
@@ -144,8 +144,8 @@ fn apply_cx(sv: &mut Array1<Complex64>, control: usize, target: usize) {
 
 #[allow(dead_code)]
 fn apply_cz(sv: &mut Array1<Complex64>, q1: usize, q2: usize) {
-    let n_qubits = (sv.len() as f64).log2() as usize;
-    let dim = 1 << n_qubits;
+    let num_qubits = (sv.len() as f64).log2() as usize;
+    let dim = 1 << num_qubits;
 
     for i in 0..dim {
         if ((i >> q1) & 1 == 1) && ((i >> q2) & 1 == 1) {
@@ -156,8 +156,8 @@ fn apply_cz(sv: &mut Array1<Complex64>, q1: usize, q2: usize) {
 
 #[allow(dead_code)]
 fn apply_swap(sv: &mut Array1<Complex64>, q1: usize, q2: usize) {
-    let n_qubits = (sv.len() as f64).log2() as usize;
-    let dim = 1 << n_qubits;
+    let num_qubits = (sv.len() as f64).log2() as usize;
+    let dim = 1 << num_qubits;
 
     for i in 0..dim {
         let bit1 = (i >> q1) & 1;
@@ -176,7 +176,7 @@ fn apply_swap(sv: &mut Array1<Complex64>, q1: usize, q2: usize) {
 /// Simulate the given `CliffordCircuit` U and return the resulting reference
 /// statevector: |ψ⟩ = U |0...0⟩, using a naive statevector simulator.
 pub fn get_reference_statevector(circuit: &CliffordCircuit) -> Array1<Complex64> {
-    let n = circuit.n_qubits;
+    let n = circuit.num_qubits;
     let dim = 1 << n;
     let mut sv = Array1::<Complex64>::zeros(dim);
     sv[0] = Complex64::ONE;

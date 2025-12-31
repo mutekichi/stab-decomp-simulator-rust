@@ -40,7 +40,7 @@ pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
         };
     }
 
-    let mut n_qubits: Option<usize> = None;
+    let mut num_qubits: Option<usize> = None;
     let mut gates = Vec::new();
 
     for (line_num, line_content) in qasm_str.lines().enumerate() {
@@ -54,7 +54,7 @@ pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
         }
 
         if let Some(caps) = QREG_RE.captures(line) {
-            if n_qubits.is_some() {
+            if num_qubits.is_some() {
                 return Err(Error::QasmParsingError(
                     "Multiple qreg declarations are not supported.".to_string(),
                 ));
@@ -62,7 +62,7 @@ pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
             let size = caps[2].parse::<usize>().map_err(|_| {
                 Error::QasmParsingError(format!("Invalid qreg size in line: {}", line))
             })?;
-            n_qubits = Some(size);
+            num_qubits = Some(size);
             continue;
         }
 
@@ -105,8 +105,11 @@ pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<CliffordCircuit> {
         )));
     }
 
-    if let Some(n) = n_qubits {
-        Ok(CliffordCircuit { n_qubits: n, gates })
+    if let Some(n) = num_qubits {
+        Ok(CliffordCircuit {
+            num_qubits: n,
+            gates,
+        })
     } else {
         Err(Error::QasmParsingError(
             "qreg declaration not found in QASM string.".to_string(),
@@ -130,7 +133,7 @@ pub(crate) fn to_qasm_str(circuit: &CliffordCircuit, reg_name: &str) -> String {
     let mut lines = Vec::new();
     lines.push("OPENQASM 2.0;".to_string());
     lines.push("include \"qelib1.inc\";".to_string());
-    lines.push(format!("qreg {}[{}];", reg_name, circuit.n_qubits));
+    lines.push(format!("qreg {}[{}];", reg_name, circuit.num_qubits));
 
     for gate in &circuit.gates {
         lines.push(gate.to_qasm_str(reg_name))
@@ -182,15 +185,15 @@ cx q[0], q[1];"#;
         expected_circuit.apply_h(0);
         expected_circuit.apply_cx(0, 1);
 
-        assert_eq!(circuit.n_qubits, expected_circuit.n_qubits);
+        assert_eq!(circuit.num_qubits, expected_circuit.num_qubits);
         assert_eq!(circuit.gates, expected_circuit.gates);
     }
 
     #[test]
     fn test_qasm_parser_roundtrip_str() {
-        let n_qubits = 4;
+        let num_qubits = 4;
         // Generate a random Clifford circuit
-        let circuit1 = CliffordCircuit::random_clifford(n_qubits, Some([42; 32]));
+        let circuit1 = CliffordCircuit::random_clifford(num_qubits, Some([42; 32]));
         assert!(
             circuit1.gates.len() > 0,
             "Random circuit should not be empty"
@@ -204,7 +207,7 @@ cx q[0], q[1];"#;
             .expect("QASM parsing from generated string failed");
 
         // Check that the circuits match
-        assert_eq!(circuit1.n_qubits, circuit2.n_qubits);
+        assert_eq!(circuit1.num_qubits, circuit2.num_qubits);
         assert_eq!(
             circuit1.gates, circuit2.gates,
             "Gate sequences must match after roundtrip"
@@ -222,8 +225,8 @@ cx q[0], q[1];"#;
             .expect("Failed to create temp path string");
 
         // Generate a random circuit and write to QASM file
-        let n_qubits = 3;
-        let circuit1 = CliffordCircuit::random_clifford(n_qubits, Some([123; 32]));
+        let num_qubits = 3;
+        let circuit1 = CliffordCircuit::random_clifford(num_qubits, Some([123; 32]));
         circuit1
             .to_qasm_file(temp_path_str, "qr")
             .expect("Failed to write QASM to file");
@@ -233,7 +236,7 @@ cx q[0], q[1];"#;
             CliffordCircuit::from_qasm_file(temp_path_str).expect("Failed to read QASM from file");
 
         // Check that the circuits match
-        assert_eq!(circuit1.n_qubits, circuit2.n_qubits);
+        assert_eq!(circuit1.num_qubits, circuit2.num_qubits);
         assert_eq!(circuit1.gates, circuit2.gates);
 
         // Clean up the temporary file

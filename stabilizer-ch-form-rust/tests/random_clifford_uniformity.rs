@@ -16,10 +16,10 @@ struct DiscreteAmp {
 
 /// Calculate the total number of unique stabilizer states for n qubits (up to global phase).
 /// Formula: 2^n * ∏_{k=0}^{n-1} (2^{n-k} + 1)
-fn calculate_num_stabilizer_states(n_qubits: usize) -> u64 {
-    let term1 = 1u64 << n_qubits;
-    let product: u64 = (0..n_qubits)
-        .map(|k| (1u64 << (n_qubits - k)) + 1)
+fn calculate_num_stabilizer_states(num_qubits: usize) -> u64 {
+    let term1 = 1u64 << num_qubits;
+    let product: u64 = (0..num_qubits)
+        .map(|k| (1u64 << (num_qubits - k)) + 1)
         .product();
     term1 * product
 }
@@ -66,17 +66,15 @@ fn statevector_to_discrete_key(sv: &Array1<Complex64>) -> Vec<Option<DiscreteAmp
 #[test]
 #[ignore]
 fn test_random_clifford_uniformity() {
-    // --- Test Configuration ---
-    const N_QUBITS: usize = 3;
-    const SAMPLES_PER_STATE: u32 = 100;
-    // --- End Configuration ---
+    let num_qubits: usize = 3;
+    let samples_per_state: u32 = 100;
 
-    let num_unique_states_theory = calculate_num_stabilizer_states(N_QUBITS);
-    let total_samples = num_unique_states_theory * SAMPLES_PER_STATE as u64;
+    let num_unique_states_theory = calculate_num_stabilizer_states(num_qubits);
+    let total_samples = num_unique_states_theory * samples_per_state as u64;
 
     println!(
         "Testing uniformity for {} qubits. Expecting {} unique states.",
-        N_QUBITS, num_unique_states_theory
+        num_qubits, num_unique_states_theory
     );
     println!("Total samples to generate: {}", total_samples);
 
@@ -92,23 +90,18 @@ fn test_random_clifford_uniformity() {
             );
         }
 
-        // 1. Use the public API of CliffordCircuit to generate the circuit
-        let circuit = CliffordCircuit::random_clifford(N_QUBITS, None);
+        let circuit = CliffordCircuit::random_clifford(num_qubits, None);
 
-        // 2. Convert to CHForm to get the statevector
         let state = StabilizerCHForm::from_clifford_circuit(&circuit)
             .expect("Failed to create CHForm from random circuit");
         let mut sv = state.to_statevector().expect("Failed to get statevector");
 
-        // 3. Normalize and discretize the statevector
         normalize_global_phase(&mut sv);
         let key = statevector_to_discrete_key(&sv);
 
-        // 4. Count occurrences
         *state_counts.entry(key).or_insert(0) += 1;
     }
 
-    // --- Analysis ---
     println!("\n--- Analysis Results ---");
     let num_observed_unique_states = state_counts.len();
     println!("Observed unique states: {}", num_observed_unique_states);
@@ -129,7 +122,6 @@ fn test_random_clifford_uniformity() {
     println!("Maximum occurrences for a state: {}", max_count);
     println!("Average occurrences per state: {:.2}", avg_count);
 
-    // --- Assertions ---
     assert!(
         discovery_rate > 0.99,
         "Did not discover almost all states ({} / {})",
@@ -137,8 +129,8 @@ fn test_random_clifford_uniformity() {
         num_unique_states_theory
     );
 
-    let lower_bound = (SAMPLES_PER_STATE as f64 * 0.5) as u32;
-    let upper_bound = (SAMPLES_PER_STATE as f64 * 1.5) as u32;
+    let lower_bound = (samples_per_state as f64 * 0.5) as u32;
+    let upper_bound = (samples_per_state as f64 * 1.5) as u32;
 
     assert!(
         min_count >= lower_bound,
@@ -151,5 +143,5 @@ fn test_random_clifford_uniformity() {
         max_count
     );
 
-    println!("\nUniformity test passed for {} qubits", N_QUBITS);
+    println!("\nUniformity test passed for {} qubits", num_qubits);
 }

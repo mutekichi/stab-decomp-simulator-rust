@@ -65,7 +65,7 @@ impl StabilizerCHForm {
     }
 
     /// Returns the number of qubits in the stabilizer state.
-    pub fn n_qubits(&self) -> usize {
+    pub fn num_qubits(&self) -> usize {
         self.n
     }
 
@@ -96,7 +96,7 @@ impl StabilizerCHForm {
     /// ## Returns
     /// A [`Result`] containing the resulting [`StabilizerCHForm`].
     pub fn from_clifford_circuit(circuit: &CliffordCircuit) -> Result<Self> {
-        let mut ch_form = StabilizerCHForm::new(circuit.n_qubits)?;
+        let mut ch_form = StabilizerCHForm::new(circuit.num_qubits)?;
 
         for gate in &circuit.gates {
             match gate {

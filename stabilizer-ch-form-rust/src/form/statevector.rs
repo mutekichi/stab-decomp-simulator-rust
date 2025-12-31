@@ -10,12 +10,13 @@ impl StabilizerCHForm {
     ///    mainly for testing and debugging purposes.
     ///  * Uses little-endian convention for basis states.
     pub fn to_statevector(&self) -> Result<Array1<Complex64>> {
-        let dim = 1 << self.n_qubits(); // 2^n
+        let dim = 1 << self.num_qubits(); // 2^n
         let mut statevector = ndarray::Array1::from_elem(dim, Complex64::new(0.0, 0.0));
 
         for i in 0..dim {
-            let bitstring: ndarray::Array1<bool> =
-                (0..self.n_qubits()).map(|j| (i & (1 << j)) != 0).collect();
+            let bitstring: ndarray::Array1<bool> = (0..self.num_qubits())
+                .map(|j| (i & (1 << j)) != 0)
+                .collect();
             statevector[i] = self
                 .amplitude_at_computational_basis(&bitstring)?
                 .to_complex()
