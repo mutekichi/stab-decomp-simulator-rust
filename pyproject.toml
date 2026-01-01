@@ -9,7 +9,7 @@ python-source = "python-bindings"
 [project]
 name = "necstar"
 version = "1.0.0"
-description = "A high-performance near-Clifford quantum circuit simulator."
+description = "A stabilizer decomposition based quantum circuit simulator implemented in Rust with Python bindings."
 authors = [
   { name = "Yuki Watanabe", email = "ywatanabe.r5p@gmail.com" },
 ]
@@ -23,7 +23,7 @@ classifiers = [
 package-mode = false
 name = "necstar"
 version = "1.0.0"
-description = ""
+description = "A stabilizer decomposition based quantum circuit simulator implemented in Rust with Python bindings."
 authors = ["Yuki Watanabe <ywatanabe.r5p@gmail.com>"]
 readme = "README.md"
 
