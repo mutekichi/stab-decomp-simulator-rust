@@ -1,5 +1,5 @@
+use necstar::circuit::QuantumGate as RustQuantumGate;
 use pyo3::prelude::*;
-use stab_decomp_simulator_rust::circuit::QuantumGate as RustQuantumGate;
 
 #[pyclass(name = "QuantumGate")]
 #[derive(Debug, Clone)]

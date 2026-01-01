@@ -37,8 +37,8 @@ use crate::{
 /// ## Examples
 ///
 /// ```rust
-/// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
-/// use stab_decomp_simulator_rust::types::PauliString;
+/// use necstar::prelude::{QuantumCircuit, QuantumState};
+/// use necstar::types::PauliString;
 /// use std::str::FromStr;
 ///
 /// // 1. Build a quantum circuit
@@ -80,7 +80,7 @@ impl QuantumState {
     /// Creates a new [`QuantumState`] by compiling a [`QuantumCircuit`].
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
     ///
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_h(0);
@@ -111,7 +111,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
     /// use num_complex::Complex64;
     ///
     /// let mut circuit = QuantumCircuit::new(2);
@@ -141,7 +141,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
     /// use num_complex::Complex64;
     ///
     /// let mut circuit1 = QuantumCircuit::new(1);
@@ -176,7 +176,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
     ///
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_h(0);
@@ -209,7 +209,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
     ///
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_h(0);
@@ -240,7 +240,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
     ///
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_h(0);
@@ -287,8 +287,8 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
-    /// use stab_decomp_simulator_rust::types::PauliString;
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::types::PauliString;
     /// use std::str::FromStr;
     ///
     /// let mut circuit = QuantumCircuit::new(2);
@@ -323,7 +323,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
     ///
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_h(0);
@@ -363,7 +363,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
     ///
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_h(0);
@@ -428,7 +428,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState};
     ///
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_h(0);
@@ -462,7 +462,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState, QuantumGate};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState, QuantumGate};
     ///
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_h(0);
@@ -494,7 +494,7 @@ impl QuantumState {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState, QuantumGate};
+    /// use necstar::prelude::{QuantumCircuit, QuantumState, QuantumGate};
     /// use num_complex::Complex64;
     ///
     /// let mut circuit = QuantumCircuit::new(2);

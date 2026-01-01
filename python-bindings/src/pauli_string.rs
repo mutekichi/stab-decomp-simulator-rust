@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use std::str::FromStr;
 
 // Import the Rust PauliString type
-use stab_decomp_simulator_rust::types::PauliString as RustPauliString;
+use necstar::types::PauliString as RustPauliString;
 
 #[pyclass(name = "PauliString", module = "necstar")]
 #[derive(Clone, Debug)]

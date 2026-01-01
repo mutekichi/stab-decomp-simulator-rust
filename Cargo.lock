@@ -178,12 +178,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "necstar"
+version = "0.1.0"
+dependencies = [
+ "katexit",
+ "lazy_static",
+ "ndarray",
+ "num-bigint",
+ "num-complex",
+ "num-traits",
+ "rand",
+ "rand_distr",
+ "regex",
+ "stabilizer-ch-form-rust",
+ "thiserror",
+]
+
+[[package]]
 name = "necstar-py"
 version = "0.1.0"
 dependencies = [
+ "necstar",
  "num-complex",
  "pyo3",
- "stab-decomp-simulator-rust",
 ]
 
 [[package]]
@@ -465,23 +482,6 @@ name = "smallvec"
 version = "1.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
-
-[[package]]
-name = "stab-decomp-simulator-rust"
-version = "0.1.0"
-dependencies = [
- "katexit",
- "lazy_static",
- "ndarray",
- "num-bigint",
- "num-complex",
- "num-traits",
- "rand",
- "rand_distr",
- "regex",
- "stabilizer-ch-form-rust",
- "thiserror",
-]
 
 [[package]]
 name = "stabilizer-ch-form-rust"

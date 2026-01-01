@@ -1,5 +1,5 @@
 [package]
-name = "stab-decomp-simulator-rust"
+name = "necstar"
 version = "0.1.0"
 edition = "2024"
 

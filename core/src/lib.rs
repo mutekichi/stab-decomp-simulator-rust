@@ -40,8 +40,8 @@
 //! ## Examples
 //!
 //! ```rust
-//! use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
-//! use stab_decomp_simulator_rust::types::PauliString;
+//! use necstar::prelude::{QuantumCircuit, QuantumState};
+//! use necstar::types::PauliString;
 //! use std::str::FromStr;
 //!
 //! // 1. Build a quantum circuit

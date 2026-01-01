@@ -1,9 +1,7 @@
 use pyo3::exceptions::{PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
 
-use stab_decomp_simulator_rust::circuit::{
-    QuantumCircuit as RustQuantumCircuit, QuantumGate as RustQuantumGate,
-};
+use necstar::circuit::{QuantumCircuit as RustQuantumCircuit, QuantumGate as RustQuantumGate};
 
 use crate::gate::PyQuantumGate;
 use crate::utils::parse_py_seed;

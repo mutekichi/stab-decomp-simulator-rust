@@ -17,8 +17,8 @@ use std::{fmt, path::Path};
 /// ## Examples
 ///
 /// ```rust
-/// use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState};
-/// use stab_decomp_simulator_rust::types::PauliString;
+/// use necstar::prelude::{QuantumCircuit, QuantumState};
+/// use necstar::types::PauliString;
 /// use std::str::FromStr;
 ///
 /// // Create a circuit
@@ -72,8 +72,8 @@ impl QuantumCircuit {
     /// * `gate` - The quantum gate to apply.
     /// ## Example
     /// ```rust
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
-    /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
+    /// use necstar::circuit::QuantumGate;
+    /// use necstar::prelude::QuantumCircuit;
     /// let mut circuit = QuantumCircuit::new(2);
     /// circuit.apply_gate(QuantumGate::H(0));
     /// circuit.apply_gate(QuantumGate::CX(0, 1));
@@ -90,8 +90,8 @@ impl QuantumCircuit {
     /// * `gates` - A slice of quantum gates to apply.
     /// ## Example
     /// ```rust
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
-    /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
+    /// use necstar::circuit::QuantumGate;
+    /// use necstar::prelude::QuantumCircuit;
     /// let mut circuit = QuantumCircuit::new(2);
     /// let gates = vec![QuantumGate::H(0), QuantumGate::CX(0, 1)];
     /// circuit.apply_gates(&gates);
@@ -213,8 +213,8 @@ impl QuantumCircuit {
     /// - `other`: A reference to another [`QuantumCircuit`] whose gates will be appended.
     /// ## Example
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use necstar::prelude::QuantumCircuit;
+    /// use necstar::circuit::QuantumGate;
     /// let mut circuit1 = QuantumCircuit::new(2);
     /// circuit1.apply_h(0);
     /// let mut circuit2 = QuantumCircuit::new(2);
@@ -238,8 +238,8 @@ impl QuantumCircuit {
     /// - `other`: A reference to another [`QuantumCircuit`] to tensor with.  
     /// ## Example
     /// ```rust
-    /// use stab_decomp_simulator_rust::prelude::QuantumCircuit;
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use necstar::prelude::QuantumCircuit;
+    /// use necstar::circuit::QuantumGate;
     /// let mut circuit1 = QuantumCircuit::new(1);
     /// circuit1.apply_h(0);
     /// let mut circuit2 = QuantumCircuit::new(2);

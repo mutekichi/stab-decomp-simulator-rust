@@ -4,7 +4,7 @@
 
 ### Requirements
 
-  * Python 3.9+
+    * Python 3.11+
   * Rust (and Cargo)
   * `maturin` (Python package)
 
@@ -73,19 +73,19 @@ except ValueError as e:
 
 ### Local Setup
 
-Add the `stab-decomp-simulator-rust` crate (the core library) to your `Cargo.toml` using a local path reference.
+Add the `necstar` crate (the core library) to your `Cargo.toml` using a local path reference.
 
 ```toml
 [dependencies]
 # Adjust the path to point to the 'core' directory in this repository
-stab-decomp-simulator-rust = { path = "../path/to/stab-decomp-simulator-rust/core" }
+necstar = { path = "../path/to/necstar/core" }
 ```
 
 ### Example Usage
 
 ```rust
-use stab_decomp_simulator_rust::prelude::{QuantumCircuit, QuantumState, Result};
-use stab_decomp_simulator_rust::types::PauliString;
+use necstar::prelude::{QuantumCircuit, QuantumState, Result};
+use necstar::types::PauliString;
 use std::str::FromStr;
 
 fn main() -> Result<()> {

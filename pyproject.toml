@@ -8,10 +8,10 @@ python-source = "python-bindings"
 
 [project]
 name = "necstar"
-version = "0.1.0"
+version = "1.0.0"
 description = "A high-performance near-Clifford quantum circuit simulator."
 authors = [
-  { name = "Yuki Watanabe", email = "sample@sample.com" },
+  { name = "Yuki Watanabe", email = "ywatanabe.r5p@gmail.com" },
 ]
 requires-python = ">=3.11"
 classifiers = [
@@ -22,9 +22,9 @@ classifiers = [
 [tool.poetry]
 package-mode = false
 name = "necstar"
-version = "0.1.0"
+version = "1.0.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Yuki Watanabe <ywatanabe.r5p@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

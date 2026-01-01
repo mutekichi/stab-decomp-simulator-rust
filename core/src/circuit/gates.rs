@@ -47,7 +47,7 @@ impl QuantumGate {
     /// * `bool` - `true` if the gate is a single-qubit gate, otherwise `false`.
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use necstar::circuit::QuantumGate;
     /// let gate = QuantumGate::H(0);
     /// assert!(gate.is_single_qubit_gate());
     /// let gate = QuantumGate::CX(0, 1);
@@ -74,7 +74,7 @@ impl QuantumGate {
     /// * `bool` - `true` if the gate is a Clifford gate, otherwise `false`.
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use necstar::circuit::QuantumGate;
     /// let gate = QuantumGate::H(0);
     /// assert!(gate.is_clifford());
     /// let gate = QuantumGate::T(0);
@@ -103,7 +103,7 @@ impl QuantumGate {
     /// * `bool` - `true` if the gate is a T-type gate, otherwise `false`.
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use necstar::circuit::QuantumGate;
     /// let gate = QuantumGate::T(0);
     /// assert!(gate.is_t_type_gate());
     /// let gate = QuantumGate::Tdg(0);
@@ -121,7 +121,7 @@ impl QuantumGate {
     /// * `bool` - `true` if the gate is a T gate, otherwise `false`.
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use necstar::circuit::QuantumGate;
     /// let gate = QuantumGate::T(0);
     /// assert!(gate.is_t_gate());
     /// let gate = QuantumGate::Tdg(0);
@@ -139,7 +139,7 @@ impl QuantumGate {
     /// * `bool` - `true` if the gate is a T-dagger gate, otherwise `false`.
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use necstar::circuit::QuantumGate;
     /// let gate = QuantumGate::Tdg(0);
     /// assert!(gate.is_tdg_gate());
     /// let gate = QuantumGate::T(0);
@@ -161,7 +161,7 @@ impl QuantumGate {
     ///
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use necstar::circuit::QuantumGate;
     ///
     /// let h_gate = QuantumGate::H(0);
     /// assert_eq!(h_gate.qubits(), vec![0]);
@@ -200,7 +200,7 @@ impl QuantumGate {
     /// * `&'static str` - The name of the gate as a string slice.
     /// ## Examples
     /// ```rust
-    /// use stab_decomp_simulator_rust::circuit::QuantumGate;
+    /// use necstar::circuit::QuantumGate;
     /// let gate = QuantumGate::H(0);
     /// assert_eq!(gate.name(), "H");
     /// let gate = QuantumGate::CX(0, 1);

@@ -21,14 +21,5 @@ __pycache__/
 # Maturin build artifacts
 dist/
 
-# IDE/Editor specific files (Examples)
+# IDE files
 .vscode/
-.idea/
-*.swp
-
-# OS specific files (Examples)
-.DS_Store
-Thumbs.db
-
-# For development purposes
-data/
