@@ -61,6 +61,9 @@
 //! let pauli_z0 = PauliString::from_str("ZI").unwrap();
 //! let exp_val = state.exp_value(&pauli_z0).unwrap();
 //! println!("Expectation value: {}", exp_val);
+//!
+//! // (Optional) Check the stabilizer rank
+//! println!("Stabilizer rank: {}", state.stabilizer_rank());
 //! ```
 //!
 //! [`QuantumCircuit`]: crate::circuit::QuantumCircuit

@@ -55,6 +55,9 @@ Example
     exp_val = state.exp_value(pauli_z0)
     print(f"Expectation value: {exp_val}")
 
+    # (Optional) Check the stabilizer rank
+    print(f"Stabilizer rank: {state.stabilizer_rank}")
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
