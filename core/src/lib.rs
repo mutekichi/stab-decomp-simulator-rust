@@ -1,43 +1,41 @@
 //! # NECSTAR: NEar-Clifford STAbilizer decomposition simulator in Rust
 //!
 //! A high-performance quantum circuit simulator designed for the strong simulation of
-//! near-Clifford circuits.
+//! near-Clifford circuits based on the stabilizer decomposition method [1].
 //!
 //! NECSTAR is particularly effective for circuits dominated by Clifford gates
-//! but also contain a small number of non-Clifford gates, such as the T-gate.
-//! It provides an intuitive API for building and simulating quantum circuits.
+//! but also containing a small number of non-Clifford gates. Currently, NECSTAR supports
+//! only T-gates as non-Clifford operations, but future versions may include additional
+//! non-Clifford gates.
 //!
 //! # Features
 //!
-//! * **Stabilizer Decomposition Core**: The simulator's engine is built on the stabilizer
-//!   decomposition method. Instead of representing the state vector in a memory-intensive
-//!   dense vector, it maintains the quantum state as a linear combination of stabilizer states.
-//!   This approach is highly efficient for circuits with low non-Clifford gate counts and
-//!   relatively large qubit numbers.
+//! * **Stabilizer Decomposition Core**: The simulator represents the quantum state as a linear
+//!   combination of stabilizer states \[1\]. This approach avoids the memory overhead of dense
+//!   state vectors and is efficient for circuits with low non-Clifford gate counts.
 //!
-//! * **Magic State Teleportation**: Non-Clifford gates are handled using the gate teleportation
-//!   protocol. The required magic states (e.g., T-states) are themselves represented using
-//!   stabilizer decompositions, allowing the entire simulation to remain within the stabilizer
-//!   formalism.
+//! * **Magic State Teleportation**: Non-Clifford gates are applied via the gate teleportation
+//!   protocol using magic states. A T-gate is implemented by consuming a T-state and the tensor
+//!   product of T-states is automatically decomposed into stabilizer states \[2\].
 //!
-//! * **Intuitive Declarative API**: Users can define quantum computations by declaratively
-//!   building a [`QuantumCircuit`]. This circuit object is then compiled into a [`QuantumState`],
-//!   which provides a clean interface for simulation tasks, abstracting away the complex
-//!   internal state representation.
+//! * **Intuitive Declarative API**: Users can define quantum computations by building a
+//!   [`QuantumCircuit`]. This is compiled into a [`QuantumState`], which manages the
+//!   internal stabilizer decomposition and provides a clean interface for simulation.
 //!
-//! * **Strong, Exact Simulation**: Necstar performs strong simulation, calculating the full
-//!   final quantum state with exact amplitudes. No approximations are used, ensuring results
-//!   are accurate and suitable for verifying quantum algorithms or investigating the power of
-//!   non-Clifford resources.
+//! # References
+//!
+//! - \[1\] S. Bravyi, D. Browne, P. Calpin, E. Campbell, D. Gosset, and M. Howard,
+//!   "Simulation of quantum circuits by low-rank stabilizer decompositions",
+//!   Quantum 3, 181 (2019). <https://doi.org/10.22331/q-2019-09-02-181>
+//! - \[2\] H. Qassim, H. Pashayan, and D. Gosset,
+//!   "Improved upper bounds on the stabilizer rank of magic states",
+//!   Quantum 5, 604 (2021). <https://doi.org/10.22331/q-2021-12-20-606>
 //!
 //! ## Typical Workflow
 //!
 //! 1. Construct a quantum circuit using [`QuantumCircuit`].
 //! 2. Compile the circuit into a [`QuantumState`] using [`from_circuit`].
-//! 3. Perform operations such as [`measure`], [`sample`], or [`exp_value`] (expectation value
-//!    calculation).
-//! 4. If needed, additional Clifford gates can be applied directly to the state using methods like
-//!    [`apply_x`], [`apply_h`], etc.
+//! 3. Perform operations such as [`measure`], [`sample`], or [`exp_value`].
 //!
 //! ## Examples
 //!
@@ -50,24 +48,19 @@
 //! let mut circuit = QuantumCircuit::new(2);
 //! circuit.apply_h(0);
 //! circuit.apply_cx(0, 1);
-//! circuit.apply_t(1); // A non-Clifford gate
+//! circuit.apply_t(1); // Non-Clifford T-gate
 //!
-//! // 2. Compile the circuit into a QuantumState
+//! // 2. Compile into a QuantumState (internally decomposes T-states)
 //! let mut state = QuantumState::from_circuit(&circuit).unwrap();
 //!
-//! // (optional) Apply a gate directly to the state
-//! state.apply_x(0).unwrap();
-//!
-//! // 3. Perform operations on the state
-//! // - Sample measurement outcomes
+//! // 3. Perform operations
 //! let shots = 1024;
 //! let samples = state.sample(&[0, 1], shots, None).unwrap();
-//! println!("Measurement samples: {:?}", samples);
+//! println!("Samples: {:?}", samples);
 //!
-//! // - Calculate an expectation value
 //! let pauli_z0 = PauliString::from_str("ZI").unwrap();
 //! let exp_val = state.exp_value(&pauli_z0).unwrap();
-//! println!("Expectation value of Z on qubit 0: {}", exp_val);
+//! println!("Expectation value: {}", exp_val);
 //! ```
 //!
 //! [`QuantumCircuit`]: crate::circuit::QuantumCircuit
@@ -76,8 +69,6 @@
 //! [`sample`]: crate::state::QuantumState::sample
 //! [`exp_value`]: crate::state::QuantumState::exp_value
 //! [`from_circuit`]: crate::state::QuantumState::from_circuit
-//! [`apply_x`]: crate::state::QuantumState::apply_x
-//! [`apply_h`]: crate::state::QuantumState::apply_h
 
 pub mod circuit;
 pub mod error;
@@ -91,8 +82,5 @@ pub mod prelude {
     pub use crate::types::*;
 }
 
-// Hide test_utils from the public documentation.
 #[cfg(test)]
 pub mod test_utils;
-
-// TODO: Add appropriate references, improved the "feature" comments.
