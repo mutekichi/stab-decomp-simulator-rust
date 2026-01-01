@@ -3,7 +3,7 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use std::collections::HashMap;
 
-use necstar::prelude::{QuantumGate, QuantumState as RustQuantumState};
+use necstar_core::prelude::{QuantumGate, QuantumState as RustQuantumState};
 
 use crate::gate::PyQuantumGate;
 use crate::pauli_string::PyPauliString;

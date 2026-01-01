@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use std::str::FromStr;
 
 // Import the Rust PauliString type
-use necstar::types::PauliString as RustPauliString;
+use necstar_core::types::PauliString as RustPauliString;
 
 #[pyclass(name = "PauliString", module = "necstar")]
 #[derive(Clone, Debug)]

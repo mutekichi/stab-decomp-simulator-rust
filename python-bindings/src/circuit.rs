@@ -1,7 +1,7 @@
 use pyo3::exceptions::{PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
 
-use necstar::circuit::{QuantumCircuit as RustQuantumCircuit, QuantumGate as RustQuantumGate};
+use necstar_core::circuit::{QuantumCircuit as RustQuantumCircuit, QuantumGate as RustQuantumGate};
 
 use crate::gate::PyQuantumGate;
 use crate::utils::parse_py_seed;

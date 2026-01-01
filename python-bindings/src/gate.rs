@@ -1,4 +1,4 @@
-use necstar::circuit::QuantumGate as RustQuantumGate;
+use necstar_core::circuit::QuantumGate as RustQuantumGate;
 use pyo3::prelude::*;
 
 #[pyclass(name = "QuantumGate")]
