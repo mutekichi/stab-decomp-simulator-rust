@@ -2,6 +2,7 @@
 name = "necstar"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
 
 [dependencies]
 ndarray = "0.15"

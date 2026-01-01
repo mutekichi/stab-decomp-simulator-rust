@@ -10,9 +10,9 @@ import sys
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'necstar'
-copyright = '2025, Yuki Watanabe'
+copyright = '2026, Yuki Watanabe'
 author = 'Yuki Watanabe'
-release = '0.1.0'
+release = '1.0.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
