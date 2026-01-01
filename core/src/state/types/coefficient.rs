@@ -40,4 +40,3 @@ pub(crate) trait Coefficient:
 }
 
 impl<T> Coefficient for T where T: InnerProduct + Into<Complex64> + One + Amplify + Debug {}
-// DONE

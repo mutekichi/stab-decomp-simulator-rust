@@ -118,4 +118,3 @@ impl Amplify for Scalar {
         }
     }
 }
-// DONE

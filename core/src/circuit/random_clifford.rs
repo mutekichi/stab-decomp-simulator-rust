@@ -26,4 +26,3 @@ pub(crate) fn random_clifford(n: usize, seed: Option<[u8; 32]>) -> QuantumCircui
 
     qc
 }
-// DONE

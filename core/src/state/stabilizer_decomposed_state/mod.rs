@@ -5,7 +5,6 @@ pub mod inner_product;
 pub mod kron;
 pub mod measurement;
 pub mod norm;
-pub mod pauli_application;
 pub mod projection;
 pub mod sampling;
 pub mod statevector;

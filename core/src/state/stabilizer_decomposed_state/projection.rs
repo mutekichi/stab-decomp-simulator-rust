@@ -61,6 +61,10 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
 mod tests {
     use crate::circuit::QuantumCircuit;
     use crate::error::Error;
+    use crate::{
+        state::QuantumState,
+        test_utils::{assert_eq_complex_array1, random_circuit_with_t_gate},
+    };
     use ndarray::Array1;
     use num_complex::Complex64;
 
@@ -104,11 +108,6 @@ mod tests {
 
         (projected_statevector, probability)
     }
-
-    use crate::{
-        state::QuantumState,
-        test_utils::{assert_eq_complex_array1, random_circuit_with_t_gate},
-    };
 
     #[test]
     fn test_project_unnormalized_random() {
@@ -323,4 +322,3 @@ mod tests {
         }
     }
 }
-// DONE

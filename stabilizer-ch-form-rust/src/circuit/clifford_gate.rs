@@ -97,4 +97,3 @@ mod tests {
         assert_eq!(cx_gate.to_qasm_str("q"), "cx q[1], q[2];");
     }
 }
-// DONE

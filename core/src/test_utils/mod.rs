@@ -41,6 +41,23 @@ pub(crate) fn assert_eq_complex_array1(a: &Array1<Complex64>, b: &Array1<Complex
 }
 
 #[allow(dead_code)]
+pub(crate) fn tensor_statevectors(
+    a: &Array1<Complex64>,
+    b: &Array1<Complex64>,
+) -> Array1<Complex64> {
+    let dim_a = a.len();
+    let dim_b = b.len();
+    let mut res = Array1::zeros(dim_a * dim_b);
+
+    for i in 0..dim_a {
+        for j in 0..dim_b {
+            res[j * dim_a + i] = a[i] * b[j];
+        }
+    }
+    res
+}
+
+#[allow(dead_code)]
 pub(crate) fn load_statevector_from_file<P: AsRef<Path>>(
     path: P,
 ) -> Result<Array1<Complex64>, std::io::Error> {
@@ -188,6 +205,13 @@ pub(crate) fn random_circuit_with_t_gate(
     }
 
     circuit
+}
+
+#[allow(dead_code)]
+/// Creates an all-zero state |0...0> as a sample StabilizerDecomposedState.
+pub(crate) fn create_all_zero_state(n: usize) -> StabilizerDecomposedState<Complex64> {
+    let stab = StabilizerCHForm::new(n).unwrap();
+    StabilizerDecomposedState::new(n, vec![stab], vec![Complex64::new(1.0, 0.0)])
 }
 
 #[allow(dead_code)]

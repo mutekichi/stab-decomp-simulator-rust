@@ -34,4 +34,3 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         Ok(self.norm_squared()?.sqrt())
     }
 }
-// WIP: Add tests

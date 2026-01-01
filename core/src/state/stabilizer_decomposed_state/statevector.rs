@@ -48,4 +48,3 @@ mod tests {
         assert_eq_complex_array1(&statevector, &expected_statevector);
     }
 }
-// DONE

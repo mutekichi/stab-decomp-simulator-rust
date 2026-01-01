@@ -43,13 +43,10 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
                 temp_stab
             };
 
-            // --- Diagonal term (j == i) ---
-            // This calculates c_i* c_i <S_i|P|S_i>.
+            // Diagonal term: c_i* c_i <S_i|P|S_i>.
             let inner_prod_diag = stab_i.inner_product(&evolved_stab)?;
             exp_val += (coeff_i.conj() * **coeff_i).into() * inner_prod_diag;
 
-            // --- Off-diagonal terms (j > i) ---
-            // Loop through the remaining terms where j > i.
             for (stab_j, coeff_j) in terms.iter().skip(i + 1) {
                 // Calculate the term for (i, j): c_j* c_i <S_j|P|S_i>.
                 let inner_prod_off_diag = stab_j.inner_product(&evolved_stab)?;
@@ -77,6 +74,26 @@ mod test {
         let expected_result = 0.5;
         let result = sample_state.exp_value(&pauli_string).unwrap();
         assert!((result - expected_result).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_exp_value_identity() {
+        // sample_state = |000> + |001> + |010> + |111>
+        let sample_state = crate::test_utils::create_sample_stab_decomp_state();
+        let pauli_string =
+            stabilizer_ch_form_rust::types::pauli::PauliString::from_str("III").unwrap();
+        let expected_result = 1.0;
+        let result = sample_state.exp_value(&pauli_string).unwrap();
+        assert!((result - expected_result).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_exp_value_invalid_length() {
+        let sample_state = crate::test_utils::create_sample_stab_decomp_state();
+        let pauli_string =
+            stabilizer_ch_form_rust::types::pauli::PauliString::from_str("ZZII").unwrap();
+        let result = sample_state.exp_value(&pauli_string);
+        assert!(result.is_err());
     }
 }
 // WIP: Add tests

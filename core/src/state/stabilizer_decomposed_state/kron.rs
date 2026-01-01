@@ -21,4 +21,24 @@ impl<T: Coefficient> StabilizerDecomposedState<T> {
         ))
     }
 }
-// WIP: Add tests
+
+#[cfg(test)]
+mod tests {
+    use crate::test_utils::{assert_eq_complex_array1, create_sample_stab_decomp_state};
+
+    #[test]
+    fn test_kron() {
+        let state1 = create_sample_stab_decomp_state(); // 3 qubits
+        let state2 = create_sample_stab_decomp_state(); // 3 qubits
+        let kron_state = state1.kron(&state2).unwrap();
+        assert_eq!(kron_state.num_qubits, 6);
+
+        let sv = kron_state.to_statevector().unwrap();
+        let expected_sv = {
+            let sv1 = state1.to_statevector().unwrap();
+            let sv2 = state2.to_statevector().unwrap();
+            crate::test_utils::tensor_statevectors(&sv1, &sv2)
+        };
+        assert_eq_complex_array1(&sv, &expected_sv);
+    }
+}
