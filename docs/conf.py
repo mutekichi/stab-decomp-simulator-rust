@@ -31,7 +31,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
 # -- Options for sphinx-autoapi ----------------------------------------------
-autoapi_dirs = ['../python-bindings']
+autoapi_dirs = ['../python']
 autoapi_file_patterns = ['*.pyi', '*.py']
 autoapi_root = 'api'
 
