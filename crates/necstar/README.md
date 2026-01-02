@@ -66,3 +66,4 @@ println!("Stabilizer rank: {}", state.stabilizer_rank());
 
 ## Documentation
 See the [Documentation](https://mutekichi.github.io/necstar/rust/necstar/) for more details and examples.
+If you are a Python user, please refer to the [NECSTAR Python Documentation](https://mutekichi.github.io/necstar/).
