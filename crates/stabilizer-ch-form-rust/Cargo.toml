@@ -8,10 +8,9 @@ repository = "https://github.com/mutekichi/necstar"
 homepage = "https://github.com/mutekichi/necstar"
 description = "A Rust library implementing CH form representation of stabilizer states for quantum computing simulations."
 documentation = "https://mutekichi.github.io/necstar/rust/stabilizer_ch_form_rust/"
-
 readme = "README.md"
-keywords = ["quantum computing", "stabilizer", "CH form", "simulation"]
-categories = ["science", "physics", "simulation"]
+keywords = ["quantum-computing", "stabilizer", "CH-form", "simulation"]
+categories = ["science", "simulation"]
 
 [dependencies]
 ndarray = "0.15"
