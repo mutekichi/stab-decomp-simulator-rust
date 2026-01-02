@@ -29,6 +29,9 @@ If you want to modify the source code, you can set up the project locally.
 
     Replace `/path/to/necstar` with the actual path to the cloned repository.
 
+## Documentation
+See the [Documentation](https://mutekichi.github.io/necstar/rust/stabilizer_ch_form_rust/) for more details and examples.
+
 ## References
 
 * [1] S. Bravyi, D. Browne, P. Calpin, E. Campbell, D. Gosset, and M. Howard, "Simulation of quantum circuits by low-rank stabilizer decompositions", Quantum 3, 181 (2019). <https://doi.org/10.22331/q-2019-09-02-181>

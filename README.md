@@ -21,7 +21,7 @@ The project is organized as a Rust workspace with the following components:
 | Directory | Package Name | Description |
 | --- | --- | --- |
 | [`crates/necstar`](https://github.com/mutekichi/necstar/tree/main/crates/necstar) | `necstar` | The main Rust core crate containing the simulation logic. |
-| [`crates/stabilizer-ch-form-rust`](https://github.com/mutekichi/necstar/tree/main/crates/stabilizer-ch-form-rust) | `stabilizer-ch-form-rust` | A sub-crate dedicated to fast stabilizer state manipulation using CH-form. |
+| [`crates/stabilizer-ch-form-rust`](https://github.com/mutekichi/necstar/tree/main/crates/stabilizer-ch-form-rust) | `stabilizer-ch-form-rust` | A sub-crate dedicated to phase-sensitive stabilizer state manipulation using CH-form[1]. |
 | [`python/`](https://github.com/mutekichi/necstar/tree/main/python) | `necstar` (on PyPI) | Python bindings and high-level API for the simulator. |
 
 ## Quick Start

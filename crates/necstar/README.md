@@ -64,4 +64,5 @@ println!("Expectation value: {}", exp_val);
 println!("Stabilizer rank: {}", state.stabilizer_rank());
 ```
 
-See the [Documentation](TODO:LINK) for more details and examples.
+## Documentation
+See the [Documentation](https://mutekichi.github.io/necstar/rust/necstar/) for more details and examples.
