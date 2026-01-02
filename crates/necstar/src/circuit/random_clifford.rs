@@ -20,7 +20,6 @@ use stabilizer_ch_form_rust::circuit::CliffordCircuit;
 pub(crate) fn random_clifford(n: usize, seed: Option<[u8; 32]>) -> QuantumCircuit {
     let clifford_circuit = CliffordCircuit::random_clifford(n, seed);
     let mut qc = QuantumCircuit::new(n);
-    // Convert stabilizer_ch_form_rust::circuit::CliffordGate to core::circuit::QuantumGate
     let gates_iter = clifford_circuit.gates.into_iter().map(QuantumGate::from);
     qc.gates.extend(gates_iter);
 

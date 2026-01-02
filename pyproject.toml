@@ -3,8 +3,8 @@ requires = ["maturin>=1.0"]
 build-backend = "maturin"
 
 [tool.maturin]
-manifest-path = "python-bindings/Cargo.toml"
-python-source = "python-bindings"
+manifest-path = "python/Cargo.toml"
+python-source = "python"
 
 [project]
 name = "necstar"
@@ -14,7 +14,7 @@ authors = [
   { name = "Yuki Watanabe", email = "ywatanabe.r5p@gmail.com" },
 ]
 license = {text = "MIT"}
-readme = "README.md"
+readme = "python/README.md"
 requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Rust",

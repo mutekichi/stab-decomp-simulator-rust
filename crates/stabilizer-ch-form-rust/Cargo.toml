@@ -2,9 +2,15 @@
 name = "stabilizer-ch-form-rust"
 version = "0.1.0"
 edition = "2024"
+authors = ["Yuki Watanabe <ywatanabe.r5p@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/mutekichi/necstar"
+homepage = "https://github.com/mutekichi/necstar"
 description = "A Rust library implementing CH form representation of stabilizer states for quantum computing simulations."
+documentation = ""
+readme = "README.md"
+keywords = ["quantum computing", "stabilizer", "CH form", "simulation"]
+categories = ["science", "physics", "simulation"]
 
 [dependencies]
 ndarray = "0.15"
