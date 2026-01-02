@@ -1,7 +1,7 @@
 [workspace]
 members = [
-    "core",
-    "stabilizer-ch-form-rust",
-    "python-bindings",
+    "crates/necstar",
+    "crates/stabilizer-ch-form-rust",
+    "python",
 ]
 resolver = "2"

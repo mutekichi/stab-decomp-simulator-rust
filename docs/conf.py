@@ -12,7 +12,7 @@ import sys
 project = 'necstar'
 copyright = '2026, Yuki Watanabe'
 author = 'Yuki Watanabe'
-release = '1.0.0'
+release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

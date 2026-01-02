@@ -78,8 +78,7 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Build and Install Python bindings
-        run: poetry run maturin develop --release --manifest-path python-bindings/Cargo.toml
+        run: poetry run maturin develop --release --manifest-path python/Cargo.toml
 
       - name: Run Python tests
         run: poetry run pytest
-        
