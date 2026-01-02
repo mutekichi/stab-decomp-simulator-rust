@@ -1,118 +1,67 @@
-# necstar QuickStart
+# NECSTAR: NEar-Clifford STAbilizer decomposition simulator in Rust
 
-## 🐍 For Python Users
+A high-performance quantum circuit simulator designed for the strong simulation of
+near-Clifford circuits based on the stabilizer decomposition method [1].
 
-### Requirements
+NECSTAR is particularly effective for circuits dominated by Clifford gates
+but also containing a small number of non-Clifford gates. Currently, NECSTAR supports
+only T-gates as non-Clifford operations, but future versions may include additional
+non-Clifford gates.
 
-    * Python 3.11+
-  * Rust (and Cargo)
-  * `maturin` (Python package)
+## Features
 
-### Local Installation
+* **Stabilizer Decomposition Core**: The simulator represents the quantum state as a linear combination of stabilizer states [1]. This approach avoids the memory overhead of dense state vectors and is efficient for circuits with low non-Clifford gate counts.
+* **Magic State Teleportation**: Non-Clifford gates are applied via the gate teleportation protocol using magic states. A T-gate is implemented by consuming a T-state, and the tensor product of T-states is automatically decomposed into stabilizer states using optimized techniques [2].
+* **Intuitive Declarative API**: Users can define quantum computations by building a :class:`~necstar.QuantumCircuit`. This is compiled into a :class:`~necstar.QuantumState`, which manages the internal stabilizer decomposition and provides a clean interface for simulation.
 
-1.  Install `maturin`:
+## Repository Structure
 
-    ```bash
-    pip install maturin
-    ```
+The project is organized as a Rust workspace with the following components:
 
-2.  From the root of this repository, build and install `necstar` into your environment:
+| Directory | Package Name | Description |
+| --- | --- | --- |
+| [`crates/necstar`](https://github.com/mutekichi/necstar/tree/main/crates/necstar) | `necstar` | The main Rust core crate containing the simulation logic. |
+| [`crates/stabilizer-ch-form-rust`](https://github.com/mutekichi/necstar/tree/main/crates/stabilizer-ch-form-rust) | `stabilizer-ch-form-rust` | A sub-crate dedicated to fast stabilizer state manipulation using CH-form. |
+| [`python/`](https://github.com/mutekichi/necstar/tree/main/python) | `necstar` (on PyPI) | Python bindings and high-level API for the simulator. |
 
-    ```bash
-    # (Recommended) Create and activate a virtual environment first
-    # python -m venv .venv
-    # source .venv/bin/activate
+## Quick Start
 
-    # Build and install in editable mode
-    maturin develop
-    ```
+### Python (Recommended)
 
-> **Note on Requirements:** This local installation method builds the package from source, which **requires a Rust compiler (Rust and Cargo) to be installed**.
->
-> If this package were published to PyPI with pre-compiled *wheels*, most users could simply run `pip install necstar` **without needing Rust**. The Rust requirement applies only when installing from source (like this local method, or if PyPI lacks a wheel for your specific platform).
+For Python users, NECSTAR can be installed via `pip`:
 
-### Example Usage
-
-```python
-import necstar
-
-# 1. Create a 2-qubit circuit
-qc = necstar.QuantumCircuit(2)
-
-# 2. Apply gates (including non-Clifford T-gate)
-qc.apply_h(0)
-qc.apply_cx(0, 1)
-qc.apply_t(1)
-
-try:
-    # 3. Compile the circuit into a state
-    state = necstar.QuantumState.from_circuit(qc)
-    print(f"State stabilizer rank (χ): {state.stabilizer_rank}")
-
-    # 4. Calculate an expectation value
-    pauli_z0 = necstar.PauliString.from_str("ZI")
-    exp_val = state.exp_value(pauli_z0)
-    print(f"Expectation value of Z0: {exp_val}")
-
-    # 5. Sample measurement outcomes
-    samples = state.sample(qargs=[0, 1], shots=1024, seed=42)
-    print(f"Samples: {samples}")
-
-except ValueError as e:
-    print(f"An error occurred: {e}")
+```bash
+pip install necstar
 
 ```
 
------
+Please refer to the [Python README](https://github.com/mutekichi/necstar/tree/main/python/README.md) for more details.
 
-## 🦀 For Rust Users
+### Rust
 
-### Requirements
-
-  * Rust (and Cargo)
-
-### Local Setup
-
-Add the `necstar` crate (the core library) to your `Cargo.toml` using a local path reference.
+To use NECSTAR as a library in your Rust project, add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-# Adjust the path to point to the 'core' directory in this repository
-necstar = { path = "../path/to/necstar/core" }
+necstar = "0.1.0"
+
 ```
 
-### Example Usage
+Please refer to the [NECSTAR README](https://github.com/mutekichi/necstar/tree/main/crates/necstar/README.md) for more details.
 
-```rust
-use necstar::prelude::{QuantumCircuit, QuantumState, Result};
-use necstar::types::PauliString;
-use std::str::FromStr;
+## Statement of Need
 
-fn main() -> Result<()> {
-    // 1. Create a 2-qubit circuit
-    let mut qc = QuantumCircuit::new(2);
-
-    // 2. Apply gates (including non-Clifford T-gate)
-    qc.apply_h(0);
-    qc.apply_cx(0, 1);
-    qc.apply_t(1);
-
-    // 3. Compile the circuit into a state
-    let state = QuantumState::from_circuit(&qc)?;
-    println!("State stabilizer rank (χ): {}", state.stabilizer_rank());
-
-    // 4. Calculate an expectation value
-    let pauli_z0 = PauliString::from_str("ZI").unwrap();
-    let exp_val = state.exp_value(&pauli_z0)?;
-    println!("Expectation value of Z0: {}", exp_val);
-
-    // 5. Sample measurement outcomes
-    let samples = state.sample(&[0, 1], 1024, None)?;
-    println!("Samples: {:?}", samples);
-
-    Ok(())
-}
-```
+(TODO: Describe the problem this project solves and who would benefit from it.)
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/mutekichi/necstar/blob/main/LICENSE) file for details.
+
+## References
+
+* [1] S. Bravyi, D. Browne, P. Calpin, E. Campbell, D. Gosset, and M. Howard, "Simulation of quantum circuits by low-rank stabilizer decompositions", Quantum 3, 181 (2019). <https://doi.org/10.22331/q-2019-09-02-181>
+* [2] H. Qassim, H. Pashayan, and D. Gosset, "Improved upper bounds on the stabilizer rank of magic states", Quantum 5, 604 (2021). <https://doi.org/10.22331/q-2021-12-20-606>
+
+## Authors
+
+* **Yuki Watanabe** - [ywatanabe.r5p@gmail.com](mailto:ywatanabe.r5p@gmail.com)
