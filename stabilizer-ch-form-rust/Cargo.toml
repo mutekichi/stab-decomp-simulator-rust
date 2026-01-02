@@ -3,6 +3,8 @@ name = "stabilizer-ch-form-rust"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+repository = "https://github.com/mutekichi/necstar"
+description = "A Rust library implementing CH form representation of stabilizer states for quantum computing simulations."
 
 [dependencies]
 ndarray = "0.15"

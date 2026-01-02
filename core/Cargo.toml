@@ -2,7 +2,15 @@
 name = "necstar"
 version = "0.1.0"
 edition = "2024"
+authors = ["Yuki Watanabe <ywatanabe.r5p@gmail.com>"]
 license = "MIT"
+repository = "https://github.com/mutekichi/necstar"
+homepage = "https://github.com/mutekichi/necstar"
+description = "A stabilizer decomposition based quantum circuit simulator core library implemented in Rust."
+documentation = ""
+readme = "README.md"
+keywords = ["quantum computing", "simulation", "stabilizer", "T-gate"]
+categories = ["science", "physics", "simulation"]
 
 [dependencies]
 ndarray = "0.15"
@@ -15,4 +23,4 @@ rand = { version = "0.8", features = ["std_rng"] }
 rand_distr = "0.4"
 thiserror = "1.0"
 katexit = "0.1"
-stabilizer-ch-form-rust = { path = "../stabilizer-ch-form-rust" }
+stabilizer-ch-form-rust = { version = "0.1.0", path = "../stabilizer-ch-form-rust" }
