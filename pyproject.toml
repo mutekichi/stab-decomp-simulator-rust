@@ -30,6 +30,7 @@ name = "necstar"
 version = "0.1.0"
 description = "A stabilizer decomposition based quantum circuit simulator implemented in Rust with Python bindings."
 authors = ["Yuki Watanabe <ywatanabe.r5p@gmail.com>"]
+documentation = "https://mutekichi.github.io/necstar/"
 license = "MIT"
 readme = "README.md"
 
