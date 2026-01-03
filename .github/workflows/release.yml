@@ -57,12 +57,21 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'poetry'
+
+      - name: Install poetry
+        run: pip install poetry
+
+      - name: Configure poetry
+        run: poetry config virtualenvs.in-project true
+
+      - name: Install Python dependencies
+        run: poetry install --no-interaction
 
       - name: Run Python Tests
         run: |
-          pip install maturin pytest numpy qiskit
-          maturin develop --manifest-path python/Cargo.toml
-          pytest
+          poetry run maturin develop --release --manifest-path python/Cargo.toml
+          poetry run pytest
 
   publish-stabilizer:
     needs: validate-and-test
