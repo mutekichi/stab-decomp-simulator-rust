@@ -119,38 +119,46 @@ pub(crate) fn from_qasm_str(qasm_str: &str) -> Result<QuantumCircuit> {
         }
 
         // Check for 2-qubit gates if not matched
-        if !matched && let Some(caps) = GATE2_RE.captures(line) {
-            let gate_name = &caps[1];
-            if let Some(gate_fn) = TWO_QUBIT_GATES.get(gate_name) {
-                let q1 = caps[3].parse::<usize>().map_err(|e| {
-                    Error::QasmParsingError(format!(
-                        "Invalid qubit index in line: '{}' ({})",
-                        line, e
-                    ))
-                })?;
-                let q2 = caps[5].parse::<usize>().map_err(|e| {
-                    Error::QasmParsingError(format!(
-                        "Invalid qubit index in line: '{}' ({})",
-                        line, e
-                    ))
-                })?;
-                gates.push(gate_fn(q1, q2));
-                matched = true;
+        #[allow(clippy::collapsible_if)]
+        // avoid let-chains for compatibility with older Rust toolchains
+        if !matched {
+            if let Some(caps) = GATE2_RE.captures(line) {
+                let gate_name = &caps[1];
+                if let Some(gate_fn) = TWO_QUBIT_GATES.get(gate_name) {
+                    let q1 = caps[3].parse::<usize>().map_err(|e| {
+                        Error::QasmParsingError(format!(
+                            "Invalid qubit index in line: '{}' ({})",
+                            line, e
+                        ))
+                    })?;
+                    let q2 = caps[5].parse::<usize>().map_err(|e| {
+                        Error::QasmParsingError(format!(
+                            "Invalid qubit index in line: '{}' ({})",
+                            line, e
+                        ))
+                    })?;
+                    gates.push(gate_fn(q1, q2));
+                    matched = true;
+                }
             }
         }
 
         // Check for 1-qubit gates if not matched
-        if !matched && let Some(caps) = GATE1_RE.captures(line) {
-            let gate_name = &caps[1];
-            if let Some(gate_fn) = SINGLE_QUBIT_GATES.get(gate_name) {
-                let qarg = caps[3].parse::<usize>().map_err(|e| {
-                    Error::QasmParsingError(format!(
-                        "Invalid qubit index in line: '{}' ({})",
-                        line, e
-                    ))
-                })?;
-                gates.push(gate_fn(qarg));
-                matched = true;
+        #[allow(clippy::collapsible_if)]
+        // avoid let-chains for compatibility with older Rust toolchains
+        if !matched {
+            if let Some(caps) = GATE1_RE.captures(line) {
+                let gate_name = &caps[1];
+                if let Some(gate_fn) = SINGLE_QUBIT_GATES.get(gate_name) {
+                    let qarg = caps[3].parse::<usize>().map_err(|e| {
+                        Error::QasmParsingError(format!(
+                            "Invalid qubit index in line: '{}' ({})",
+                            line, e
+                        ))
+                    })?;
+                    gates.push(gate_fn(qarg));
+                    matched = true;
+                }
             }
         }
 
