@@ -1,6 +1,6 @@
 [package]
 name = "necstar-py"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 description = "A stabilizer decomposition based quantum circuit simulator implemented in Rust with Python bindings."
@@ -14,4 +14,4 @@ doc = false
 [dependencies]
 pyo3 = { version = "0.21", features = ["extension-module", "num-complex"] }
 num-complex = "0.4"
-necstar_core = { version = "0.1.0", package = "necstar", path = "../crates/necstar" }
+necstar_core = { version = "0.1.1", package = "necstar", path = "../crates/necstar" }

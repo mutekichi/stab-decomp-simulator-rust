@@ -9,7 +9,7 @@ To use `stabilizer-ch-form-rust` as a library in your Rust project, add the foll
 
 ```toml
 [dependencies]
-stabilizer-ch-form-rust = "0.1.0"
+stabilizer-ch-form-rust = "0.1.1"
 ```
 
 ### Build from Source

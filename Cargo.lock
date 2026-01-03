@@ -179,7 +179,7 @@ dependencies = [
 
 [[package]]
 name = "necstar"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "katexit",
  "lazy_static",
@@ -196,7 +196,7 @@ dependencies = [
 
 [[package]]
 name = "necstar-py"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "necstar",
  "num-complex",
@@ -485,7 +485,7 @@ checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
 
 [[package]]
 name = "stabilizer-ch-form-rust"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "approx",
  "itertools",

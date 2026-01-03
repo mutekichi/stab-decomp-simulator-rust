@@ -15,7 +15,7 @@ To use NECSTAR as a library in your Rust project, add the following to your `Car
 
 ```toml
 [dependencies]
-necstar = "0.1.0"
+necstar = "0.1.1"
 ```
 
 ### Build from Source

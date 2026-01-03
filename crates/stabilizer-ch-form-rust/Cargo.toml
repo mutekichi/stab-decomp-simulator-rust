@@ -1,6 +1,6 @@
 [package]
 name = "stabilizer-ch-form-rust"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 authors = ["Yuki Watanabe <ywatanabe.r5p@gmail.com>"]
 license = "MIT"

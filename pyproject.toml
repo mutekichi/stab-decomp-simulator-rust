@@ -8,7 +8,7 @@ python-source = "python"
 
 [project]
 name = "necstar"
-version = "0.1.0"
+version = "0.1.1"
 description = "A stabilizer decomposition based quantum circuit simulator implemented in Rust with Python bindings."
 authors = [
   { name = "Yuki Watanabe", email = "ywatanabe.r5p@gmail.com" },
@@ -27,7 +27,7 @@ classifiers = [
 [tool.poetry]
 package-mode = false
 name = "necstar"
-version = "0.1.0"
+version = "0.1.1"
 description = "A stabilizer decomposition based quantum circuit simulator implemented in Rust with Python bindings."
 authors = ["Yuki Watanabe <ywatanabe.r5p@gmail.com>"]
 documentation = "https://mutekichi.github.io/necstar/"
