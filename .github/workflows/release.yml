@@ -124,7 +124,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist --manifest-path python/Cargo.toml
+          args: --release --out dist --manifest-path python/Cargo.toml -i python3.11
           sccache: 'true'
           manylinux: auto
       - name: Upload artifacts
