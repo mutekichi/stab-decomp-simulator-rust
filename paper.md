@@ -1,5 +1,5 @@
 ---
-title: 'NECSTAR: Near-Clifford Stabilizer Decomposition Simulator in Rust`
+title: "NECSTAR: Near-Clifford Stabilizer Decomposition Simulator in Rust"
 tags:
   - quantum computing
   - quantum information
