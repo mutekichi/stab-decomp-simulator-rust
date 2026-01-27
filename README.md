@@ -12,7 +12,7 @@ non-Clifford gates.
 
 * **Stabilizer Decomposition Core**: The simulator represents the quantum state as a linear combination of stabilizer states [1]. This approach avoids the memory overhead of dense state vectors and is efficient for circuits with low non-Clifford gate counts.
 * **Magic State Teleportation**: Non-Clifford gates are applied via the gate teleportation protocol using magic states. A T-gate is implemented by consuming a T-state, and the tensor product of T-states is automatically decomposed into stabilizer states using optimized techniques [2].
-* **Intuitive Declarative API**: Users can define quantum computations by building a :class:`~necstar.QuantumCircuit`. This is compiled into a :class:`~necstar.QuantumState`, which manages the internal stabilizer decomposition and provides a clean interface for simulation.
+* **Intuitive Declarative API**: Users can define quantum computations by building a `necstar.QuantumCircuit`. This is compiled into a `necstar.QuantumState`, which manages the internal stabilizer decomposition and provides a clean interface for simulation.
 
 ## Repository Structure
 
@@ -48,10 +48,6 @@ necstar = "0.1.1"
 ```
 
 Please refer to the [NECSTAR README](https://github.com/mutekichi/necstar/tree/main/crates/necstar/README.md) for more details.
-
-## Statement of Need
-
-(TODO: Describe the problem this project solves and who would benefit from it.)
 
 ## License
 
